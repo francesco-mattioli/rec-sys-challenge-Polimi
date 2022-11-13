@@ -1,53 +1,35 @@
-from Recommenders.KNN.UserKNNCFRecommender import UserKNNCFRecommender
-from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
-from Evaluation.Evaluator import EvaluatorHoldout
-
-import matplotlib.pyplot as pyplot
-
-class Evaluator:
-
-    def evaluate_topK(self,URM_train, evaluator_validation):
-        x_tick = [10, 50, 100, 200, 500]
-        MAP_per_k = []
-
-        for topK in x_tick:
-
-            recommender = UserKNNCFRecommender(URM_train)
-            recommender.fit(shrink=0.0, topK=topK)
-
-            result_df, _ = evaluator_validation.evaluateRecommender(
-                recommender)
-
-            MAP_per_k.append(result_df.loc[10]["MAP"])
-
-        pyplot.plot(x_tick, MAP_per_k)
-        pyplot.ylabel('MAP')
-        pyplot.xlabel('TopK')
-        pyplot.show()
+from tqdm import tqdm
+import numpy as np
+import scipy.sparse as sp
 
 
-    def evaluator_shrinkage(self,URM_train,evaluator_validation):
-        x_tick = [0, 10, 50, 100, 200, 500]
-        MAP_per_shrinkage = []
+def mean_average_precision(recommendations: np.array, relevant_items: np.array) -> float:
+        is_relevant = np.in1d(recommendations, relevant_items, assume_unique=True)
 
-        for shrink in x_tick:
-            
-            recommender = ItemKNNCFRecommender(URM_train)
-            recommender.fit(shrink=shrink, topK=100)
-            
-            result_df, _ = evaluator_validation.evaluateRecommender(recommender)
-            
-            MAP_per_shrinkage.append(result_df.loc[10]["MAP"])
-        
-        pyplot.plot(x_tick, MAP_per_shrinkage)
-        pyplot.ylabel('MAP')
-        pyplot.xlabel('Shrinkage')
-        pyplot.show()
+        precision_at_k = is_relevant * np.cumsum(is_relevant, dtype=np.float32) / (1 + np.arange(is_relevant.shape[0]))
+
+        map_score = np.sum(precision_at_k) / np.min([relevant_items.shape[0], is_relevant.shape[0]])
+
+        return map_score
 
 
-    def evaluate(self,URM_train,URM_test,URM_validation):
-        evaluator_validation = EvaluatorHoldout(URM_validation, cutoff_list=[10])
-        #evaluator_test = EvaluatorHoldout(URM_test, cutoff_list=[10])
-        self.evaluate_topK(URM_train,evaluator_validation)
-        self.evaluator_shrinkage(URM_train,evaluator_validation)
+def evaluate(recommended_items_for_each_user, urm_test: sp.csr_matrix, target: sp.csr_matrix):       
+    accum_map = 0
+    num_users_evaluated = 0
+
+    for user_id in tqdm(target):
+        user_profile_start = urm_test.indptr[user_id]
+        user_profile_end = urm_test.indptr[user_id+1]
+    
+        relevant_items = urm_test.indices[user_profile_start:user_profile_end]
+    
+        if relevant_items.size == 0:
+            relevant_items = np.zeros(urm_test.indices[0])
+
+        accum_map += mean_average_precision(recommended_items_for_each_user[int(user_id)], relevant_items)
+        num_users_evaluated += 1
+
+    accum_map /=  max(num_users_evaluated, 1)
+
+    return accum_map
 

@@ -348,7 +348,8 @@ class Evaluator(object):
             test_user = test_user_batch_array[batch_user_index]
 
             relevant_items = self.get_user_relevant_items(test_user)
-
+            if(len(relevant_items)==0):
+                relevant_items=np.zeros(10)
             # Being the URM CSR, the indices are the non-zero column indexes
             recommended_items = recommended_items_batch_list[batch_user_index]
             is_relevant = np.in1d(recommended_items, relevant_items, assume_unique=True)

@@ -1,6 +1,7 @@
 # Import recommenders
 from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
 from Recommenders.BaseRecommender import BaseRecommender
+from Recommenders.SLIM.SLIMElasticNetRecommender import SLIMElasticNetRecommender
 
 # Import libraries
 from tqdm import tqdm
@@ -15,9 +16,11 @@ class HybridRecommender(BaseRecommender):
         super(HybridRecommender, self).__init__(URM_train)
 
     def fit(self):
-        self.ItemCF = ItemKNNCFRecommender(self.URM_train)
-        # TODO: to improve passing specific parameters
-        self.ItemCF.fit(5000, 2000)
+        #self.ItemCF = ItemKNNCFRecommender(self.URM_train)
+        self.SLIM_ElasticNet = SLIMElasticNetRecommender(self.URM_train)
+        # TODO: to improve passing specific parameters for ItemCF
+        #self.ItemCF.fit(5000, 2000)
+        self.SLIM_ElasticNet.fit(0.05,0.7,True,5000)
 
     def _compute_item_score(self, user_id_array, items_to_compute=None):
 
@@ -26,8 +29,8 @@ class HybridRecommender(BaseRecommender):
 
         for i in tqdm(range(len(user_id_array))):
    
-            w = self.ItemCF._compute_item_score(
-                user_id_array[i], items_to_compute)
+            #w = self.ItemCF._compute_item_score(user_id_array[i], items_to_compute)
+            w = self.SLIM_ElasticNet._compute_item_score(user_id_array[i], items_to_compute)
 
             # In the i-th array of item_weights we assign the w array
             item_weights[i, :] = w
