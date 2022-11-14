@@ -35,7 +35,7 @@ from Recommenders.MatrixFactorization.Cython.MatrixFactorization_Cython import M
     MatrixFactorization_FunkSVD_Cython, MatrixFactorization_AsySVD_Cython
 
 from Recommenders.Neural.MultVAERecommender import MultVAERecommender_OptimizerMask as MultVAERecommender
-from Recommenders.FactorizationMachines.LightFMRecommender import LightFMCFRecommender
+#from Recommenders.FactorizationMachines.LightFMRecommender import LightFMCFRecommender
 
 ######################################################################
 ##########                                                  ##########
@@ -54,7 +54,7 @@ from Recommenders.KNN.UserKNNCBFRecommender import UserKNNCBFRecommender
 ######################################################################
 from Recommenders.KNN.ItemKNN_CFCBF_Hybrid_Recommender import ItemKNN_CFCBF_Hybrid_Recommender
 from Recommenders.KNN.UserKNN_CFCBF_Hybrid_Recommender import UserKNN_CFCBF_Hybrid_Recommender
-from Recommenders.FactorizationMachines.LightFMRecommender import LightFMItemHybridRecommender, LightFMUserHybridRecommender
+#from Recommenders.FactorizationMachines.LightFMRecommender import LightFMItemHybridRecommender, LightFMUserHybridRecommender
 from Recommenders.FeatureWeighting.Cython.CFW_D_Similarity_Cython import CFW_D_Similarity_Cython
 from Recommenders.FeatureWeighting.Cython.CFW_DVV_Similarity_Cython import CFW_DVV_Similarity_Cython
 from Recommenders.FeatureWeighting.Cython.FBSM_Rating_Cython import FBSM_Rating_Cython
@@ -327,7 +327,7 @@ def runHyperparameterSearch_Hybrid(recommender_class, URM_train, ICM_object, ICM
 
             return
 
-
+        '''
         elif recommender_class in [LightFMItemHybridRecommender, LightFMUserHybridRecommender]:
 
                 hyperparameters_range_dictionary = {
@@ -347,7 +347,7 @@ def runHyperparameterSearch_Hybrid(recommender_class, URM_train, ICM_object, ICM
                     FIT_KEYWORD_ARGS = {},
                     EARLYSTOPPING_KEYWORD_ARGS = earlystopping_keywargs,
                 )
-
+        '''
 
        #########################################################################################################
 
@@ -998,7 +998,7 @@ def runHyperparameterSearch_Collaborative(recommender_class, URM_train, URM_trai
 
 
         ##########################################################################################################
-
+        '''
         if recommender_class is LightFMCFRecommender:
 
             hyperparameters_range_dictionary = {
@@ -1018,6 +1018,7 @@ def runHyperparameterSearch_Collaborative(recommender_class, URM_train, URM_trai
                 FIT_KEYWORD_ARGS = {},
                 EARLYSTOPPING_KEYWORD_ARGS = earlystopping_keywargs,
             )
+        '''
 
         #########################################################################################################
 

@@ -47,7 +47,7 @@ class DataReader(object):
         watchers_urm = urm[urm.Data != 1]
         # replacing data which is 0 with 1
         watchers_urm = watchers_urm.replace({'Data': {0: 1}})
-        return self.dataframe_to_csr(urm)
+        return self.dataframe_to_csr(watchers_urm)
        
 
     def load_urm(self):

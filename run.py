@@ -3,26 +3,25 @@ from Data_manager.split_functions.split_train_validation_random_holdout import s
 from hybrid import HybridRecommender
 from tqdm import tqdm
 from evaluator import evaluate
-from Evaluation import Evaluator
+#from Evaluation import Evaluator
 
 # Read & split data
 dataReader = DataReader()
-urm = dataReader.load_urm()
-#urm=dataReader.load_binary_urm()
+#urm = dataReader.load_urm()
+urm=dataReader.load_binary_urm()
 target = dataReader.load_target()
 #dataReader.print_statistics(target)
 
 URM_train, URM_test = split_train_in_two_percentage_global_sample(urm, train_percentage = 0.80)
 URM_train, URM_validation = split_train_in_two_percentage_global_sample(URM_train, train_percentage = 0.80)
 
-
 # Instantiate and fit hybrid recommender
 recommender = HybridRecommender(URM_train)
 recommender.fit()
 
 # TODO: evaluator
-evaluator=Evaluator(URM_test,cutoff=10)
-evaluator.evaluateRecommender(recommender)
+#evaluator=Evaluator(URM_test,cutoff=10)
+#evaluator.evaluateRecommender(recommender)
 
 # Create CSV for submission
 f = open("submission.csv", "w+")

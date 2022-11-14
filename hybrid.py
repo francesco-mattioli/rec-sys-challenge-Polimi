@@ -19,8 +19,8 @@ class HybridRecommender(BaseRecommender):
         #self.ItemCF = ItemKNNCFRecommender(self.URM_train)
         self.SLIM_ElasticNet = SLIMElasticNetRecommender(self.URM_train)
         # TODO: to improve passing specific parameters for ItemCF
-        #self.ItemCF.fit(5000, 2000)
-        self.SLIM_ElasticNet.fit(0.05,0.7,True,5000)
+        #self.ItemCF.fit(10, 2000)
+        self.SLIM_ElasticNet.fit(l1_ratio=0.1, alpha = 0.05, positive_only=True, topK = 100)
 
     def _compute_item_score(self, user_id_array, items_to_compute=None):
 
