@@ -74,8 +74,8 @@ class DataReader(object):
         df=df.groupby(['UserID','ItemID'],as_index=False)
         # count occurrences of pairs (user,item)
         df=df['Data'].sum()
-        # keep only users who have opened an item more than 3 times 
-        openers_urm=df[df.Data>3]
+        # keep only users who have opened an item more than 1 times 
+        openers_urm=df[df.Data>1]
         # replace the number of times a user opened an item page (which is in column 'Data') with '1'
         openers_urm['Data']=1
 
