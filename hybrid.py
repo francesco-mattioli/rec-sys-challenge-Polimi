@@ -16,11 +16,11 @@ class HybridRecommender(BaseRecommender):
         super(HybridRecommender, self).__init__(URM_train)
 
     def fit(self):
-        #self.ItemCF = ItemKNNCFRecommender(self.URM_train)
-        self.SLIM_ElasticNet = SLIMElasticNetRecommender(self.URM_train)
+        self.ItemCF = ItemKNNCFRecommender(self.URM_train)
+        #self.SLIM_ElasticNet = SLIMElasticNetRecommender(self.URM_train)
         # TODO: to improve passing specific parameters for ItemCF
-        #self.ItemCF.fit(10, 2000)
-        self.SLIM_ElasticNet.fit(l1_ratio=0.1, alpha = 0.05, positive_only=True, topK = 100)
+        self.ItemCF.fit(10, 2000)
+        #self.SLIM_ElasticNet.fit(l1_ratio=0.00041748415370319755, alpha = 0.040880323355113234, positive_only=True, topK = 10000) #orginal topk was 183
 
     def _compute_item_score(self, user_id_array, items_to_compute=None):
 
@@ -29,8 +29,8 @@ class HybridRecommender(BaseRecommender):
 
         for i in tqdm(range(len(user_id_array))):
    
-            #w = self.ItemCF._compute_item_score(user_id_array[i], items_to_compute)
-            w = self.SLIM_ElasticNet._compute_item_score(user_id_array[i], items_to_compute)
+            w = self.ItemCF._compute_item_score(user_id_array[i], items_to_compute)
+            #w = self.SLIM_ElasticNet._compute_item_score(user_id_array[i], items_to_compute)
 
             # In the i-th array of item_weights we assign the w array
             item_weights[i, :] = w

@@ -963,7 +963,8 @@ def runHyperparameterSearch_Collaborative(recommender_class, URM_train, URM_trai
         if recommender_class is SLIMElasticNetRecommender or recommender_class is MultiThreadSLIM_SLIMElasticNetRecommender:
 
             hyperparameters_range_dictionary = {
-                "topK": Integer(5, 1000),
+                #"topK": Integer(5, 1000), #original
+                "topK": Integer(100, 4000), #custom
                 "l1_ratio": Real(low = 1e-5, high = 1.0, prior = 'log-uniform'),
                 "alpha": Real(low = 1e-3, high = 1.0, prior = 'uniform'),
             }

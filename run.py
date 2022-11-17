@@ -8,7 +8,8 @@ from evaluator import evaluate
 # Read & split data
 dataReader = DataReader()
 #urm = dataReader.load_urm()
-urm=dataReader.load_binary_urm()
+#urm = dataReader.load_binary_urm()
+urm = dataReader.load_augmented_binary_urm()
 target = dataReader.load_target()
 #dataReader.print_statistics(target)
 
@@ -19,7 +20,6 @@ URM_train, URM_validation = split_train_in_two_percentage_global_sample(URM_trai
 recommender = HybridRecommender(URM_train)
 recommender.fit()
 
-# TODO: evaluator
 #evaluator=Evaluator(URM_test,cutoff=10)
 #evaluator.evaluateRecommender(recommender)
 
@@ -35,5 +35,3 @@ for user_id in tqdm(target):
 
 map=evaluate(recommended_items_for_each_user,URM_test,target)
 print('MAP score: {}'.format(map))
-
-#TODO: SLIM with binary urm and find good params
