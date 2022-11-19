@@ -6,6 +6,7 @@ from evaluator import evaluate
 # from Evaluation import Evaluator
 from HyperparameterTuning.run_hyperparameter_search import runHyperparameterSearch_Collaborative
 from Recommenders.SLIM.SLIMElasticNetRecommender import SLIMElasticNetRecommender
+from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
 from Evaluation.Evaluator import EvaluatorHoldout
 from Recommenders.DataIO import DataIO
 
@@ -14,6 +15,7 @@ dataReader = DataReader()
 #urm = dataReader.load_urm()
 #urm = dataReader.load_binary_urm()
 urm = dataReader.load_augmented_binary_urm()
+#urm = dataReader.load_powerful_binary_urm()
 target = dataReader.load_target()
 # dataReader.print_statistics(target)
 
@@ -26,5 +28,6 @@ evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 evaluator_test = EvaluatorHoldout(URM_test, [10])
 
 
-runHyperparameterSearch_Collaborative(recommender_class=SLIMElasticNetRecommender, URM_train=URM_train, URM_train_last_test=URM_train_v0,n_cases=50,n_random_starts=15,
+
+runHyperparameterSearch_Collaborative(recommender_class=ItemKNNCFRecommender, URM_train=URM_train, URM_train_last_test=URM_train_v0,n_cases=200,n_random_starts=60,
                                       evaluator_validation=evaluator_validation, evaluator_validation_earlystopping=evaluator_validation, evaluator_test=evaluator_test, metric_to_optimize="MAP",cutoff_to_optimize=10)

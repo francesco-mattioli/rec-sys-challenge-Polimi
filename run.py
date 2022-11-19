@@ -9,9 +9,10 @@ from evaluator import evaluate
 dataReader = DataReader()
 #urm = dataReader.load_urm()
 #urm = dataReader.load_binary_urm()
-urm = dataReader.load_augmented_binary_urm()
+#urm = dataReader.load_augmented_binary_urm()
+urm = dataReader.load_powerful_binary_urm()
 target = dataReader.load_target()
-#dataReader.print_statistics(target)
+dataReader.print_statistics(target)
 
 URM_train, URM_test = split_train_in_two_percentage_global_sample(urm, train_percentage = 0.80)
 URM_train, URM_validation = split_train_in_two_percentage_global_sample(URM_train, train_percentage = 0.80)
