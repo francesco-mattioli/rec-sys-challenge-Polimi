@@ -161,7 +161,6 @@ class DataReader(object):
 
         return self.dataframe_to_csr(data_icm_type)
 
-    ''' TODO: TO COMPLETE
     # for S-SLIM
     def load_powerful_binary_urm(self):
         data_icm_type =  pd.read_csv(filepath_or_buffer=os.getenv('DATA_ICM_TYPE_PATH'),
@@ -170,7 +169,7 @@ class DataReader(object):
                                                         'item_id', 'feature_id', 'data'],
                                                     header=0,
                                                     dtype={'item_id': np.int32, 'feature_id': np.int32, 'data': np.int32})
-        # Swap the columns
+        # Swap the columns from (item_id, feature_id, data) to (feature_id, item_id, data)
         swap_list = ["feature_id","item_id","data"]
         f = data_icm_type.reindex(columns=swap_list)
         f = f.rename({'feature_id':'UserID','item_id':'ItemID','data':'Data'},axis=1)
@@ -178,16 +177,15 @@ class DataReader(object):
         urm = self.load_augmented_binary_urm_df()
 
         # urm times alpha
-        urm['Data'] = 0.5 * urm['Data']
+        urm['Data'] = 0.7 * urm['Data']
         # f times (1-aplha)
-        f['Data']  = 0.5 * f['Data']
+        f['Data']  = 0.3 * f['Data']
         # DUNNO IF CORRECT: we change UserIDs of f matrix in order to make recommender work
-        f['UserID'] = 50000 + f['UserID']
+        f['UserID'] = 41634 + f['UserID']
 
         powerful_urm = pd.concat([urm,f],ignore_index=True).sort_values(['UserID', 'ItemID'])
 
         return self.dataframe_to_csr(powerful_urm)
-        '''
 
 
     ###########################################################################################################################################################

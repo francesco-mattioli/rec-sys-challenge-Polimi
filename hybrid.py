@@ -1,7 +1,8 @@
 # Import recommenders
 from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
 from Recommenders.BaseRecommender import BaseRecommender
-from Recommenders.SLIM.SLIMElasticNetRecommender import SLIMElasticNetRecommender
+from Recommenders.SLIM.SLIMElasticNetRecommender import *
+from Recommenders.NonPersonalizedRecommender import TopPop
 
 # Import libraries
 from tqdm import tqdm
@@ -9,7 +10,7 @@ import numpy as np
 from numpy import linalg as LA
 
 
-class HybridRecommender(BaseRecommender):
+class HybridRecommender(BaseRecommender,):
 
     RECOMMENDER_NAME = "Hybrid_Recommender"
 
@@ -20,12 +21,13 @@ class HybridRecommender(BaseRecommender):
         #self.ItemCF = ItemKNNCFRecommender(self.URM_train)
         #self.ItemCF.fit(10, 2000)
         self.SLIM_ElasticNet = SLIMElasticNetRecommender(self.URM_train)
-        self.SLIM_ElasticNet.fit(l1_ratio=0.019254487370873725, alpha = 0.001613345808856924, positive_only=True, topK = 490)
+        self.SLIM_ElasticNet.fit(l1_ratio=0.01, alpha = 0.001, positive_only=True, topK = 3000)
 
 
     def _compute_item_score(self, user_id_array, items_to_compute=None):
 
-        num_items = 24507
+        #num_items = 24507
+        num_items = 27968 # with powerful_urm
         item_weights = np.empty([len(user_id_array), num_items])
 
         for i in tqdm(range(len(user_id_array))):
@@ -36,7 +38,9 @@ class HybridRecommender(BaseRecommender):
             w2 /= LA.norm(w2, 2)
             w = w1 + w2 
             '''
+            #w = self.ItemCF._compute_item_score(user_id_array[i], items_to_compute)
             w = self.SLIM_ElasticNet._compute_item_score(user_id_array[i], items_to_compute)
+        
 
             # In the i-th array of item_weights we assign the w array
             item_weights[i, :] = w

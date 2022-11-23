@@ -20,9 +20,9 @@ target = dataReader.load_target()
 # dataReader.print_statistics(target)
 
 URM_train_v0, URM_test = split_train_in_two_percentage_global_sample(
-    urm, train_percentage=0.80)
+    urm, train_percentage=0.90)
 URM_train, URM_validation = split_train_in_two_percentage_global_sample(
-    URM_train_v0, train_percentage=0.80)
+    URM_train_v0, train_percentage=0.90)
 
 evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 evaluator_test = EvaluatorHoldout(URM_test, [10])
