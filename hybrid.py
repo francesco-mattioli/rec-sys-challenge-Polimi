@@ -2,7 +2,6 @@
 from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
 from Recommenders.BaseRecommender import BaseRecommender
 from Recommenders.SLIM.SLIMElasticNetRecommender import *
-from Recommenders.NonPersonalizedRecommender import TopPop
 
 # Import libraries
 from tqdm import tqdm

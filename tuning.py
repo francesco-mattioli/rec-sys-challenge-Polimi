@@ -1,6 +1,5 @@
 from Data_Handler.DataReader import DataReader
 from Data_manager.split_functions.split_train_validation_random_holdout import split_train_in_two_percentage_global_sample
-from hybrid import HybridRecommender
 from tqdm import tqdm
 from evaluator import evaluate
 # from Evaluation import Evaluator
@@ -14,13 +13,13 @@ from Recommenders.DataIO import DataIO
 dataReader = DataReader()
 #urm = dataReader.load_urm()
 #urm = dataReader.load_binary_urm()
-urm = dataReader.load_augmented_binary_urm()
-#urm = dataReader.load_powerful_binary_urm()
+#urm = dataReader.load_augmented_binary_urm()
+urm = dataReader.load_powerful_binary_urm()
 target = dataReader.load_target()
 # dataReader.print_statistics(target)
 
 URM_train_v0, URM_test = split_train_in_two_percentage_global_sample(
-    urm, train_percentage=0.90)
+    urm, train_percentage=1)
 URM_train, URM_validation = split_train_in_two_percentage_global_sample(
     URM_train_v0, train_percentage=0.90)
 
@@ -29,5 +28,5 @@ evaluator_test = EvaluatorHoldout(URM_test, [10])
 
 
 
-runHyperparameterSearch_Collaborative(recommender_class=ItemKNNCFRecommender, URM_train=URM_train, URM_train_last_test=URM_train_v0,n_cases=200,n_random_starts=60,
+runHyperparameterSearch_Collaborative(recommender_class=SLIMElasticNetRecommender, URM_train=URM_train, URM_train_last_test=URM_train_v0,n_cases=100,n_random_starts=30,
                                       evaluator_validation=evaluator_validation, evaluator_validation_earlystopping=evaluator_validation, evaluator_test=evaluator_test, metric_to_optimize="MAP",cutoff_to_optimize=10)
