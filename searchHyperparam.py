@@ -5,6 +5,7 @@ from Data_manager.split_functions.split_train_validation_random_holdout import s
 from Evaluation.Evaluator import EvaluatorHoldout
 from Recommenders.SLIM.SLIMElasticNetRecommender import SLIMElasticNetRecommender
 from Data_Handler.DataReader import DataReader
+from tqdm import tqdm
 
 import os
 from skopt.space import Real, Integer, Categorical

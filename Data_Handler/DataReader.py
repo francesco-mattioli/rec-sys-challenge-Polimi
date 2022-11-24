@@ -49,7 +49,7 @@ class DataReader(object):
         # replacing data which is 0 with 1
         watchers_urm = watchers_urm.replace({'Data': {0: 1}})
         return self.dataframe_to_csr(watchers_urm)
-
+    '''
     def load_augmented_binary_urm_df_old(self):
         interactions_and_impressions = pd.read_csv(filepath_or_buffer=os.getenv('INTERACTIONS_AND_IMPRESSIONS_PATH'),
                                                    sep=',',
@@ -84,7 +84,8 @@ class DataReader(object):
         # union of watchers and openers, drop the duplicates and sort by the pair (userid,itemid) in order to have a proper formatting
         union_urm = pd.concat([watchers_urm,openers_urm],ignore_index=True).drop_duplicates(keep='first').sort_values(['UserID', 'ItemID'])
         return union_urm
-
+    '''
+    
     def load_augmented_binary_urm_df(self):
         interactions_and_impressions = pd.read_csv(filepath_or_buffer=os.getenv('INTERACTIONS_AND_IMPRESSIONS_PATH'),
                                                     sep=',',
