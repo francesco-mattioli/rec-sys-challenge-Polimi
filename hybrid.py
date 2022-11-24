@@ -20,7 +20,7 @@ class HybridRecommender(BaseRecommender):
         self.SLIM_ElasticNet = SLIMElasticNetRecommender(self.URM_train)
         # TODO: to improve passing specific parameters for ItemCF
         #self.ItemCF.fit(10, 2000)
-        self.SLIM_ElasticNet.fit(l1_ratio=0.00041748415370319755, alpha = 0.040880323355113234, positive_only=True, topK = 183) #orginal topk was 183
+        self.SLIM_ElasticNet.fit(l1_ratio=0.009354296806065364, alpha = 0.00240336319782477, positive_only=True, topK = 699) #orginal topk was 183
 
     def _compute_item_score(self, user_id_array, items_to_compute=None):
 
