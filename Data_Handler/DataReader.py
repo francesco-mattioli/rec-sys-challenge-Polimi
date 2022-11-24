@@ -5,9 +5,9 @@ from pandas.api.types import CategoricalDtype
 import scipy.sparse as sps
 
 # imports for .env usage
-'''import os
+import os
 from dotenv import load_dotenv
-load_dotenv()'''
+load_dotenv()
 
 
 class DataReader(object):
@@ -35,7 +35,7 @@ class DataReader(object):
 
     
     def load_binary_urm(self):
-        interactions_and_impressions = pd.read_csv(filepath_or_buffer="Dataset/interactions_and_impressions.csv",
+        interactions_and_impressions = pd.read_csv(filepath_or_buffer=os.getenv('INTERACTIONS_AND_IMPRESSIONS_PATH'),
                                                    sep=',',
                                                    names=[
                                                        'UserID', 'ItemID', 'Impressions', 'Data'],
@@ -141,7 +141,7 @@ class DataReader(object):
 
 
     def load_target(self):
-        df_original = pd.read_csv(filepath_or_buffer="Dataset/data_target_users_test.csv",
+        df_original = pd.read_csv(filepath_or_buffer=os.getenv('TARGET_PATH'),
                                   sep=',',
                                   header=0,
                                   dtype={'user_id': np.int32})
@@ -181,7 +181,7 @@ class DataReader(object):
         urm['Data'] = 0.7 * urm['Data']
         # f times (1-aplha)
         f['Data']  = 0.3 * f['Data']
-        # DUNNO IF CORRECT: we change UserIDs of f matrix in order to make recommender work
+        # Change UserIDs of f matrix in order to make recommender work
         f['UserID'] = 41634 + f['UserID']
 
         powerful_urm = pd.concat([urm,f],ignore_index=True).sort_values(['UserID', 'ItemID'])
@@ -192,7 +192,7 @@ class DataReader(object):
     ###########################################################################################################################################################
     # JUST STATISTICS
     def print_statistics(self,target):
-        interactions_and_impressions = pd.read_csv(filepath_or_buffer="Dataset/interactions_and_impressions.csv",
+        interactions_and_impressions = pd.read_csv(filepath_or_buffer=os.getenv('INTERACTIONS_AND_IMPRESSIONS_PATH'),
                                                    sep=',',
                                                    names=[
                                                        'UserID', 'ItemID', 'Impressions', 'Data'],

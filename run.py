@@ -20,7 +20,7 @@ URM_train, URM_validation = split_train_in_two_percentage_global_sample(urm, tra
 recommender = HybridRecommender(URM_train)
 recommender.fit()
 
-evaluator=EvaluatorHoldout(URM_train, cutoff=[10])
+#evaluator=EvaluatorHoldout(URM_train)
 #evaluator.evaluateRecommender(recommender)
 
 # Create CSV for submission
@@ -34,6 +34,6 @@ for user_id in tqdm(target):
     f.write(f"{user_id}, {well_formatted}\n")
 
 #map=evaluate(recommended_items_for_each_user,URM_test,target)
-#map=evaluate(recommended_items_for_each_user,URM_validation,target)
-evaluator.evaluateRecommender(recommender)
+map=evaluate(recommended_items_for_each_user,URM_validation,target)
+#evaluator.evaluateRecommender(recommender)
 print('MAP score: {}'.format(map))
