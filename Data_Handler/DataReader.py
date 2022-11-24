@@ -2,6 +2,7 @@ import scipy.sparse as sps
 import pandas as pd
 import numpy as np
 from pandas.api.types import CategoricalDtype
+import scipy.sparse as sps
 
 # imports for .env usage
 '''import os
@@ -49,9 +50,8 @@ class DataReader(object):
         watchers_urm = watchers_urm.replace({'Data': {0: 1}})
         return self.dataframe_to_csr(watchers_urm)
 
-
-    def load_augmented_binary_urm(self):
-        interactions_and_impressions = pd.read_csv(filepath_or_buffer="Dataset/interactions_and_impressions.csv",
+    def load_augmented_binary_urm_df_old(self):
+        interactions_and_impressions = pd.read_csv(filepath_or_buffer=os.getenv('INTERACTIONS_AND_IMPRESSIONS_PATH'),
                                                    sep=',',
                                                    names=[
                                                        'UserID', 'ItemID', 'Impressions', 'Data'],
@@ -82,9 +82,24 @@ class DataReader(object):
 
         ######### Create the augmented urm: the union of watchers_urm and openers_urm
         # union of watchers and openers, drop the duplicates and sort by the pair (userid,itemid) in order to have a proper formatting
-        #union_urm = pd.concat([watchers_urm,openers_urm],ignore_index=True).drop_duplicates(keep='first').sort_values(['UserID', 'ItemID'])
-        #return self.dataframe_to_csr(union_urm)
-        return self.dataframe_to_csr(df)
+        union_urm = pd.concat([watchers_urm,openers_urm],ignore_index=True).drop_duplicates(keep='first').sort_values(['UserID', 'ItemID'])
+        return union_urm
+
+    def load_augmented_binary_urm_df(self):
+        interactions_and_impressions = pd.read_csv(filepath_or_buffer=os.getenv('INTERACTIONS_AND_IMPRESSIONS_PATH'),
+                                                    sep=',',
+                                                    names=[
+                                                        'UserID', 'ItemID', 'Impressions', 'Data'],
+                                                    header=0,
+                                                    dtype={'UserID': np.int32, 'ItemID': np.int32, 'Impressions': np.object0, 'Data': np.int32})
+        interactions = interactions_and_impressions.drop(['Impressions'], axis=1)
+        df = interactions.replace({'Data': {0: 1}})
+        df = df.drop_duplicates(keep='first')
+        return df
+       
+    def load_augmented_binary_urm(self):
+        urm = self.load_augmented_binary_urm_df()
+        return self.dataframe_to_csr(urm)
 
     def load_urm(self):
         interactions_and_impressions = pd.read_csv(filepath_or_buffer="Dataset/interactions_and_impressions.csv",
@@ -136,6 +151,46 @@ class DataReader(object):
         print(">>> number of target users: {}".format(len(user_id_list)))
         return user_id_unique
 
+    
+    def load_icm(self):
+        data_icm_type =  pd.read_csv(filepath_or_buffer=os.getenv('DATA_ICM_TYPE_PATH'),
+                                                    sep=',',
+                                                    names=[
+                                                        'item_id', 'feature_id', 'data'],
+                                                    header=0,
+                                                    dtype={'item_id': np.int32, 'feature_id': np.int32, 'data': np.int32})
+
+        return self.dataframe_to_csr(data_icm_type)
+
+    # for S-SLIM
+    def load_powerful_binary_urm(self):
+        data_icm_type =  pd.read_csv(filepath_or_buffer=os.getenv('DATA_ICM_TYPE_PATH'),
+                                                    sep=',',
+                                                    names=[
+                                                        'item_id', 'feature_id', 'data'],
+                                                    header=0,
+                                                    dtype={'item_id': np.int32, 'feature_id': np.int32, 'data': np.int32})
+        # Swap the columns from (item_id, feature_id, data) to (feature_id, item_id, data)
+        swap_list = ["feature_id","item_id","data"]
+        f = data_icm_type.reindex(columns=swap_list)
+        f = f.rename({'feature_id':'UserID','item_id':'ItemID','data':'Data'},axis=1)
+
+        urm = self.load_augmented_binary_urm_df()
+
+        # urm times alpha
+        urm['Data'] = 0.7 * urm['Data']
+        # f times (1-aplha)
+        f['Data']  = 0.3 * f['Data']
+        # DUNNO IF CORRECT: we change UserIDs of f matrix in order to make recommender work
+        f['UserID'] = 41634 + f['UserID']
+
+        powerful_urm = pd.concat([urm,f],ignore_index=True).sort_values(['UserID', 'ItemID'])
+
+        return self.dataframe_to_csr(powerful_urm)
+
+
+    ###########################################################################################################################################################
+    # JUST STATISTICS
     def print_statistics(self,target):
         interactions_and_impressions = pd.read_csv(filepath_or_buffer="Dataset/interactions_and_impressions.csv",
                                                    sep=',',
@@ -155,3 +210,4 @@ class DataReader(object):
         print('>>> number of unique users in target that are not in "list of users that have watched at least a movie": {}'.format(len(np.setdiff1d(target,watchers_urm['UserID'].unique()))))
         print('>>> number of unique users in "list of users that have watched at least a movie" that are not in target: {}'.format(len(np.setdiff1d(watchers_urm['UserID'].unique(),target))))
         print('>>> number of unique users in interactions_and_impressions that are not in "list of users that have watched at least a movie": {}'.format(len(np.setdiff1d(urm['UserID'].unique(),watchers_urm['UserID'].unique()))))
+

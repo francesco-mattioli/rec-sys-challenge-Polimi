@@ -8,7 +8,8 @@ from Evaluation.Evaluator import EvaluatorHoldout
 dataReader = DataReader()
 #urm = dataReader.load_urm()
 #urm = dataReader.load_binary_urm()
-urm = dataReader.load_augmented_binary_urm()
+#urm = dataReader.load_augmented_binary_urm()
+urm = dataReader.load_powerful_binary_urm()
 target = dataReader.load_target()
 #dataReader.print_statistics(target)
 

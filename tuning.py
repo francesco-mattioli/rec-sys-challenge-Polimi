@@ -6,6 +6,7 @@ from evaluator import evaluate
 # from Evaluation import Evaluator
 from HyperparameterTuning.run_hyperparameter_search import runHyperparameterSearch_Collaborative
 from Recommenders.SLIM.SLIMElasticNetRecommender import SLIMElasticNetRecommender
+from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
 from Evaluation.Evaluator import EvaluatorHoldout
 from Recommenders.DataIO import DataIO
 
@@ -14,6 +15,7 @@ dataReader = DataReader()
 #urm = dataReader.load_urm()
 #urm = dataReader.load_binary_urm()
 urm = dataReader.load_augmented_binary_urm()
+#urm = dataReader.load_powerful_binary_urm()
 target = dataReader.load_target()
 # dataReader.print_statistics(target)
 
