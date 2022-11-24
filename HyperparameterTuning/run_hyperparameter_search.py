@@ -964,8 +964,8 @@ def runHyperparameterSearch_Collaborative(recommender_class, URM_train, URM_trai
 
             hyperparameters_range_dictionary = {
                 #"topK": Integer(5, 1000), #original
-                "topK": Integer(5, 1000), #custom
-                "l1_ratio": Real(low = 1e-5, high = 1.0, prior = 'log-uniform'),
+                "topK": Integer(5, 800), #custom
+                "l1_ratio": Real(low = 1e-5, high = 0.01, prior = 'log-uniform'),
                 "alpha": Real(low = 1e-3, high = 1.0, prior = 'uniform'),
             }
 
@@ -974,7 +974,7 @@ def runHyperparameterSearch_Collaborative(recommender_class, URM_train, URM_trai
                 CONSTRUCTOR_KEYWORD_ARGS = {},
                 FIT_POSITIONAL_ARGS = [],
                 FIT_KEYWORD_ARGS = {},
-                EARLYSTOPPING_KEYWORD_ARGS = {},
+                EARLYSTOPPING_KEYWORD_ARGS = earlystopping_keywargs,
             )
 
 

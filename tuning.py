@@ -18,15 +18,15 @@ urm = dataReader.load_powerful_binary_urm()
 target = dataReader.load_target()
 # dataReader.print_statistics(target)
 
-URM_train_v0, URM_test = split_train_in_two_percentage_global_sample(
-    urm, train_percentage=1)
-URM_train, URM_validation = split_train_in_two_percentage_global_sample(
-    URM_train_v0, train_percentage=0.90)
+#URM_train_v0, URM_test = split_train_in_two_percentage_global_sample(urm, train_percentage=0.90)
+#URM_train, URM_validation = split_train_in_two_percentage_global_sample(URM_train_v0, train_percentage=0.90)
+URM_train, URM_validation = split_train_in_two_percentage_global_sample(urm, train_percentage=0.85)
+
 
 evaluator_validation = EvaluatorHoldout(URM_validation, [10])
-evaluator_test = EvaluatorHoldout(URM_test, [10])
+#evaluator_test = EvaluatorHoldout(URM_test, [10])
 
 
+runHyperparameterSearch_Collaborative(recommender_class=SLIMElasticNetRecommender, URM_train=URM_train, URM_train_last_test=urm,n_cases=100,n_random_starts=15,
+                                       evaluator_validation=evaluator_validation, evaluator_validation_earlystopping=evaluator_validation, metric_to_optimize="MAP",cutoff_to_optimize=10)
 
-runHyperparameterSearch_Collaborative(recommender_class=SLIMElasticNetRecommender, URM_train=URM_train, URM_train_last_test=URM_train_v0,n_cases=100,n_random_starts=30,
-                                      evaluator_validation=evaluator_validation, evaluator_validation_earlystopping=evaluator_validation, evaluator_test=evaluator_test, metric_to_optimize="MAP",cutoff_to_optimize=10)

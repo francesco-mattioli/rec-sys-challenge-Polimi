@@ -5,9 +5,9 @@ from pandas.api.types import CategoricalDtype
 import scipy.sparse as sps
 
 # imports for .env usage
-import os
+'''import os
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv()'''
 
 
 class DataReader(object):
@@ -35,7 +35,7 @@ class DataReader(object):
 
     
     def load_binary_urm(self):
-        interactions_and_impressions = pd.read_csv(filepath_or_buffer=os.getenv('INTERACTIONS_AND_IMPRESSIONS_PATH'),
+        interactions_and_impressions = pd.read_csv(filepath_or_buffer="Dataset/interactions_and_impressions.csv",
                                                    sep=',',
                                                    names=[
                                                        'UserID', 'ItemID', 'Impressions', 'Data'],
@@ -58,26 +58,27 @@ class DataReader(object):
                                                    header=0,
                                                    dtype={'UserID': np.int32, 'ItemID': np.int32, 'Impressions': np.object0, 'Data': np.int32})
         interactions = interactions_and_impressions.drop(['Impressions'], axis=1)
-
+        df = interactions.replace({'Data': {0: 1}})
+        df = df.drop_duplicates(keep='first')
         ######### Create watchers_urm: the urm having the pairs (user,item) in which a user have watched the paired item at least once
         # remove duplicated (user_id,item_id) pairs
-        df = interactions.drop_duplicates(keep='first')
+        #df = interactions.drop_duplicates(keep='first')
         # remove (user_id,item_id) pairs with data set to 1
-        df = df[df.Data != 1]
+        #df = df[df.Data != 1]
         # replace data which is 0 with 1
-        watchers_urm = df.replace({'Data': {0: 1}})
+        #watchers_urm = df.replace({'Data': {0: 1}})
 
         ######### Create openers_urm: the urm having the pairs (user,item) in which a user have opened at least 3 times an item page
         # remove rows where data is 0 in order to have only users who have opened some item pages
-        df = interactions[interactions.Data != 0]
+        #df = interactions[interactions.Data != 0]
         # groupby UserID and ItemID keeping the columns index
-        df=df.groupby(['UserID','ItemID'],as_index=False)
+        #df=df.groupby(['UserID','ItemID'],as_index=False)
         # count occurrences of pairs (user,item)
-        df=df['Data'].sum()
-        # keep only users who have opened an item more than 1 times 
-        openers_urm=df[df.Data>1]
+        #df=df['Data'].sum()
+        # keep only users who have opened an item more than 0 times 
+        #openers_urm=df[df.Data>0]
         # replace the number of times a user opened an item page (which is in column 'Data') with '1'
-        openers_urm['Data']=1
+        #openers_urm['Data']=1
 
         ######### Create the augmented urm: the union of watchers_urm and openers_urm
         # union of watchers and openers, drop the duplicates and sort by the pair (userid,itemid) in order to have a proper formatting
@@ -101,7 +102,7 @@ class DataReader(object):
         return self.dataframe_to_csr(urm)
 
     def load_urm(self):
-        interactions_and_impressions = pd.read_csv(filepath_or_buffer=os.getenv('INTERACTIONS_AND_IMPRESSIONS_PATH'),
+        interactions_and_impressions = pd.read_csv(filepath_or_buffer="Dataset/interactions_and_impressions.csv",
                                             sep=',',
                                             names=[
                                                 'UserID', 'ItemID', 'Impressions', 'Data'],
@@ -116,7 +117,7 @@ class DataReader(object):
         # count occurrences of pairs (user,item)
         df_number_of_watched_episodes=df['Data'].count()
 
-        data_ICM_length =  pd.read_csv(filepath_or_buffer=os.getenv('DATA_ICM_LENGTH_PATH'),
+        data_ICM_length =  pd.read_csv(filepath_or_buffer="Dataset/data_ICM_length.csv",
                                                     sep=',',
                                                     names=[
                                                         'ItemID', 'FeatureID', 'Data'],
@@ -140,7 +141,7 @@ class DataReader(object):
 
 
     def load_target(self):
-        df_original = pd.read_csv(filepath_or_buffer=os.getenv('TARGET_PATH'),
+        df_original = pd.read_csv(filepath_or_buffer="Dataset/data_target_users_test.csv",
                                   sep=',',
                                   header=0,
                                   dtype={'user_id': np.int32})
@@ -191,7 +192,7 @@ class DataReader(object):
     ###########################################################################################################################################################
     # JUST STATISTICS
     def print_statistics(self,target):
-        interactions_and_impressions = pd.read_csv(filepath_or_buffer=os.getenv('INTERACTIONS_AND_IMPRESSIONS_PATH'),
+        interactions_and_impressions = pd.read_csv(filepath_or_buffer="Dataset/interactions_and_impressions.csv",
                                                    sep=',',
                                                    names=[
                                                        'UserID', 'ItemID', 'Impressions', 'Data'],
