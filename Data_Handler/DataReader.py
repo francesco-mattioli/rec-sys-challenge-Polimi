@@ -152,6 +152,13 @@ class DataReader(object):
         print(">>> number of target users: {}".format(len(user_id_list)))
         return user_id_unique
 
+    def load_target_df(self):
+        target = pd.read_csv(filepath_or_buffer=os.getenv('TARGET_PATH'),
+                                  sep=',',
+                                  header=0,
+                                  dtype={'user_id': np.int32})
+        return target
+
     
     def load_icm(self):
         data_icm_type =  pd.read_csv(filepath_or_buffer=os.getenv('DATA_ICM_TYPE_PATH'),
@@ -162,6 +169,17 @@ class DataReader(object):
                                                     dtype={'item_id': np.int32, 'feature_id': np.int32, 'data': np.int32})
 
         return self.dataframe_to_csr(data_icm_type)
+
+        
+    def load_icm_df(self):
+        data_icm_type =  pd.read_csv(filepath_or_buffer=os.getenv('DATA_ICM_TYPE_PATH'),
+                                                    sep=',',
+                                                    names=[
+                                                        'item_id', 'feature_id', 'data'],
+                                                    header=0,
+                                                    dtype={'item_id': np.int32, 'feature_id': np.int32, 'data': np.int32})
+
+        return data_icm_type
 
     # for S-SLIM
     def load_powerful_binary_urm(self):

@@ -38,9 +38,9 @@ metric_to_optimize = "MAP"
 cutoff_to_optimize = 10
 
 hyperparameters_range_dictionary = {
-    "l1_ratio": Real(low=0.0005, high=0.05, prior='log-uniform'),
-    "alpha": Real(low=0.01, high=0.1, prior='log-uniform'),
-    "topK": Integer(300, 4000)
+    "l1_ratio": Real(low=0.0001, high=0.1, prior='log-uniform'),
+    "alpha": Real(low=0.00001, high=0.1, prior='log-uniform'),
+    "topK": Integer(200,800 )
 }
 
 recommender_class = SLIMElasticNetRecommender
