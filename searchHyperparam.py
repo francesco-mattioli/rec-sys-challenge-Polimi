@@ -47,89 +47,89 @@ hyperparameters_range_dictionary = {
 }
 
 recommender_class = SLIMElasticNetRecommender
-    hyperparameters_range_dictionary = {
-        "l1_ratio": Real(low=0.0001, high=0.1, prior='log-uniform'),
-        "alpha": Real(low=0.001, high=0.1, prior='log-uniform'),
-        "topK": Integer(450, 1000)
-    }
-    
-
-    recommender_class = MultiThreadSLIM_SLIMElasticNetRecommender
-
-    earlystopping_keywargs = {"validation_every_n": 5,
-                            "stop_on_validation": True,
-                            "evaluator_object": evaluator_validation,
-                            "lower_validations_allowed": 5,
-                            "validation_metric": metric_to_optimize,
-                            }
+hyperparameters_range_dictionary = {
+    "l1_ratio": Real(low=0.0001, high=0.1, prior='log-uniform'),
+    "alpha": Real(low=0.001, high=0.1, prior='log-uniform'),
+    "topK": Integer(450, 1000)
+}
 
 
-    # create a bayesian optimizer object, we pass the recommender and the evaluator
-    hyperparameterSearch = SearchBayesianSkopt(recommender_class,
-                                            evaluator_validation=evaluator_validation)
+recommender_class = MultiThreadSLIM_SLIMElasticNetRecommender
+
+earlystopping_keywargs = {"validation_every_n": 5,
+                        "stop_on_validation": True,
+                        "evaluator_object": evaluator_validation,
+                        "lower_validations_allowed": 5,
+                        "validation_metric": metric_to_optimize,
+                        }
 
 
-    # provide data needed to create instance of model (one on URM_train, the other on URM_all)
-    recommender_input_args = SearchInputRecommenderArgs(
-        # For a CBF model simply put [URM_train, ICM_train]
-        CONSTRUCTOR_POSITIONAL_ARGS=[URM_train],
-        CONSTRUCTOR_KEYWORD_ARGS={},
-        FIT_POSITIONAL_ARGS=[],
-        FIT_KEYWORD_ARGS={},
-        EARLYSTOPPING_KEYWORD_ARGS = earlystopping_keywargs
-        )
+# create a bayesian optimizer object, we pass the recommender and the evaluator
+hyperparameterSearch = SearchBayesianSkopt(recommender_class,
+                                        evaluator_validation=evaluator_validation)
 
 
-    recommender_input_args_last_test = SearchInputRecommenderArgs(
-        CONSTRUCTOR_POSITIONAL_ARGS=[urm],
-        CONSTRUCTOR_KEYWORD_ARGS={},
-        FIT_POSITIONAL_ARGS=[],
-        FIT_KEYWORD_ARGS={},
-        EARLYSTOPPING_KEYWORD_ARGS =  earlystopping_keywargs
+# provide data needed to create instance of model (one on URM_train, the other on URM_all)
+recommender_input_args = SearchInputRecommenderArgs(
+    # For a CBF model simply put [URM_train, ICM_train]
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train],
+    CONSTRUCTOR_KEYWORD_ARGS={},
+    FIT_POSITIONAL_ARGS=[],
+    FIT_KEYWORD_ARGS={},
+    EARLYSTOPPING_KEYWORD_ARGS = earlystopping_keywargs
     )
 
-    # let's run the bayesian search
-    hyperparameterSearch.search(recommender_input_args=recommender_input_args,
-                                recommender_input_args_last_test=recommender_input_args_last_test,
-                                hyperparameter_search_space=hyperparameters_range_dictionary,
-                                n_cases=n_cases,
-                                n_random_starts=n_random_starts,
-                                save_model="last",
-                                output_folder_path=output_folder_path,  # Where to save the results
-                                output_file_name_root=recommender_class.RECOMMENDER_NAME,  # How to call the files
-                                metric_to_optimize=metric_to_optimize,
-                                cutoff_to_optimize=cutoff_to_optimize,
-                                )
+
+recommender_input_args_last_test = SearchInputRecommenderArgs(
+    CONSTRUCTOR_POSITIONAL_ARGS=[urm],
+    CONSTRUCTOR_KEYWORD_ARGS={},
+    FIT_POSITIONAL_ARGS=[],
+    FIT_KEYWORD_ARGS={},
+    EARLYSTOPPING_KEYWORD_ARGS =  earlystopping_keywargs
+)
+
+# let's run the bayesian search
+hyperparameterSearch.search(recommender_input_args=recommender_input_args,
+                            recommender_input_args_last_test=recommender_input_args_last_test,
+                            hyperparameter_search_space=hyperparameters_range_dictionary,
+                            n_cases=n_cases,
+                            n_random_starts=n_random_starts,
+                            save_model="last",
+                            output_folder_path=output_folder_path,  # Where to save the results
+                            output_file_name_root=recommender_class.RECOMMENDER_NAME,  # How to call the files
+                            metric_to_optimize=metric_to_optimize,
+                            cutoff_to_optimize=cutoff_to_optimize,
+                            )
 
 
-    # explore the results of the search
-    data_loader = DataIO(folder_path=output_folder_path)
-    search_metadata = data_loader.load_data(
-        recommender_class.RECOMMENDER_NAME + "_metadata.zip")
+# explore the results of the search
+data_loader = DataIO(folder_path=output_folder_path)
+search_metadata = data_loader.load_data(
+    recommender_class.RECOMMENDER_NAME + "_metadata.zip")
 
-    search_metadata.keys()
-    hyperparameters_df = search_metadata["hyperparameters_df"]
-    print(hyperparameters_df)
+search_metadata.keys()
+hyperparameters_df = search_metadata["hyperparameters_df"]
+print(hyperparameters_df)
 
-    result_on_validation_df = search_metadata["result_on_validation_df"]
-    print(result_on_validation_df)
+result_on_validation_df = search_metadata["result_on_validation_df"]
+print(result_on_validation_df)
 
-    best_hyperparameters = search_metadata["hyperparameters_best"]
-    print(best_hyperparameters)
+best_hyperparameters = search_metadata["hyperparameters_best"]
+print(best_hyperparameters)
 
 
-    # Run Recommender and get the best recommendations
-    recommender = MultiThreadSLIM_SLIMElasticNetRecommender(urm)
-    recommender.fit()
-    recommender.save_model(output_folder_path, file_name = recommender.RECOMMENDER_NAME + "_my_own_save.zip" )
+# Run Recommender and get the best recommendations
+recommender = MultiThreadSLIM_SLIMElasticNetRecommender(urm)
+recommender.fit()
+recommender.save_model(output_folder_path, file_name = recommender.RECOMMENDER_NAME + "_my_own_save.zip" )
 
-    # Create CSV for submission
-    f = open("submission.csv", "w+")
-    f.write("user_id,item_list\n")
-    recommended_items_for_each_user = {}
-    for user_id in tqdm(target):
-        recommended_items = recommender.recommend(user_id, cutoff=10, remove_seen_flag=True)
-        well_formatted = " ".join([str(x) for x in recommended_items])
-        f.write(f"{user_id}, {well_formatted}\n")
+# Create CSV for submission
+f = open("submission.csv", "w+")
+f.write("user_id,item_list\n")
+recommended_items_for_each_user = {}
+for user_id in tqdm(target):
+    recommended_items = recommender.recommend(user_id, cutoff=10, remove_seen_flag=True)
+    well_formatted = " ".join([str(x) for x in recommended_items])
+    f.write(f"{user_id}, {well_formatted}\n")
 
-    print('MAP score: {}'.format(map))
+print('MAP score: {}'.format(map))
