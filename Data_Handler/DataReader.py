@@ -103,7 +103,7 @@ class DataReader(object):
         return self.dataframe_to_csr(urm)
 
     def load_urm(self):
-        interactions_and_impressions = pd.read_csv(filepath_or_buffer="Dataset/interactions_and_impressions.csv",
+        interactions_and_impressions = pd.read_csv(filepath_or_buffer=os.getenv('INTERACTIONS_AND_IMPRESSIONS_PATH'),
                                             sep=',',
                                             names=[
                                                 'UserID', 'ItemID', 'Impressions', 'Data'],
@@ -118,7 +118,7 @@ class DataReader(object):
         # count occurrences of pairs (user,item)
         df_number_of_watched_episodes=df['Data'].count()
 
-        data_ICM_length =  pd.read_csv(filepath_or_buffer="Dataset/data_ICM_length.csv",
+        data_ICM_length =  pd.read_csv(filepath_or_buffer=os.getenv('ICM_LENGTH_PATH'),
                                                     sep=',',
                                                     names=[
                                                         'ItemID', 'FeatureID', 'Data'],

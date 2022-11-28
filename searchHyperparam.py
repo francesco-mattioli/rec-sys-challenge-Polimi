@@ -1,82 +1,73 @@
-if __name__ == '__main__':
-    import tqdm
-    from Recommenders.DataIO import DataIO
-    from HyperparameterTuning.SearchAbstractClass import SearchInputRecommenderArgs
-    from HyperparameterTuning.SearchBayesianSkopt import SearchBayesianSkopt
-    from Data_manager.split_functions.split_train_validation_random_holdout import split_train_in_two_percentage_global_sample
-    from Evaluation.Evaluator import EvaluatorHoldout
-    from Recommenders.SLIM.SLIMElasticNetRecommender import SLIMElasticNetRecommender
-    from Recommenders.SLIM.SLIMElasticNetRecommender import MultiThreadSLIM_SLIMElasticNetRecommender
-    from Data_Handler.DataReader import DataReader
+#if __name__ == '__main__':
+import tqdm
+from Recommenders.DataIO import DataIO
+from HyperparameterTuning.SearchAbstractClass import SearchInputRecommenderArgs
+from HyperparameterTuning.SearchBayesianSkopt import SearchBayesianSkopt
+from Data_manager.split_functions.split_train_validation_random_holdout import split_train_in_two_percentage_global_sample
+from Evaluation.Evaluator import EvaluatorHoldout
+from Recommenders.SLIM.SLIMElasticNetRecommender import SLIMElasticNetRecommender
+from Data_Handler.DataReader import DataReader
 
-    import os
-    from skopt.space import Real, Integer, Categorical
+import os
+from skopt.space import Real, Integer, Categorical
 
-    # Read data
-    dataReader = DataReader()
-    #urm = dataReader.load_powerful_binary_urm()
-    urm = dataReader.load_augmented_binary_urm()
-    target = dataReader.load_target()
+# Read data
+dataReader = DataReader()
+#urm = dataReader.load_powerful_binary_urm()
+urm = dataReader.load_augmented_binary_urm()
+target = dataReader.load_target()
 
-    # Split data into train and validation data 80/20
-    URM_train, URM_validation = split_train_in_two_percentage_global_sample(
-        urm, train_percentage=0.85)
+# Split data into train and validation data 80/20
+URM_train, URM_validation = split_train_in_two_percentage_global_sample(
+    urm, train_percentage=0.85)
 
-    # Create an evaluator object to evaluate validation set and use it for hyperparameter tuning
-    evaluator_validation = EvaluatorHoldout(URM_validation, cutoff_list=[10])
-
-
-    # Create folder for tuning results
-    output_folder_path = "result_experiments/"
-
-    # If directory does not exist, create
-    if not os.path.exists(output_folder_path):
-        os.makedirs(output_folder_path)
+# Create an evaluator object to evaluate validation set and use it for hyperparameter tuning
+evaluator_validation = EvaluatorHoldout(URM_validation, cutoff_list=[10])
 
 
-    # Configure tuning parameters
-    n_cases = 150
-    n_random_starts = int(n_cases*0.3)
-    metric_to_optimize = "MAP"
-    cutoff_to_optimize = 10
-
-hyperparameters_range_dictionary = {
-    "l1_ratio": Real(low=0.0001, high=0.1, prior='log-uniform'),
-    "alpha": Real(low=0.00001, high=0.1, prior='log-uniform'),
-    "topK": Integer(200,800 )
-}
+# Create folder for tuning results
+output_folder_path = "result_experiments/"
 
 recommender_class = SLIMElasticNetRecommender
+# If directory does not exist, create
+if not os.path.exists(output_folder_path):
+    os.makedirs(output_folder_path)
+
+
+# Configure tuning parameters
+n_cases = 50
+n_random_starts = int(n_cases*0.3)
+metric_to_optimize = "MAP"
+cutoff_to_optimize = 10
+
 hyperparameters_range_dictionary = {
     "l1_ratio": Real(low=0.0001, high=0.1, prior='log-uniform'),
     "alpha": Real(low=0.001, high=0.1, prior='log-uniform'),
     "topK": Integer(450, 1000)
 }
+    
 
-
-recommender_class = MultiThreadSLIM_SLIMElasticNetRecommender
-
-earlystopping_keywargs = {"validation_every_n": 5,
+earlystopping_keywargs = {
+                        "validation_every_n":5,
                         "stop_on_validation": True,
                         "evaluator_object": evaluator_validation,
-                        "lower_validations_allowed": 5,
+                        "lower_validations_allowed":5,
                         "validation_metric": metric_to_optimize,
                         }
 
 
 # create a bayesian optimizer object, we pass the recommender and the evaluator
 hyperparameterSearch = SearchBayesianSkopt(recommender_class,
-                                        evaluator_validation=evaluator_validation)
+                                            evaluator_validation=evaluator_validation)
 
 
 # provide data needed to create instance of model (one on URM_train, the other on URM_all)
 recommender_input_args = SearchInputRecommenderArgs(
-    # For a CBF model simply put [URM_train, ICM_train]
     CONSTRUCTOR_POSITIONAL_ARGS=[URM_train],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
-    EARLYSTOPPING_KEYWORD_ARGS = earlystopping_keywargs
+    EARLYSTOPPING_KEYWORD_ARGS = {}
     )
 
 
@@ -85,7 +76,7 @@ recommender_input_args_last_test = SearchInputRecommenderArgs(
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
-    EARLYSTOPPING_KEYWORD_ARGS =  earlystopping_keywargs
+    EARLYSTOPPING_KEYWORD_ARGS =  {}
 )
 
 # let's run the bayesian search
@@ -119,7 +110,7 @@ print(best_hyperparameters)
 
 
 # Run Recommender and get the best recommendations
-recommender = MultiThreadSLIM_SLIMElasticNetRecommender(urm)
+recommender = SLIMElasticNetRecommender(urm)
 recommender.fit()
 recommender.save_model(output_folder_path, file_name = recommender.RECOMMENDER_NAME + "_my_own_save.zip" )
 
