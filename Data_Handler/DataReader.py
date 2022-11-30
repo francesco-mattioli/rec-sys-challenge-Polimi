@@ -168,7 +168,20 @@ class DataReader(object):
                                                     header=0,
                                                     dtype={'item_id': np.int32, 'feature_id': np.int32, 'data': np.int32})
 
-        return self.dataframe_to_csr(data_icm_type)
+        features = data_icm_type['feature_id'].unique()
+        items = data_icm_type['item_id'].unique()
+        shape = (len(items), len(features))
+
+
+        # Create indices for users and items
+        features_cat = CategoricalDtype(categories=sorted(features), ordered=True)
+        item_cat = CategoricalDtype(categories=sorted(items), ordered=True)
+        features_index = data_icm_type["feature_id"].astype(features_cat).cat.codes
+        item_index = data_icm_type["item_id"].astype(item_cat).cat.codes
+        coo = sps.coo_matrix(
+            (data_icm_type["data"], (item_index.values, features_index.values)), shape=shape)
+        csr = coo.tocsr()
+        return csr
 
         
     def load_icm_df(self):
