@@ -13,13 +13,12 @@ from skopt.space import Real, Integer, Categorical
 
 # Read data
 dataReader = DataReader()
-#urm = dataReader.load_powerful_binary_urm()
-urm = dataReader.load_augmented_binary_urm()
+urm = dataReader.load_powerful_binary_urm() # remember that items to compure will be 27968
+#urm = dataReader.load_augmented_binary_urm()
 target = dataReader.load_target()
 
 # Split data into train and validation data 80/20
-URM_train, URM_validation = split_train_in_two_percentage_global_sample(
-    urm, train_percentage=0.85)
+URM_train, URM_validation = split_train_in_two_percentage_global_sample(urm, train_percentage=0.)
 
 # Create an evaluator object to evaluate validation set and use it for hyperparameter tuning
 evaluator_validation = EvaluatorHoldout(URM_validation, cutoff_list=[10])
@@ -41,11 +40,10 @@ metric_to_optimize = "MAP"
 cutoff_to_optimize = 10
 
 hyperparameters_range_dictionary = {
-    "l1_ratio": Real(low=0.0001, high=0.1, prior='log-uniform'),
-    "alpha": Real(low=0.001, high=0.1, prior='log-uniform'),
-    "topK": Integer(450, 1000)
+    "l1_ratio": Real(low=0.0001, high=0.1, prior='uniform'),
+    "alpha": Real(low=0.00001, high=0.1, prior='uniform'),
+    "topK": Integer(200, 800)
 }
-    
 
 earlystopping_keywargs = {
                         "validation_every_n":5,
