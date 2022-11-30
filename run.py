@@ -11,10 +11,12 @@ dataReader = DataReader()
 #urm = dataReader.load_urm()
 #urm = dataReader.load_binary_urm()
 #urm = dataReader.load_augmented_binary_urm()
-#urm_df=dataReader.load_powerful_binary_urm_df()
-#urm = dataReader.load_powerful_binary_urm()
+urm_df=dataReader.load_powerful_binary_urm_df()
+urm = dataReader.load_powerful_binary_urm()
+'''
 urm = dataReader.load_augmented_binary_urm_less_items()
 icm = dataReader.load_augmented_binary_icm_less_items()
+'''
 target = dataReader.load_target()
 # dataReader.print_statistics(target)
 
@@ -27,7 +29,8 @@ URM_train, URM_validation = split_train_in_two_percentage_global_sample(urm, tra
 
 
 # Instantiate and fit hybrid recommender
-recommender = HybridRecommender(URM_train,icm)
+#recommender = HybridRecommender(URM_train,icm)
+recommender = HybridRecommender(URM_train)
 recommender.fit()
 
 # evaluator=EvaluatorHoldout(URM_train)

@@ -13,26 +13,34 @@ class HybridRecommender(BaseRecommender):
 
     RECOMMENDER_NAME = "Hybrid_Recommender"
 
+    '''
     def __init__(self, URM_train,ICM):
         self.ICM = ICM
         super(HybridRecommender, self).__init__(URM_train)
+    '''
+
+    def __init__(self, URM_train):
+        super(HybridRecommender, self).__init__(URM_train)
+
         
 
     def fit(self):
         # Stack and normalize URM and ICM
-        URM_stacked = sps.vstack([self.URM_train, self.ICM.T])
+        #URM_stacked = sps.vstack([self.URM_train, self.ICM.T])
         
         # Instantiate & fit the recommenders
         #self.ItemCF = ItemKNNCFRecommender(URM_stacked)
         #self.ItemCF.fit(10, 2000)
 
         self.SLIM_ElasticNet = SLIMElasticNetRecommender(self.URM_train)
-        self.SLIM_ElasticNet.fit(l1_ratio=0.008213119901673099, alpha =  0.0046000272149077145, positive_only=True, topK = 498)
+        self.SLIM_ElasticNet.fit(l1_ratio=0.005433411169912986, alpha =  0.007117675882466448, positive_only=True, topK = 202)
 
 
     def _compute_item_score(self, user_id_array, items_to_compute=None):
         
-        num_items=19630
+        #num_items = 24507
+        num_items = 27968 # with powerful_urm
+        #num_items=19630
         #num_items = len(self.items) # num_items changes based on used urm
         item_weights = np.empty([len(user_id_array), num_items])
 
