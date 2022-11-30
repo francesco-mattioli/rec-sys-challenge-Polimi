@@ -303,15 +303,14 @@ class DataReader(object):
 
     def get_impressions_count(self, target, items):
         """
-        TODO: MODIFIY DOCS
-        Return a dictionary in which for each ItemID there is a number corresponding to 
-        how many times that ItemID has been presented to the given UserID.
+        Return a dictionary of dictionaries. For each UserID there is a dictionary of ItemIDs as keys and a number, corresponding to 
+        how many times that ItemID has been presented to the given UserID, as values.
 
         Args:
-            user (int): UserID on which count ItemIDs presentations occurences
+            target (int): UserIDs on which count ItemIDs presentations occurences
             items (numpy.array): ItemIDs on which count presentations occurences
         Returns:
-            dict: dictionary with ItemIDs as keys and corresponding number of occurences as values
+            dict: dictionary of dictionaries, for instance { user0:{item0:2, item1:23}, user1:{item2:11, item4:3} }
         """
 
         df = pd.read_csv(filepath_or_buffer=os.getenv('INTERACTIONS_AND_IMPRESSIONS_PATH'),
