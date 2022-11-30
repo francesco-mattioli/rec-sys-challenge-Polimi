@@ -111,11 +111,77 @@ class DataReader(object):
             'UserID', 'ItemID', 'Impressions', 'Data'],
             header=0,
             dtype={'UserID': np.int32, 'ItemID': np.int32, 'Impressions': np.object0, 'Data': np.int32})
-        interactions = interactions_and_impressions.drop(
-            ['Impressions'], axis=1)
+        interactions = interactions_and_impressions.drop(['Impressions'], axis=1)
         df = interactions.replace({'Data': {0: 1}})
         df = df.drop_duplicates(keep='first')
         return df
+
+    def load_augmented_binary_urm_less_items_df(self):
+        """Load urm in which pairs (user,item) are '1' iff user has either watched item or opened item's details page
+            removing those elements without informations
+        Returns:
+            df: urm as dataframe object
+        """
+        interactions_and_impressions = pd.read_csv(filepath_or_buffer=os.getenv('INTERACTIONS_AND_IMPRESSIONS_PATH'),
+                                                   sep=',',
+                                                   names=[
+            'UserID', 'ItemID', 'Impressions', 'Data'],
+            header=0,
+            dtype={'UserID': np.int32, 'ItemID': np.int32, 'Impressions': np.object0, 'Data': np.int32})
+        interactions = interactions_and_impressions.drop(['Impressions'], axis=1)
+        interactions = interactions.replace({'Data': {0: 1}})
+        interactions = interactions.drop_duplicates(keep='first')
+        icm = self.load_augmented_binary_icm_less_items_df()
+        diff = np.setdiff1d(interactions['ItemID'].unique(), icm['item_id'].unique())
+        df = interactions[interactions.ItemID.isin(diff)==False]
+        df.reset_index(drop=True, inplace=True)
+        return df
+
+
+    def load_augmented_binary_icm_less_items_df(self):
+        interactions_and_impressions = pd.read_csv(filepath_or_buffer=os.getenv('INTERACTIONS_AND_IMPRESSIONS_PATH'),
+                                                   sep=',',
+                                                   names=[
+            'UserID', 'ItemID', 'Impressions', 'Data'],
+            header=0,
+            dtype={'UserID': np.int32, 'ItemID': np.int32, 'Impressions': np.object0, 'Data': np.int32})
+        interactions = interactions_and_impressions.drop(['Impressions'], axis=1)
+        interactions = interactions.replace({'Data': {0: 1}})
+        interactions = interactions.drop_duplicates(keep='first')
+        icm = self.load_icm_df()
+        diff = np.setdiff1d(icm['item_id'].unique(), interactions['ItemID'].unique())
+        df = icm[icm.item_id.isin(diff)==False]
+        df.reset_index(drop=True, inplace=True)
+        return df
+
+
+    def load_augmented_binary_icm_less_items(self):
+        
+        data_icm_type = self.load_augmented_binary_icm_less_items_df()
+        
+        features = data_icm_type['feature_id'].unique()
+        items = data_icm_type['item_id'].unique()
+        shape = (len(items), len(features))
+
+
+        # Create indices for users and items
+        features_cat = CategoricalDtype(categories=sorted(features), ordered=True)
+        item_cat = CategoricalDtype(categories=sorted(items), ordered=True)
+        features_index = data_icm_type["feature_id"].astype(features_cat).cat.codes
+        item_index = data_icm_type["item_id"].astype(item_cat).cat.codes
+        coo = sps.coo_matrix(
+            (data_icm_type["data"], (item_index.values, features_index.values)), shape=shape)
+        csr = coo.tocsr()
+        return csr
+
+    def load_augmented_binary_urm_less_items(self):
+        """Load urm in which pairs (user,item) are '1' iff user has either watched item or opened item's details page
+
+        Returns:
+            csr: urm as csr object
+        """
+        urm = self.load_augmented_binary_urm_less_items_df()
+        return self.dataframe_to_csr(urm)
 
     def load_augmented_binary_urm(self):
         """Load urm in which pairs (user,item) are '1' iff user has either watched item or opened item's details page
