@@ -1,6 +1,7 @@
 from Data_Handler.DataReader import DataReader
 from Data_manager.split_functions.split_train_validation_random_holdout import split_train_in_two_percentage_global_sample
 from hybrid import HybridRecommender
+from Recommenders.SLIM.SLIMElasticNetRecommender import SLIMElasticNetRecommender
 from tqdm import tqdm
 from evaluator import evaluate
 from Evaluation.Evaluator import EvaluatorHoldout
@@ -10,8 +11,9 @@ dataReader = DataReader()
 #urm = dataReader.load_urm()
 #urm = dataReader.load_binary_urm()
 #urm = dataReader.load_augmented_binary_urm()
-urm_df=dataReader.load_powerful_binary_urm_df()
-urm = dataReader.load_powerful_binary_urm()
+#urm_df=dataReader.load_powerful_binary_urm_df()
+#urm = dataReader.load_powerful_binary_urm()
+urm = dataReader.load_augmented_binary_urm_less_items()
 target = dataReader.load_target()
 # dataReader.print_statistics(target)
 
@@ -25,8 +27,8 @@ URM_train, URM_validation = split_train_in_two_percentage_global_sample(
 
 
 # Instantiate and fit hybrid recommender
-recommender = HybridRecommender(URM_train, dataReader.get_unique_items_based_on_urm(urm_df))
-recommender.fit()
+recommender = SLIMElasticNetRecommender(URM_train)
+recommender.fit(l1_ratio = 0.05220125019731136, alpha = 0.0013922898354140408, positive_only=True, topK = 245)
 
 # evaluator=EvaluatorHoldout(URM_train)
 # evaluator.evaluateRecommender(recommender)
