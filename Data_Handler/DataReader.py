@@ -13,32 +13,31 @@ load_dotenv()
 
 class DataReader(object):
 
-    def dataframe_to_csr(self, dataframe):
-        """This method converts a dataframe object into a csr object
+    def dataframe_to_csr(self, dataframe,row_name,col_name,cell_name):
+        """This method converts a dataframe object into a csr
 
         Args:
             dataframe (dataframe)
-
+            row_name (str): For example, "UserID"
+            col_name (str): For example, "ItemID"
+            cell_name (str): For example, "Data"
         Returns:
             csr
         """
-        users = dataframe['UserID'].unique()
-        items = dataframe['ItemID'].unique()
+        rows = dataframe[row_name].unique()
+        columns = dataframe[col_name].unique()
 
-        print(
-            ">>> number of users (only those who have watched at least movie): ", len(users))
-        print(">>> number of items: ", len(items))
-        shape = (len(users), len(items))
+        shape = (len(rows), len(columns))
 
         # Create indices for users and items
-        user_cat = CategoricalDtype(categories=sorted(users), ordered=True)
-        item_cat = CategoricalDtype(categories=sorted(items), ordered=True)
-        user_index = dataframe["UserID"].astype(user_cat).cat.codes
-        item_index = dataframe["ItemID"].astype(item_cat).cat.codes
+        row_cat = CategoricalDtype(categories=sorted(rows), ordered=True)
+        col_cat = CategoricalDtype(categories=sorted(columns), ordered=True)
+        row_index = dataframe[row_name].astype(row_cat).cat.codes
+        row_index = dataframe[col_name].astype(col_cat).cat.codes
 
         # Conversion via COO matrix
         coo = sps.coo_matrix(
-            (dataframe["Data"], (user_index.values, item_index.values)), shape=shape)
+            (dataframe[cell_name], (row_index.values, row_index.values)), shape=shape)
         csr = coo.tocsr()
         return csr
 
@@ -61,7 +60,7 @@ class DataReader(object):
         watchers_urm = urm[urm.Data != 1]
         # replacing data which is 0 with 1
         watchers_urm = watchers_urm.replace({'Data': {0: 1}})
-        return self.dataframe_to_csr(watchers_urm)
+        return self.dataframe_to_csr(watchers_urm,'UserID','ItemID','Data')
 
     '''
     def load_augmented_binary_urm_df_old(self):
@@ -125,7 +124,7 @@ class DataReader(object):
             csr: urm as csr object
         """
         urm = self.load_augmented_binary_urm_df()
-        return self.dataframe_to_csr(urm)
+        return self.dataframe_to_csr(urm,'UserID','ItemID','Data')
 
     def load_weighted_urm(self):
         """
@@ -169,7 +168,7 @@ class DataReader(object):
         # produce urm
         df = df.drop(['NumWatchedEpisodes', 'TotNumEpisodes'], axis=1)
         urm = df.rename({'A': 'Data'}, axis=1)
-        return self.dataframe_to_csr(urm)
+        return self.dataframe_to_csr(urm,'UserID','ItemID','Data')
 
     def load_target(self):
         """Load target that is the set of users to which recommend items
@@ -286,7 +285,7 @@ class DataReader(object):
             csr: urm as csr object
         """
         powerful_urm = self.load_powerful_binary_urm_df()
-        return self.dataframe_to_csr(powerful_urm)
+        return self.dataframe_to_csr(powerful_urm,'UserID','ItemID','Data')
 
     def get_unique_items_based_on_urm(self, urm):
         """Returns numpy.array of unique items contained in the given urm
@@ -371,3 +370,5 @@ class DataReader(object):
             len(np.setdiff1d(watchers_urm['UserID'].unique(), target))))
         print('>>> number of unique users in interactions_and_impressions that are not in "list of users that have watched at least a movie": {}'.format(
             len(np.setdiff1d(urm['UserID'].unique(), watchers_urm['UserID'].unique()))))
+
+
