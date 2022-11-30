@@ -13,22 +13,27 @@ class HybridRecommender(BaseRecommender):
 
     RECOMMENDER_NAME = "Hybrid_Recommender"
 
-    def __init__(self, URM_train,items):
-        self.items = items
+    def __init__(self, URM_train,ICM):
+        self.ICM = ICM
         super(HybridRecommender, self).__init__(URM_train)
         
 
     def fit(self):
-        self.ItemCF = ItemKNNCFRecommender(self.URM_train)
-        self.ItemCF.fit(10, 2000)
+        # Stack and normalize URM and ICM
+        URM_stacked = sps.vstack([self.URM_train, self.ICM.T])
+        
+        # Instantiate & fit the recommenders
+        #self.ItemCF = ItemKNNCFRecommender(URM_stacked)
+        #self.ItemCF.fit(10, 2000)
 
-        #self.SLIM_ElasticNet = SLIMElasticNetRecommender(self.URM_train)
-        #self.SLIM_ElasticNet.fit(l1_ratio=0.008213119901673099, alpha =  0.0046000272149077145, positive_only=True, topK = 498)
+        self.SLIM_ElasticNet = SLIMElasticNetRecommender(self.URM_train)
+        self.SLIM_ElasticNet.fit(l1_ratio=0.008213119901673099, alpha =  0.0046000272149077145, positive_only=True, topK = 498)
 
 
     def _compute_item_score(self, user_id_array, items_to_compute=None):
         
-        num_items = len(self.items) # num_items changes based on used urm
+        num_items=19630
+        #num_items = len(self.items) # num_items changes based on used urm
         item_weights = np.empty([len(user_id_array), num_items])
 
         for i in tqdm(range(len(user_id_array))):
@@ -39,8 +44,9 @@ class HybridRecommender(BaseRecommender):
             w2 /= LA.norm(w2, 2)
             w = w1 + w2 
             '''
-            w = self.ItemCF._compute_item_score(user_id_array[i], items_to_compute)
-            #w = self.SLIM_ElasticNet._compute_item_score(user_id_array[i], items_to_compute)
+            
+            #w = self.ItemCF._compute_item_score(user_id_array[i], items_to_compute)
+            w = self.SLIM_ElasticNet._compute_item_score(user_id_array[i], items_to_compute)
             #w = self.SLIM_BPR_Cython._compute_item_score(user_id_array[i], items_to_compute)
 
             item_weights[i, :] = w # In the i-th array of item_weights we assign the w array

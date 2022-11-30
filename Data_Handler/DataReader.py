@@ -181,7 +181,7 @@ class DataReader(object):
             csr: urm as csr object
         """
         urm = self.load_augmented_binary_urm_less_items_df()
-        return self.dataframe_to_csr(urm)
+        return self.dataframe_to_csr(urm,'UserID','ItemID','Data')
 
     def load_augmented_binary_urm(self):
         """Load urm in which pairs (user,item) are '1' iff user has either watched item or opened item's details page
