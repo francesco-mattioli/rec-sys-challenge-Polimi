@@ -33,11 +33,11 @@ class DataReader(object):
         row_cat = CategoricalDtype(categories=sorted(rows), ordered=True)
         col_cat = CategoricalDtype(categories=sorted(columns), ordered=True)
         row_index = dataframe[row_name].astype(row_cat).cat.codes
-        row_index = dataframe[col_name].astype(col_cat).cat.codes
+        col_index = dataframe[col_name].astype(col_cat).cat.codes
 
         # Conversion via COO matrix
         coo = sps.coo_matrix(
-            (dataframe[cell_name], (row_index.values, row_index.values)), shape=shape)
+            (dataframe[cell_name], (row_index.values, col_index.values)), shape=shape)
         csr = coo.tocsr()
         return csr
 
