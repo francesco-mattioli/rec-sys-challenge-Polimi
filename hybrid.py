@@ -26,7 +26,7 @@ class HybridRecommender(BaseRecommender):
         #self.ItemCF = ItemKNNCFRecommender(URM_stacked)
         #self.ItemCF.fit(10, 2000)
 
-        self.SLIM_ElasticNet = SLIMElasticNetRecommender(self.URM_train)
+        self.SLIM_ElasticNet = SLIMElasticNetRecommender(URM_stacked)
         self.SLIM_ElasticNet.fit(l1_ratio=0.008213119901673099, alpha =  0.0046000272149077145, positive_only=True, topK = 498)
 
 
