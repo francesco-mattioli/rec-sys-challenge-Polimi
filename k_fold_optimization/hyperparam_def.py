@@ -1,5 +1,6 @@
 from skopt.space import Real, Integer, Categorical
 
+from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
 from Recommenders.SLIM.SLIMElasticNetRecommender import *
 from Recommenders.GraphBased.RP3betaRecommender import *
 
@@ -10,11 +11,20 @@ from hybrid import HybridRecommender_2
 names = {}
 spaces = {}
 
+names[ItemKNNCFRecommender] = "ItemKNNCFRecommender"
+spaces[ItemKNNCFRecommender] = [
+    Integer(0, 10000, name='topK'),
+    Real(0, 1000, name='shrink'),
+    Categorical([True], name='normalize'),
+    Categorical([None, "TF-IDF", "TF-IDF-Transpose"], name='feature_weighting'),
+    Categorical(["cosine", "tanimoto", "dice"], name='similarity'),
+]
+
+
 names[SLIMElasticNetRecommender] = "SLIMElasticNetRecommender"
 spaces[SLIMElasticNetRecommender] = [
     Real(low=0.001, high=0.01, prior='uniform', name='l1_ratio'),
-    Real(low=0.001, high=0.01, prior='log-uniform',
-         name='alpha'),  # old version: low=0.00001
+    Real(low=0.001, high=0.01, prior='log-uniform', name='alpha'),
     Integer(low=320, high=800, name='topK')
 ]
 
@@ -30,13 +40,10 @@ spaces[RP3betaRecommender] = [
     Real(0.5, 1, name='B'),
 ]
 
-'''
-Remove comments form code below when we will implement HybridRecommender with weigths 
-'''
-
 names[HybridRecommender_2] = "HybridRecommender_2"
 spaces[HybridRecommender_2] = [
-    Real(0, 2, name="TopPopWeight"),
-    Real(0, 5, name='SLIMElasticNetRecommenderWeight'),
+    Real(0, 2, name="UserKNNCFRecommenderWeight"),
+    #Real(0, 2, name="ItemKNNCFRecommenderWeight"),
+    Real(0, 2, name='SLIMElasticNetRecommenderWeight'),
     Categorical([True], name="normalize")
 ]

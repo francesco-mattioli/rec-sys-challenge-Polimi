@@ -1,9 +1,10 @@
 # Import recommenders
-from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
 from Recommenders.BaseRecommender import BaseRecommender
+from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
+from Recommenders.KNN.UserKNNCFRecommender import UserKNNCFRecommender
 from Recommenders.SLIM.SLIMElasticNetRecommender import *
-from Recommenders.NonPersonalizedRecommender import TopPop
-from Recommenders.FactorizationMachines.LightFMRecommender import LightFMItemHybridRecommender
+#from Recommenders.FactorizationMachines.LightFMRecommender import LightFMItemHybridRecommender
+
 
 # Import libraries
 from tqdm import tqdm
@@ -85,12 +86,13 @@ class HybridRecommender_2(BaseRecommender):
         self.recommenders = {}
         self.weights = {}
 
-    def fit(self, ItemKNNCFRecommenderWeight=0.5, SLIMElasticNetRecommenderWeight=0.5, normalize=False):
+    def fit(self, ItemKNNCFRecommenderWeight=0.5, UserKNNCFRecommenderWeight=0.5, SLIMElasticNetRecommenderWeight=0.5, normalize=False):
         """ Sets the weights for every algorithm involved in the hybrid recommender """
 
         self.weights = {
             ItemKNNCFRecommender: ItemKNNCFRecommenderWeight,
             SLIMElasticNetRecommender: SLIMElasticNetRecommenderWeight,
+            #UserKNNCFRecommender: UserKNNCFRecommenderWeight,
         }
 
         self.normalize = normalize
@@ -110,15 +112,15 @@ class HybridRecommender_2(BaseRecommender):
 
         num_items = 24507
         item_weights = np.empty([len(user_id_array), num_items])
-        '''predicted_ratings = np.zeros(shape=self.URM_train.shape[1], dtype=np.float32)'''
 
+        # w is predicted ratings array of a user
         for i in tqdm(range(len(user_id_array))):
             for rec_class in self.recommenders.keys():
                 if self.weights[rec_class] > 0.0:
                     w = self.recommenders[rec_class]._compute_item_score(user_id_array[i], items_to_compute)
                     if self.normalize:
                         w *= 1.0 / w.max()
-                    w += np.multiply(w,self.weights[rec_class])
+                    w += np.multiply(w, self.weights[rec_class])
             item_weights[i, :] = w
 
         return item_weights
