@@ -7,6 +7,10 @@ import k_fold_optimization.evaluate
 import k_fold_optimization.dataset
 from k_fold_optimization.hyperparam_def import names, spaces
 
+import sys
+sys.path.append("..")
+from hybrid import HybridRecommender_2
+
 output_root_path = "./optimization_data/"
 
 # If directory does not exist, create
@@ -76,8 +80,9 @@ def optimize_parameters(URMrecommender_class: type, n_calls=100, k=5, validation
 
     assert (len(URM_trains) == len(URM_tests) and len(URM_tests) == len(ICM_trains))
     print("Starting optimization: N_folds={}, slim_name={}".format(len(URM_trains), names[URMrecommender_class]))
-    '''
-    if URMrecommender_class == HybridRatings_IALS_hybrid_EASE_R_hybrid_SLIM_Rp3:
+    
+    
+    if URMrecommender_class == HybridRecommender_2:
         recommenders = []
         for i, URM_train_csr in enumerate(URM_trains):
             recommenders.append(URMrecommender_class(URM_train_csr, i))
@@ -91,26 +96,26 @@ def optimize_parameters(URMrecommender_class: type, n_calls=100, k=5, validation
                 scores.append(-MAP)
             print("Just Evaluated this: {}".format(params))
             return sum(scores) / len(scores)
-
+    
     else:
-    '''
-    @use_named_args(space)
-    def objective(**params):
-        scores = []
-        for URM_train_csr, test in zip(URM_trains, URM_tests):
-            # WARNING: I MODIFIED THIS (BY @ENGPAP)
-            #recommender = URMrecommender_class(URM_train_csr, **params)
-            recommender = URMrecommender_class(URM_train_csr)
-            recommender.fit(**params)
-            _, _, MAP = k_fold_optimization.evaluate.evaluate_algorithm(test, recommender)
-            scores.append(-MAP)
-            print("MAP: {}".format(MAP))
-            print("Params: {}".format(params))
+    
+        @use_named_args(space)
+        def objective(**params):
+            scores = []
+            for URM_train_csr, test in zip(URM_trains, URM_tests):
+                # WARNING: I MODIFIED THIS (BY @ENGPAP)
+                #recommender = URMrecommender_class(URM_train_csr, **params)
+                recommender = URMrecommender_class(URM_train_csr)
+                recommender.fit(**params)
+                _, _, MAP = k_fold_optimization.evaluate.evaluate_algorithm(test, recommender)
+                scores.append(-MAP)
+                print("MAP: {}".format(MAP))
+                print("Params: {}".format(params))
 
-        print("Just Evaluated this: {}".format(params))
-        print("MAP: {}, diff: {}".format(sum(scores) / len(scores), max(scores) - min(scores)))
+            print("Just Evaluated this: {}".format(params))
+            print("MAP: {}, diff: {}".format(sum(scores) / len(scores), max(scores) - min(scores)))
 
-        return sum(scores) / len(scores)
+            return sum(scores) / len(scores)
 
     # xs, ys = _load_xy(slim_name)
     param_names = [v.name for v in spaces[URMrecommender_class]]

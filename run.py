@@ -5,35 +5,30 @@ from Recommenders.SLIM.SLIMElasticNetRecommender import SLIMElasticNetRecommende
 from Recommenders.GraphBased.RP3betaRecommender import RP3betaRecommender
 from tqdm import tqdm
 from evaluator import evaluate
-from Evaluation.Evaluator import EvaluatorHoldout
 import pandas as pd
 import numpy as np
 # Read & split data
 dataReader = DataReader()
-#urm = dataReader.load_urm()
-#urm = dataReader.load_binary_urm()
-#urm = dataReader.load_augmented_binary_urm()
-urm = dataReader.load_powerful_binary_urm()
-#urm = dataReader.load_augmented_binary_urm()
-#urm_df=dataReader.load_powerful_binary_urm_df()
+
+urm = dataReader.load_augmented_binary_urm()
 #urm = dataReader.load_powerful_binary_urm()
+icm= dataReader.load_icm()
+
 '''
 urm = dataReader.load_augmented_binary_urm_less_items()
 icm = dataReader.load_augmented_binary_icm_less_items()
 '''
+
 target = dataReader.load_target()
 #dataReader.print_statistics(target)
 
 #URM_train, URM_test = split_train_in_two_percentage_global_sample(urm, train_percentage = 0.90)
 #URM_train, URM_validation = split_train_in_two_percentage_global_sample(URM_train, train_percentage = 0.90)
 URM_train, URM_validation = split_train_in_two_percentage_global_sample(urm, train_percentage = 1.0)
-# Instantiate and fit hybrid recommender
-recommender = SLIMElasticNetRecommender(URM_train)
-recommender.fit(l1_ratio=0.01, alpha = 0.001, positive_only=True, topK = 750)
-#recommender = HybridRecommender(URM_train,icm)
 
-#evaluator=EvaluatorHoldout(URM_validation)
-#evaluator.evaluateRecommender(recommender)
+# Instantiate and fit hybrid recommender
+recommender = HybridRecommender(URM_train,icm)
+recommender.fit()
 
 # Create CSV for submission
 f = open("submission.csv", "w+")
@@ -45,8 +40,7 @@ for user_id in tqdm(target):
     well_formatted = " ".join([str(x) for x in recommended_items])
     f.write(f"{user_id}, {well_formatted}\n")
 
-#map=evaluate(recommended_items_for_each_user,URM_test,target)
+# Evaluare recommended items
 map=evaluate(recommended_items_for_each_user,URM_validation,target)
-#evaluator.evaluateRecommender(recommender)
 print('MAP score: {}'.format(map))
 
