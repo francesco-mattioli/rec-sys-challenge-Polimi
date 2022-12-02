@@ -94,6 +94,8 @@ def optimize_parameters(URMrecommender_class: type, n_calls=100, k=5, validation
                 recommender.fit(**params)
                 _, _, MAP = k_fold_optimization.evaluate.evaluate_algorithm(test, recommender)
                 scores.append(-MAP)
+                print("MAP: {}".format(MAP))
+                print("Params: {}".format(params))
             print("Just Evaluated this: {}".format(params))
             return sum(scores) / len(scores)
     
