@@ -16,7 +16,7 @@ spaces[ItemKNNCFRecommender] = [
     Integer(0, 10000, name='topK'),
     Real(0, 1000, name='shrink'),
     Categorical([True], name='normalize'),
-    Categorical([None, "TF-IDF", "BM25"], name='feature_weighting'),
+    Categorical(["TF-IDF", "BM25"], name='feature_weighting'),
     Categorical(["cosine", "tanimoto", "dice"], name='similarity'),
 ]
 
