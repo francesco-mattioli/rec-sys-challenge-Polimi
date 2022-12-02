@@ -10,7 +10,7 @@ if __name__ == '__main__':
     limit_at = 5
     n_calls=50
 
-
+    '''
     rec_class = SLIMElasticNetRecommender
     optimize_parameters(
         URMrecommender_class=rec_class,
@@ -20,7 +20,7 @@ if __name__ == '__main__':
         limit_at=limit_at,
         forest=True,
     )
-
+    '''
 
     n_random_starts=1
 
