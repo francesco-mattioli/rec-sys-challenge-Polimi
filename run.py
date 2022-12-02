@@ -3,6 +3,7 @@ from Data_manager.split_functions.split_train_validation_random_holdout import s
 from hybrid import HybridRecommender
 from Recommenders.SLIM.SLIMElasticNetRecommender import SLIMElasticNetRecommender
 from Recommenders.GraphBased.RP3betaRecommender import RP3betaRecommender
+from Recommenders.NonPersonalizedRecommender import TopPop
 from tqdm import tqdm
 from evaluator import evaluate
 from Evaluation.Evaluator import EvaluatorHoldout
@@ -29,13 +30,16 @@ target = dataReader.load_target()
 URM_train, URM_validation = split_train_in_two_percentage_global_sample(urm, train_percentage = 1.0)
 # Instantiate and fit hybrid recommender
 recommender = SLIMElasticNetRecommender(URM_train)
-recommender.fit(l1_ratio=0.01, alpha = 0.001, positive_only=True, topK = 750)
+recommender.fit(l1_ratio=0.007467817120176792, alpha = 0.0016779515713674044, positive_only=True, topK = 723)
 #recommender = HybridRecommender(URM_train,icm)
+recommender_2 = TopPop(URM_train)
+recommender_2.fit()
 
 #evaluator=EvaluatorHoldout(URM_validation)
 #evaluator.evaluateRecommender(recommender)
 
-# Create CSV for submission
+
+    # Create CSV for submission
 f = open("submission.csv", "w+")
 f.write("user_id,item_list\n")
 recommended_items_for_each_user = {}
