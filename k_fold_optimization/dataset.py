@@ -12,7 +12,7 @@ def load_dataset():
         dataReader = DataReader()
         ICM = dataReader.load_icm_df()
         targets = dataReader.load_target_df()
-        URM = dataReader.load_powerful_binary_urm_df()
+        URM = dataReader.load_augmented_binary_urm_df()
         return URM, ICM, targets
 
     URM, ICM, targets = _load_dataset()

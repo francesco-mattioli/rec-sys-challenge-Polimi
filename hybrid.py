@@ -13,12 +13,22 @@ class HybridRecommender(BaseRecommender):
 
     RECOMMENDER_NAME = "Hybrid_Recommender"
 
-    def __init__(self, URM_train,ICM):
+    '''def __init__(self, URM_train,ICM):
         self.ICM = ICM
-        super(HybridRecommender, self).__init__(URM_train)
+        super(HybridRecommender, self).__init__(URM_train)'''
         
+    def __init__(self, URM_train, recommender_1, recommender_2):
+        self.URM_train=URM_train
+        super(HybridRecommender, self).__init__(URM_train)
+        self.recommender_1 = recommender_1
+        self.recommender_2 = recommender_2
 
-    def fit(self):
+    def fit(self, norm, alpha = 0.5):
+
+        self.alpha = alpha
+        self.norm = norm
+
+    '''def fit(self):
         # Stack and normalize URM and ICM
         URM_stacked = sps.vstack([self.URM_train, self.ICM.T])
         
@@ -27,28 +37,47 @@ class HybridRecommender(BaseRecommender):
         #self.ItemCF.fit(10, 2000)
 
         self.SLIM_ElasticNet = SLIMElasticNetRecommender(URM_stacked)
-        self.SLIM_ElasticNet.fit(l1_ratio=0.008213119901673099, alpha =  0.0046000272149077145, positive_only=True, topK = 498)
+        self.SLIM_ElasticNet.fit(l1_ratio=0.008213119901673099, alpha =  0.0046000272149077145, positive_only=True, topK = 498)'''
 
 
-    def _compute_item_score(self, user_id_array, items_to_compute=None):
+    '''def _compute_item_score(self, user_id_array, items_to_compute=None):
         
         num_items=19630
         #num_items = len(self.items) # num_items changes based on used urm
         item_weights = np.empty([len(user_id_array), num_items])
 
         for i in tqdm(range(len(user_id_array))):
-            '''
+            
             w1 = self.ItemCF._compute_item_score(user_id_array[i], items_to_compute)
             w1 /= LA.norm(w1, 2)
             w2 = self.SLIM_ElasticNet._compute_item_score(user_id_array[i], items_to_compute)
             w2 /= LA.norm(w2, 2)
             w = w1 + w2 
-            '''
+            
             
             #w = self.ItemCF._compute_item_score(user_id_array[i], items_to_compute)
             w = self.SLIM_ElasticNet._compute_item_score(user_id_array[i], items_to_compute)
             #w = self.SLIM_BPR_Cython._compute_item_score(user_id_array[i], items_to_compute)
 
             item_weights[i, :] = w # In the i-th array of item_weights we assign the w array
+
+        return item_weights'''
+
+    def _compute_item_score(self, user_id_array, items_to_compute):
+    
+        item_weights_1 = self.recommender_1._compute_item_score(user_id_array)
+        item_weights_2 = self.recommender_2._compute_item_score(user_id_array)
+
+        norm_item_weights_1 = LA.norm(item_weights_1, self.norm)
+        norm_item_weights_2 = LA.norm(item_weights_2, self.norm)
+        
+        
+        if norm_item_weights_1 == 0:
+            raise ValueError("Norm {} of item weights for recommender 1 is zero. Avoiding division by zero".format(self.norm))
+        
+        if norm_item_weights_2 == 0:
+            raise ValueError("Norm {} of item weights for recommender 2 is zero. Avoiding division by zero".format(self.norm))
+        
+        item_weights = item_weights_1 / norm_item_weights_1 * self.alpha + item_weights_2 / norm_item_weights_2 * (1-self.alpha)
 
         return item_weights

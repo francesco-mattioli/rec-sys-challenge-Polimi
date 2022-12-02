@@ -13,6 +13,7 @@ load_dotenv()
 
 class DataReader(object):
 
+
     def dataframe_to_csr(self, dataframe,row_name,col_name,cell_name):
         """This method converts a dataframe object into a csr
 
@@ -331,9 +332,9 @@ class DataReader(object):
         urm = self.load_augmented_binary_urm_df()
 
         # urm times alpha
-        urm['Data'] = 0.7 * urm['Data']
+        urm['Data'] = 0.825 * urm['Data']
         # f times (1-aplha)
-        f['Data'] = 0.3 * f['Data']
+        f['Data'] = 0.175 * f['Data']
         # Change UserIDs of f matrix in order to make recommender work
         f['UserID'] = 41634 + f['UserID']
 
