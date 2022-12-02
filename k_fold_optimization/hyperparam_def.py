@@ -16,7 +16,7 @@ spaces[ItemKNNCFRecommender] = [
     Integer(0, 10000, name='topK'),
     Real(0, 1000, name='shrink'),
     Categorical([True], name='normalize'),
-    Categorical([None, "TF-IDF", "TF-IDF-Transpose"], name='feature_weighting'),
+    Categorical([None, "TF-IDF", "BM25"], name='feature_weighting'),
     Categorical(["cosine", "tanimoto", "dice"], name='similarity'),
 ]
 
@@ -42,8 +42,8 @@ spaces[RP3betaRecommender] = [
 
 names[HybridRecommender_2] = "HybridRecommender_2"
 spaces[HybridRecommender_2] = [
-    Real(0, 2, name="UserKNNCFRecommenderWeight"),
-    #Real(0, 2, name="ItemKNNCFRecommenderWeight"),
+    #Real(0, 2, name="UserKNNCFRecommenderWeight"),
+    Real(0, 2, name="ItemKNNCFRecommenderWeight"),
     Real(0, 2, name='SLIMElasticNetRecommenderWeight'),
     Categorical([True], name="normalize")
 ]
