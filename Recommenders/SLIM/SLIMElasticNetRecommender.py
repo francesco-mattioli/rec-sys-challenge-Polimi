@@ -41,7 +41,7 @@ class SLIMElasticNetRecommender(BaseItemSimilarityMatrixRecommender):
         super(SLIMElasticNetRecommender, self).__init__(URM_train, verbose = verbose)
 
     @ignore_warnings(category=ConvergenceWarning)
-    def fit(self, l1_ratio=0.1, alpha = 1.0, positive_only=True, topK = 100):
+    def fit(self, l1_ratio=0.007467817120176792, alpha = 0.0016779515713674044, positive_only=True, topK = 723):
 
         assert l1_ratio>= 0 and l1_ratio<=1, "{}: l1_ratio must be between 0 and 1, provided value was {}".format(self.RECOMMENDER_NAME, l1_ratio)
 

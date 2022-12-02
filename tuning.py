@@ -44,9 +44,9 @@ metric_to_optimize = "MAP"
 cutoff_to_optimize = 10
 
 hyperparameters_range_dictionary = {
-    "alpha": Real(low=0.1, high=1, prior='uniform'),
-    "beta": Real(low=0.01, high=1, prior='uniform'),
-    "topK": Integer(100, 500),
+    "alpha": Real(low=0.1, high=0.9, prior='uniform'),
+    "beta": Real(low=0.1, high=0.9, prior='uniform'),
+    "topK": Integer(10, 500),
     "implicit": Categorical([True, False])
 }
 
