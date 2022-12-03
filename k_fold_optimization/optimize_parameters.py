@@ -79,7 +79,7 @@ def optimize_parameters(URMrecommender_class: type, n_calls=100, k=5, validation
         ICM_trains = ICM_trains[:limit_at]
 
     assert (len(URM_trains) == len(URM_tests) and len(URM_tests) == len(ICM_trains))
-    print("Starting optimization: N_folds={}, slim_name={}".format(len(URM_trains), names[URMrecommender_class]))
+    print("Starting optimization: N_folds={}, Recommender={}".format(len(URM_trains), names[URMrecommender_class]))
     
     
     if URMrecommender_class == HybridRecommender_2:
