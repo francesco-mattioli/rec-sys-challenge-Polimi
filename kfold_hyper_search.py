@@ -2,6 +2,7 @@ from k_fold_optimization.optimize_parameters import optimize_parameters
 
 from Recommenders.SLIM.SLIMElasticNetRecommender import *
 from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
+from Recommenders.GraphBased.RP3betaRecommender import RP3betaRecommender
 from hybrid import HybridRecommender_2
 
 
@@ -23,6 +24,7 @@ if __name__ == '__main__':
     )
     '''
 
+    '''
     rec_class = ItemKNNCFRecommender
     optimize_parameters(
         URMrecommender_class=rec_class,
@@ -32,6 +34,18 @@ if __name__ == '__main__':
         limit_at=limit_at,
         forest=True,
     )
+    '''
+
+    rec_class = RP3betaRecommender
+    optimize_parameters(
+        URMrecommender_class=rec_class,
+        validation_percentage=val_percentage,
+        k=k,
+        n_calls=n_calls,
+        limit_at=limit_at,
+        forest=True,
+    )
+
     '''
     n_random_starts=1
 

@@ -3,6 +3,7 @@ from Recommenders.BaseRecommender import BaseRecommender
 from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
 from Recommenders.KNN.UserKNNCFRecommender import UserKNNCFRecommender
 from Recommenders.SLIM.SLIMElasticNetRecommender import *
+from Recommenders.GraphBased.RP3betaRecommender import RP3betaRecommender
 #from Recommenders.FactorizationMachines.LightFMRecommender import LightFMItemHybridRecommender
 
 
@@ -27,15 +28,17 @@ class HybridRecommender(BaseRecommender):
         # URM_stacked = sps.vstack([self.URM_train, self.ICM.T])
 
         # Instantiate & fit the recommenders
-        # self.ItemCF = ItemKNNCFRecommender(URM_stacked)
-        # self.ItemCF.fit(10, 2000)
+        #self.ItemCF = ItemKNNCFRecommender(self.URM_train)
+        #self.ItemCF.fit(topK=1199, shrink=229.22107382005083,similarity='cosine', normalize=True, feature_weighting = "TF-IDF")
 
-        self.SLIM_ElasticNet = SLIMElasticNetRecommender(self.URM_train)
-        self.SLIM_ElasticNet.fit(l1_ratio=0.008213119901673099,
-                                 alpha=0.0046000272149077145, positive_only=True, topK=498)
+        #self.SLIM_ElasticNet = SLIMElasticNetRecommender(self.URM_train)
+        #self.SLIM_ElasticNet.fit(l1_ratio=0.008213119901673099,alpha=0.0046000272149077145, positive_only=True, topK=498)
 
         # self.LightFMItemHybridRecommender = LightFMItemHybridRecommender(self.URM_train, self.ICM)
         # self.LightFMItemHybridRecommender.fit(epochs = 10)
+
+        self.RP3beta = RP3betaRecommender(self.URM_train)
+        self.RP3beta.fit(alpha=0.6168746672144776, beta=0.4034065796742653, topK=918, normalize_similarity=True)
 
     def _compute_item_score(self, user_id_array, items_to_compute=None):
 
@@ -56,9 +59,9 @@ class HybridRecommender(BaseRecommender):
             w = w1 + w2
             '''
 
-            # w = self.ItemCF._compute_item_score(user_id_array[i], items_to_compute)
-            w = self.SLIM_ElasticNet._compute_item_score(
-                user_id_array[i], items_to_compute)
+            #w = self.ItemCF._compute_item_score(user_id_array[i], items_to_compute)
+            w = self.RP3beta._compute_item_score(user_id_array[i], items_to_compute)
+            #w = self.SLIM_ElasticNet._compute_item_score(user_id_array[i], items_to_compute)
             # w = self.SLIM_BPR_Cython._compute_item_score(user_id_array[i], items_to_compute)
             # w = self.LightFMItemHybridRecommender._compute_item_score(user_id_array[i], items_to_compute)
 
@@ -92,7 +95,7 @@ class HybridRecommender_2(BaseRecommender):
         self.weights = {
             ItemKNNCFRecommender: ItemKNNCFRecommenderWeight,
             SLIMElasticNetRecommender: SLIMElasticNetRecommenderWeight,
-            #UserKNNCFRecommender: UserKNNCFRecommenderWeight,
+            # UserKNNCFRecommender: UserKNNCFRecommenderWeight,
         }
 
         self.normalize = normalize
@@ -117,7 +120,8 @@ class HybridRecommender_2(BaseRecommender):
         for i in tqdm(range(len(user_id_array))):
             for rec_class in self.recommenders.keys():
                 if self.weights[rec_class] > 0.0:
-                    w = self.recommenders[rec_class]._compute_item_score(user_id_array[i], items_to_compute)
+                    w = self.recommenders[rec_class]._compute_item_score(
+                        user_id_array[i], items_to_compute)
                     if self.normalize:
                         w *= 1.0 / w.max()
                     w += np.multiply(w, self.weights[rec_class])
