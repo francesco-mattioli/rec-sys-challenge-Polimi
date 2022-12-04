@@ -18,8 +18,11 @@ class HybridRecommender(BaseRecommender):
 
     RECOMMENDER_NAME = "Hybrid_Recommender"
 
-    def __init__(self, URM_train, ICM):
-        self.URM_train = URM_train
+    def __init__(self, URM_train, ICM,dataReader):
+        self.URM_train_aug=URM_train
+        URM_train_aug_df=dataReader.csr_to_dataframe(URM_train)
+        self.URM_train_pow=dataReader.load_powerful_binary_urm_given_URM_train_df(URM_train_aug_df)
+
         self.ICM = ICM
         super(HybridRecommender, self).__init__(URM_train)
 
@@ -28,8 +31,8 @@ class HybridRecommender(BaseRecommender):
         # URM_stacked = sps.vstack([self.URM_train, self.ICM.T])
 
         # Instantiate & fit the recommenders
-        #self.ItemCF = ItemKNNCFRecommender(self.URM_train)
-        #self.ItemCF.fit(topK=1199, shrink=229.22107382005083,similarity='cosine', normalize=True, feature_weighting = "TF-IDF")
+        self.ItemCF = ItemKNNCFRecommender(self.URM_train_pow)
+        self.ItemCF.fit(topK=1199, shrink=229.22107382005083,similarity='cosine', normalize=True, feature_weighting = "TF-IDF")
 
         #self.SLIM_ElasticNet = SLIMElasticNetRecommender(self.URM_train)
         #self.SLIM_ElasticNet.fit(l1_ratio=0.008213119901673099,alpha=0.0046000272149077145, positive_only=True, topK=498)
@@ -37,12 +40,12 @@ class HybridRecommender(BaseRecommender):
         # self.LightFMItemHybridRecommender = LightFMItemHybridRecommender(self.URM_train, self.ICM)
         # self.LightFMItemHybridRecommender.fit(epochs = 10)
 
-        self.RP3beta = RP3betaRecommender(self.URM_train)
-        self.RP3beta.fit(alpha=0.6168746672144776, beta=0.4034065796742653, topK=918, normalize_similarity=True)
+        #self.RP3beta = RP3betaRecommender(self.URM_train)
+        #self.RP3beta.fit(alpha=0.6168746672144776, beta=0.4034065796742653, topK=918, normalize_similarity=True)
 
     def _compute_item_score(self, user_id_array, items_to_compute=None):
 
-        num_items = 24507
+        num_items = 27968
         # num_items=19630
         # num_items = len(self.items) # num_items changes based on used urm
         item_weights = np.empty([len(user_id_array), num_items])
@@ -59,8 +62,8 @@ class HybridRecommender(BaseRecommender):
             w = w1 + w2
             '''
 
-            #w = self.ItemCF._compute_item_score(user_id_array[i], items_to_compute)
-            w = self.RP3beta._compute_item_score(user_id_array[i], items_to_compute)
+            w = self.ItemCF._compute_item_score(user_id_array[i], items_to_compute)
+            #w = self.RP3beta._compute_item_score(user_id_array[i], items_to_compute)
             #w = self.SLIM_ElasticNet._compute_item_score(user_id_array[i], items_to_compute)
             # w = self.SLIM_BPR_Cython._compute_item_score(user_id_array[i], items_to_compute)
             # w = self.LightFMItemHybridRecommender._compute_item_score(user_id_array[i], items_to_compute)
