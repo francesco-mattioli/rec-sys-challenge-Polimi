@@ -31,10 +31,10 @@ spaces[SLIMElasticNetRecommender] = [
 # alpha=0.9188152746499686, beta=0.3150796458750398, min_rating=0, topK=61, implicit=False, normalize_similarity=True):
 names[RP3betaRecommender] = "RP3betaRecommender_tree"
 spaces[RP3betaRecommender] = [
-    Real(0, 1, name='alpha'),
+    Real(0, 0.5, name='alpha'),
     Real(0, 1, name='beta'),
     Integer(400, 1200, name="topK"),
-    Categorical([False,True], name="normalize_similarity"),
+    Categorical([True], name="normalize_similarity"),
 ]
 
 names[HybridRecommender_2] = "HybridRecommender_2"
