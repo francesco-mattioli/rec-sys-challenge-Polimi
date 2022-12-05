@@ -1,6 +1,6 @@
 from Data_Handler.DataReader import DataReader
 from Data_manager.split_functions.split_train_validation_random_holdout import split_train_in_two_percentage_global_sample
-from hybrid import HybridRecommender
+from hybrid import HybridRecommender_3
 from Recommenders.SLIM.SLIMElasticNetRecommender import SLIMElasticNetRecommender
 from Recommenders.GraphBased.RP3betaRecommender import RP3betaRecommender
 from Recommenders.NonPersonalizedRecommender import TopPop
@@ -27,7 +27,7 @@ target = dataReader.load_target()
 URM_train, URM_validation = split_train_in_two_percentage_global_sample(urm, train_percentage = 0.9)
 
 # Instantiate and fit hybrid recommender
-recommender = HybridRecommender(URM_train,icm,dataReader)
+recommender = HybridRecommender_3(URM_train,dataReader)
 recommender.fit()
 
 

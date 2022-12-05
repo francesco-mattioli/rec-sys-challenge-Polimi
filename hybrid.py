@@ -4,6 +4,7 @@ from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
 from Recommenders.KNN.UserKNNCFRecommender import UserKNNCFRecommender
 from Recommenders.SLIM.SLIMElasticNetRecommender import *
 from Recommenders.GraphBased.RP3betaRecommender import RP3betaRecommender
+from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
 #from Recommenders.FactorizationMachines.LightFMRecommender import LightFMItemHybridRecommender
 
 
@@ -160,4 +161,44 @@ class HybridRecommender_2(BaseRecommender):
                     w += np.multiply(w, self.weights[rec_class])
             item_weights[i, :] = w
 
+        return item_weights
+
+'''-----------------------------------------------------------------------------------------------------------------------------'''
+
+class HybridRecommender_3(BaseRecommender):
+    
+    RECOMMENDER_NAME = "Hybrid_Recommender_3"
+    def __init__(self, URM_train: sp.csr_matrix, dataReader):
+        URM_aug_df = dataReader.csr_to_dataframe(URM_train)
+        self.URM_train = URM_train
+        self.URM_train_power = dataReader.load_powerful_binary_urm_given_URM_train_df(URM_aug_df)
+        super(HybridRecommender_3, self).__init__(self.URM_train)
+    
+    def fit(self):
+        self.Slim = SLIMElasticNetRecommender(self.URM_train)
+        self.Rp3b = RP3betaRecommender(self.URM_train)
+        self.ItemKNN = ItemKNNCFRecommender(self.URM_train)
+        self.Slim.fit()
+        self.Rp3b.fit()
+        self.ItemKNN.fit()
+
+    def _compute_item_score(self, user_id_array, items_to_compute=None):
+         
+        item_weights = np.empty([len(user_id_array), 24507])
+        for i in tqdm(range(len(user_id_array))):
+
+            interactions = len(self.URM_train[user_id_array[i],:].indices)
+
+            if interactions < 17:
+                w = self.ItemKNN._compute_item_score(user_id_array[i], items_to_compute) 
+                item_weights[i,:] = w 
+            
+            elif interactions < 24 and interactions >=17:
+                w = self.Rp3b._compute_item_score(user_id_array[i], items_to_compute) 
+                item_weights[i,:] = w 
+
+            else:
+                w = self.Slim._compute_item_score(user_id_array[i], items_to_compute) 
+                item_weights[i,:] = w 
+            
         return item_weights

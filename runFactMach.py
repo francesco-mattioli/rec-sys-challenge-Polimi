@@ -22,7 +22,7 @@ URM_train, URM_validation = split_train_in_two_percentage_global_sample(urm, tra
 
 # Instantiate and fit hybrid recommender
 recommender = LightFMItemHybridRecommender(URM_train, icm)
-recommender.fit(epochs=10)
+recommender.fit(epochs=50)
 evaluator_validation = EvaluatorHoldout(URM_validation, cutoff_list=[10])
 result_df, _ = evaluator_validation.evaluateRecommender(recommender)
 print(result_df)
