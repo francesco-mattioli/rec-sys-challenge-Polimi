@@ -28,7 +28,7 @@ class ItemKNNCFRecommender(BaseItemSimilarityMatrixRecommender):
         super(ItemKNNCFRecommender, self).__init__(URM_train, verbose = verbose)
 
 
-    def fit(self, topK=50, shrink=100, similarity='cosine', normalize=True, feature_weighting = "none", URM_bias = False, **similarity_args):
+    def fit(self, topK=1199, shrink=229.22107382005083, similarity='cosine', normalize=True, feature_weighting = "TF-IDF", URM_bias = False, **similarity_args):
 
         self.topK = topK
         self.shrink = shrink

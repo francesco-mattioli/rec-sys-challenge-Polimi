@@ -7,6 +7,8 @@ from HyperparameterTuning.run_hyperparameter_search import runHyperparameterSear
 from Recommenders.SLIM.SLIMElasticNetRecommender import SLIMElasticNetRecommender
 from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
 from Recommenders.GraphBased.RP3betaRecommender import RP3betaRecommender
+from Recommenders.GraphBased.P3alphaRecommender import P3alphaRecommender
+
 from Evaluation.Evaluator import EvaluatorHoldout
 from Recommenders.DataIO import DataIO
 from HyperparameterTuning.SearchBayesianSkopt import SearchBayesianSkopt
@@ -24,13 +26,13 @@ target = dataReader.load_target()
 
 #URM_train_v0, URM_test = split_train_in_two_percentage_global_sample(urm, train_percentage=0.90)
 #URM_train, URM_validation = split_train_in_two_percentage_global_sample(URM_train_v0, train_percentage=0.90)
-URM_train, URM_validation = split_train_in_two_percentage_global_sample(urm, train_percentage=0.85)
+URM_train, URM_validation = split_train_in_two_percentage_global_sample(urm, train_percentage=0.9)
 
 
 evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 #evaluator_test = EvaluatorHoldout(URM_test, [10])
 
-recommender_class = RP3betaRecommender
+recommender_class = P3alphaRecommender
 
 output_folder_path = "result_experiments/"
 
@@ -38,17 +40,16 @@ output_folder_path = "result_experiments/"
 if not os.path.exists(output_folder_path):
     os.makedirs(output_folder_path)
     
-n_cases = 100
+n_cases = 500
 n_random_starts = int(n_cases*0.3)
 metric_to_optimize = "MAP"   
 cutoff_to_optimize = 10
 
 hyperparameters_range_dictionary = {
-    "alpha": Real(low=0.1, high=0.9, prior='uniform'),
-    "beta": Real(low=0.1, high=0.9, prior='uniform'),
-    "topK": Integer(10, 500),
-    "implicit": Categorical([True, False])
-}
+                "topK": Integer(5, 1000),
+                "alpha": Real(low = 0, high = 2, prior = 'uniform'),
+                "normalize_similarity": Categorical([True, False]),
+            }
 
 
 #create a bayesian optimizer object, we pass the recommender and the evaluator
