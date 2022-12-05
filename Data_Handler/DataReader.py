@@ -14,6 +14,11 @@ load_dotenv()
 class DataReader(object):
 
 
+    def csr_to_dataframe(self,csr):
+        coo=csr.tocoo(copy=False)
+        df=pd.DataFrame({'UserID': coo.row, 'ItemID': coo.col, 'Data': coo.data})[['UserID', 'ItemID', 'Data']].sort_values(['UserID', 'ItemID']).reset_index(drop=True)
+        return df
+
     def dataframe_to_csr(self, dataframe,row_name,col_name,cell_name):
         """This method converts a dataframe object into a csr
 
@@ -353,6 +358,38 @@ class DataReader(object):
         """
         powerful_urm = self.load_powerful_binary_urm_df()
         return self.dataframe_to_csr(powerful_urm,'UserID','ItemID','Data')
+
+
+    def load_powerful_binary_urm_df_given_URM_train_df(self,URM_train_df): #NEW
+        data_icm_type = pd.read_csv(filepath_or_buffer=os.getenv('DATA_ICM_TYPE_PATH'),
+                                    sep=',',
+                                    names=[
+            'item_id', 'feature_id', 'data'],
+            header=0,
+            dtype={'item_id': np.int32, 'feature_id': np.int32, 'data': np.int32})
+        # Swap the columns from (item_id, feature_id, data) to (feature_id, item_id, data)
+        swap_list = ["feature_id", "item_id", "data"]
+        f = data_icm_type.reindex(columns=swap_list)
+        f = f.rename(
+            {'feature_id': 'UserID', 'item_id': 'ItemID', 'data': 'Data'}, axis=1)
+
+        urm = URM_train_df
+
+        # urm times alpha
+        urm['Data'] = 0.825 * urm['Data']
+        # f times (1-aplha)
+        f['Data'] = 0.175 * f['Data']
+        # Change UserIDs of f matrix in order to make recommender work
+        f['UserID'] = 41634 + f['UserID']
+
+        powerful_urm = pd.concat(
+            [urm, f], ignore_index=True).sort_values(['UserID', 'ItemID'])
+        return powerful_urm
+    
+    def load_powerful_binary_urm_given_URM_train_df(self,URM_train_df): #NEW
+        powerful_urm = self.load_powerful_binary_urm_df_given_URM_train_df(URM_train_df)
+        return self.dataframe_to_csr(powerful_urm,'UserID','ItemID','Data')
+
 
     def get_unique_items_based_on_urm(self, urm):
         """Returns numpy.array of unique items contained in the given urm

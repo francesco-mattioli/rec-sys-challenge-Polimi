@@ -13,11 +13,11 @@ spaces = {}
 
 names[ItemKNNCFRecommender] = "ItemKNNCFRecommender"
 spaces[ItemKNNCFRecommender] = [
-    Integer(0, 10000, name='topK'),
-    Real(0, 1000, name='shrink'),
+    Integer(1000, 10000, name='topK'),
+    Real(10, 1000, name='shrink'),
     Categorical([True], name='normalize'),
-    Categorical(["TF-IDF", "BM25"], name='feature_weighting'),
-    Categorical(["cosine", "tanimoto", "dice"], name='similarity'),
+    Categorical(["TF-IDF"], name='feature_weighting'),
+    Categorical(["cosine"], name='similarity'),
 ]
 
 
@@ -28,16 +28,13 @@ spaces[SLIMElasticNetRecommender] = [
     Integer(low=320, high=800, name='topK')
 ]
 
+# alpha=0.9188152746499686, beta=0.3150796458750398, min_rating=0, topK=61, implicit=False, normalize_similarity=True):
 names[RP3betaRecommender] = "RP3betaRecommender_tree"
 spaces[RP3betaRecommender] = [
-    Integer(400, 1200, name="topK"),
     Real(0, 1, name='alpha'),
     Real(0, 1, name='beta'),
-    Categorical([False], name="normalize_similarity"),
-    Categorical([None, "TF-IDF", "TF-IDF-Transpose", "BM25",
-                "BM25-Transpose"], name='feature_weighting'),
-    Real(1, 20, name='K'),
-    Real(0.5, 1, name='B'),
+    Integer(400, 1200, name="topK"),
+    Categorical([False,True], name="normalize_similarity"),
 ]
 
 names[HybridRecommender_2] = "HybridRecommender_2"

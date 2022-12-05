@@ -110,13 +110,15 @@ def optimize_parameters(URMrecommender_class: type, n_calls=100, k=5, validation
                 recommender = URMrecommender_class(URM_train_csr)
                 recommender.fit(**params)
                 _, _, MAP = k_fold_optimization.evaluate.evaluate_algorithm(test, recommender)
-                scores.append(-MAP)
+                #scores.append(-MAP) commented out by @ENGPAP
+                scores.append(MAP)
                 print("MAP: {}".format(MAP))
                 print("Params: {}".format(params))
 
-            print("Just Evaluated this: {}".format(params))
-            print("MAP: {}, diff: {}".format(sum(scores) / len(scores), max(scores) - min(scores)))
-
+            print(">>> Just Evaluated this: {}".format(params))
+            print(">>> MAP: {}, diff (= max_map - min_map): {}".format(sum(scores) / len(scores), max(scores) - min(scores)))
+            print("\n")
+            
             return sum(scores) / len(scores)
 
     # xs, ys = _load_xy(slim_name)

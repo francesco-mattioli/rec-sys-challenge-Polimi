@@ -24,10 +24,10 @@ target = dataReader.load_target()
 
 #URM_train, URM_test = split_train_in_two_percentage_global_sample(urm, train_percentage = 0.90)
 #URM_train, URM_validation = split_train_in_two_percentage_global_sample(URM_train, train_percentage = 0.90)
-URM_train, URM_validation = split_train_in_two_percentage_global_sample(urm, train_percentage = 1.0)
+URM_train, URM_validation = split_train_in_two_percentage_global_sample(urm, train_percentage = 0.9)
 
 # Instantiate and fit hybrid recommender
-recommender = HybridRecommender(URM_train,icm)
+recommender = HybridRecommender(URM_train,icm,dataReader)
 recommender.fit()
 
 
