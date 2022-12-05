@@ -85,21 +85,21 @@ class HybridRecommender(BaseRecommender):
         pad_items_ids = np.setdiff1d(dataReader.load_augmented_binary_urm_df()['ItemID'].unique(), dataReader.load_icm_df()['item_id'].unique())
         feature_ids = dataReader.load_icm_df()['feature_id'].unique()
         
-
         col = []
         for feature_id in feature_ids:
             for item_id in range(len(pad_items_ids)):
                 col.append(feature_id)
-        col=np.array(col)
+        col = np.array(col)
 
         row=[]
         for item_id in pad_items_ids:
             for feature_id in range(len(feature_ids)):
                 row.append(item_id)
         row=np.array(row)
-    
-        data = np.zeros((1,row.size),dtype=int)
-        padICM = sps.coo_matrix((data,(row,col)),shape=(row.size, col.size))
+
+        data = np.zeros((row.size),dtype=int)
+
+        padICM = sps.csr_matrix((data,(row,col)))
 
         paddedICM = sps.vstack(ICM, padICM)
         return sps.vstack(URM, paddedICM.T)
