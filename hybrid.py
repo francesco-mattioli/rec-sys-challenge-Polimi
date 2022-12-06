@@ -13,6 +13,7 @@ from tqdm import tqdm
 import numpy as np
 from numpy import linalg as LA
 import scipy.sparse as sp
+import pandas as pd
 
 
 class HybridRecommender(BaseRecommender):
@@ -22,7 +23,7 @@ class HybridRecommender(BaseRecommender):
     def __init__(self, URM_train, ICM, dataReader):
         self.URM_train_aug = URM_train
         self.ICM = ICM
-        self.URM_train_pow = self.stackMatrixes(dataReader, URM_train, ICM)
+        self.URM_train_pow = self.stackMatrixes(dataReader, URM_train)
         # URM_train_aug_df=dataReader.csr_to_dataframe(URM_train)
         # self.URM_train_pow=dataReader.load_powerful_binary_urm_given_URM_train_df(URM_train_aug_df)
 
@@ -76,34 +77,7 @@ class HybridRecommender(BaseRecommender):
 
         return item_weights
 
-    def stackMatrixes(self, dataReader, URM, ICM):
-        # Vertical stack so ItemIDs cardinality must coincide.
-       
-        #items_array_of_icm =dataReader.load_icm_df()['item_id'].unique()
-        #items_array_concatenated= np.hstack((items_array_of_icm,items_array_difference))
-
-        pad_items_ids = np.setdiff1d(dataReader.load_augmented_binary_urm_df()['ItemID'].unique(), dataReader.load_icm_df()['item_id'].unique())
-        feature_ids = dataReader.load_icm_df()['feature_id'].unique()
-        
-        col = []
-        for feature_id in feature_ids:
-            for item_id in range(len(pad_items_ids)):
-                col.append(feature_id)
-        col = np.array(col)
-
-        row=[]
-        for item_id in pad_items_ids:
-            for feature_id in range(len(feature_ids)):
-                row.append(item_id)
-        row=np.array(row)
-
-        data = np.zeros((row.size),dtype=int)
-
-        padICM = sps.csr_matrix((data,(row,col)))
-
-        paddedICM = sps.vstack(ICM, padICM)
-        return sps.vstack(URM, paddedICM.T)
-
+    
 
 '''-----------------------------------------------------------------------------------------------------------------------------'''
 
@@ -114,7 +88,7 @@ class HybridRecommender_2(BaseRecommender):
 
     N_CONFIG = 0
 
-    def __init__(self, URM_train: sp.csr_matrix, ICM):
+    def __init__(self, URM_train, ICM, dataReader):
         self.URM_train = URM_train
         self.ICM = ICM
         super(HybridRecommender_2, self).__init__(URM_train)
@@ -168,37 +142,56 @@ class HybridRecommender_2(BaseRecommender):
 class HybridRecommender_3(BaseRecommender):
     
     RECOMMENDER_NAME = "Hybrid_Recommender_3"
-    def __init__(self, URM_train: sp.csr_matrix, dataReader):
-        URM_aug_df = dataReader.csr_to_dataframe(URM_train)
-        self.URM_train = URM_train
-        self.URM_train_power = dataReader.load_powerful_binary_urm_given_URM_train_df(URM_aug_df)
-        super(HybridRecommender_3, self).__init__(self.URM_train)
+    def __init__(self, URM_train: sp.csr_matrix, ICM,dataReader):
+        self.URM_train_aug = URM_train
+        self.ICM = ICM
+        self.URM_train_pow = self.stackMatrixes(dataReader, URM_train)
+        super(HybridRecommender_3, self).__init__(URM_train)
     
     def fit(self):
-        self.Slim = SLIMElasticNetRecommender(self.URM_train)
-        self.Rp3b = RP3betaRecommender(self.URM_train)
-        self.ItemKNN = ItemKNNCFRecommender(self.URM_train)
-        self.Slim.fit()
-        self.Rp3b.fit()
-        self.ItemKNN.fit()
+        self.S_SLIM = SLIMElasticNetRecommender(self.URM_train_pow)
+        self.RP3beta = RP3betaRecommender(self.URM_train_aug)
+        self.ItemKNNCF = ItemKNNCFRecommender(self.URM_train_aug)
+        self.S_SLIM.fit(l1_ratio=0.007467817120176792,alpha=0.0016779515713674044, positive_only=True, topK=723)
+        self.RP3beta.fit(alpha=0.2686781702308662, beta=0.39113126168484014, topK=455, normalize_similarity=True)
+        self.ItemKNNCF.fit(topK=1199, shrink=229.22107382005083,similarity='cosine', normalize=True, feature_weighting="TF-IDF")
 
     def _compute_item_score(self, user_id_array, items_to_compute=None):
          
         item_weights = np.empty([len(user_id_array), 24507])
+
         for i in tqdm(range(len(user_id_array))):
 
             interactions = len(self.URM_train[user_id_array[i],:].indices)
 
             if interactions < 17:
-                w = self.ItemKNN._compute_item_score(user_id_array[i], items_to_compute) 
+                w = self.ItemKNNCF._compute_item_score(user_id_array[i], items_to_compute) 
                 item_weights[i,:] = w 
             
             elif interactions < 24 and interactions >=17:
-                w = self.Rp3b._compute_item_score(user_id_array[i], items_to_compute) 
+                w = self.RP3beta._compute_item_score(user_id_array[i], items_to_compute) 
                 item_weights[i,:] = w 
 
             else:
-                w = self.Slim._compute_item_score(user_id_array[i], items_to_compute) 
+                w = self.S_SLIM._compute_item_score(user_id_array[i], items_to_compute) 
                 item_weights[i,:] = w 
             
         return item_weights
+
+    def stackMatrixes(self, dataReader, URM_train):
+        # Vertical stack so ItemIDs cardinality must coincide.
+       
+        urm=dataReader.csr_to_dataframe(URM_train)
+        f=dataReader.load_icm_df()
+        swap_list = ["feature_id", "item_id", "data"]
+        f = f.reindex(columns=swap_list)
+        f = f.rename({'feature_id': 'UserID', 'item_id': 'ItemID', 'data': 'Data'}, axis=1)
+
+        urm['Data'] = 0.825 * urm['Data']
+        # f times (1-aplha)
+        f['Data'] = 0.175 * f['Data']
+        # Change UserIDs of f matrix in order to make recommender work
+        f['UserID'] = 41634 + f['UserID']
+
+        powerful_urm = pd.concat([urm, f], ignore_index=True).sort_values(['UserID', 'ItemID'])
+        return dataReader.dataframe_to_csr(powerful_urm,'UserID', 'ItemID','Data')
