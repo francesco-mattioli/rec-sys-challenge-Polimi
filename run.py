@@ -1,6 +1,6 @@
 from Data_Handler.DataReader import DataReader
 from Data_manager.split_functions.split_train_validation_random_holdout import split_train_in_two_percentage_global_sample
-from hybrid import HybridRecommender_3
+from hybrid import *
 from tqdm import tqdm
 from evaluator import evaluate
 import pandas as pd
@@ -21,7 +21,7 @@ target = dataReader.load_target()
 
 #URM_train, URM_test = split_train_in_two_percentage_global_sample(urm, train_percentage = 0.90)
 #URM_train, URM_validation = split_train_in_two_percentage_global_sample(URM_train, train_percentage = 0.90)
-URM_train, URM_validation = split_train_in_two_percentage_global_sample(URM, train_percentage = 0.9)
+URM_train, URM_validation = split_train_in_two_percentage_global_sample(URM, train_percentage = 1)
 
 # Instantiate and fit hybrid recommender
 recommender = HybridRecommender_3(URM_train,ICM,dataReader)
@@ -41,4 +41,3 @@ for user_id in tqdm(target):
 # Evaluare recommended items
 map=evaluate(recommended_items_for_each_user,URM_validation,target)
 print('MAP score: {}'.format(map))
-
