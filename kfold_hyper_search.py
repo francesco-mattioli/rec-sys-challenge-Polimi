@@ -1,9 +1,11 @@
 from k_fold_optimization.optimize_parameters import optimize_parameters
 
 from Recommenders.SLIM.SLIMElasticNetRecommender import *
+from Recommenders.SLIM.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
+from Recommenders.KNN.UserKNNCFRecommender import UserKNNCFRecommender
 from Recommenders.GraphBased.RP3betaRecommender import RP3betaRecommender
-from hybrid import HybridRecommender_2
+from hybrid import *
 
 
 if __name__ == '__main__':
@@ -33,6 +35,17 @@ if __name__ == '__main__':
         n_calls=100,
         limit_at=limit_at,
         forest=True,
+    )   
+    '''
+    '''
+    rec_class = UserKNNCFRecommender
+    optimize_parameters(
+        URMrecommender_class=rec_class,
+        validation_percentage=val_percentage,
+        k=k,
+        n_calls=n_calls,
+        limit_at=limit_at,
+        forest=True,
     )
     '''
 
@@ -44,7 +57,7 @@ if __name__ == '__main__':
         n_calls=n_calls,
         limit_at=limit_at,
         forest=True,
-    )
+    ) 
 
     '''
     n_random_starts=1
@@ -59,5 +72,16 @@ if __name__ == '__main__':
         limit_at=limit_at,
         forest=True,
         xi=0.001
+    )
+    '''
+    '''
+    rec_class = SLIM_BPR_Cython
+    optimize_parameters(
+        URMrecommender_class=rec_class,
+        validation_percentage=val_percentage,
+        k=10,
+        n_calls=50,
+        limit_at=10,
+        forest=True
     )
     '''

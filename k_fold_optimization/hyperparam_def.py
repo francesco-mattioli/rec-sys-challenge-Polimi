@@ -1,12 +1,14 @@
 from skopt.space import Real, Integer, Categorical
 
 from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
-from Recommenders.SLIM.SLIMElasticNetRecommender import *
+from Recommenders.KNN.UserKNNCFRecommender import UserKNNCFRecommender
+from Recommenders.SLIM.SLIMElasticNetRecommender import * 
+from Recommenders.SLIM.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 from Recommenders.GraphBased.RP3betaRecommender import *
 
 import sys
 sys.path.append("..")
-from hybrid import HybridRecommender_2
+from hybrid import *
 
 names = {}
 spaces = {}
@@ -20,6 +22,16 @@ spaces[ItemKNNCFRecommender] = [
     Categorical(["cosine"], name='similarity'),
 ]
 
+names[UserKNNCFRecommender] = "UserKNNCFRecommender"
+spaces[UserKNNCFRecommender] = [
+    Integer(1000, 10000, name='topK'),
+    Real(10, 1000, name='shrink'),
+    Categorical([True], name='normalize'),
+    Categorical(["TF-IDF","none"], name='feature_weighting'),
+    Categorical(["cosine"], name='similarity'),
+]
+
+
 
 names[SLIMElasticNetRecommender] = "SLIMElasticNetRecommender"
 spaces[SLIMElasticNetRecommender] = [
@@ -28,8 +40,18 @@ spaces[SLIMElasticNetRecommender] = [
     Integer(low=320, high=800, name='topK')
 ]
 
+names[SLIM_BPR_Cython] = "SLIM_BPR_Recommender"
+spaces[SLIM_BPR_Cython] = [
+    Integer(1, 400, name='topK'),
+    Categorical([150], name='epochs'),  # Integer(1, 200, name="epochs")
+    Real(0, 2, name='lambda_i'),
+    Real(0, 2, name='lambda_j'),
+    Categorical([1e-4, 1e-3, 1e-2], name="learning_rate")
+]
+
+
 # alpha=0.9188152746499686, beta=0.3150796458750398, min_rating=0, topK=61, implicit=False, normalize_similarity=True):
-names[RP3betaRecommender] = "RP3betaRecommender_tree"
+names[RP3betaRecommender] = "RP3betaRecommender"
 spaces[RP3betaRecommender] = [
     Real(0, 0.5, name='alpha'),
     Real(0, 1, name='beta'),
@@ -39,8 +61,10 @@ spaces[RP3betaRecommender] = [
 
 names[HybridRecommender_2] = "HybridRecommender_2"
 spaces[HybridRecommender_2] = [
-    #Real(0, 2, name="UserKNNCFRecommenderWeight"),
-    Real(0, 2, name="ItemKNNCFRecommenderWeight"),
-    Real(0, 2, name='SLIMElasticNetRecommenderWeight'),
+    Real(0,1,name="RP3betaRecommenderWeight"),
+    #Real(0, 1, name="ItemKNNCFRecommenderWeight"),
+    Real(0, 1, name='SLIMElasticNetRecommenderWeight'),
     Categorical([True], name="normalize")
 ]
+
+
