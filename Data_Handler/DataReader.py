@@ -313,7 +313,7 @@ class DataReader(object):
 
         return data_icm_type
 
-    def load_powerful_binary_urm_df(self):
+    def load_powerful_binary_urm_df(self,mult_param_urm=0.825,mult_param_icm=0.175):
         """
         Load urm by stacking augmented urm and transposed icm.
         This is a smart technique to implement SLIM with side information (or S-SLIM).
@@ -337,9 +337,9 @@ class DataReader(object):
         urm = self.load_augmented_binary_urm_df()
 
         # urm times alpha
-        urm['Data'] = 0.825 * urm['Data']
+        urm['Data'] = mult_param_urm * urm['Data']
         # f times (1-aplha)
-        f['Data'] = 0.175 * f['Data']
+        f['Data'] = mult_param_icm * f['Data']
         # Change UserIDs of f matrix in order to make recommender work
         f['UserID'] = 41634 + f['UserID']
 
@@ -347,7 +347,7 @@ class DataReader(object):
             [urm, f], ignore_index=True).sort_values(['UserID', 'ItemID'])
         return powerful_urm
 
-    def load_powerful_binary_urm(self):
+    def load_powerful_binary_urm(self,mult_param_urm=0.825,mult_param_icm=0.175):
         """
         Load urm by stacking augmented urm and transposed icm.
         This is a smart technique to implement SLIM with side information (or S-SLIM).
@@ -356,7 +356,7 @@ class DataReader(object):
         Returns:
             csr: urm as csr object
         """
-        powerful_urm = self.load_powerful_binary_urm_df()
+        powerful_urm = self.load_powerful_binary_urm_df(mult_param_urm=mult_param_urm,mult_param_icm=mult_param_icm)
         return self.dataframe_to_csr(powerful_urm,'UserID','ItemID','Data')
 
 
@@ -447,6 +447,25 @@ class DataReader(object):
         return presentations_per_user
 
 
+    def stackMatrixes(self, URM_train):
+        # Vertical stack so ItemIDs cardinality must coincide.
+       
+        urm=self.csr_to_dataframe(URM_train)
+        f=self.load_icm_df()
+        swap_list = ["feature_id", "item_id", "data"]
+        f = f.reindex(columns=swap_list)
+        f = f.rename({'feature_id': 'UserID', 'item_id': 'ItemID', 'data': 'Data'}, axis=1)
+
+        urm['Data'] = 0.825 * urm['Data']
+        # f times (1-aplha)
+        f['Data'] = 0.175 * f['Data']
+        # Change UserIDs of f matrix in order to make recommender work
+        f['UserID'] = 41634 + f['UserID']
+
+        powerful_urm = pd.concat([urm, f], ignore_index=True).sort_values(['UserID', 'ItemID'])
+        return self.dataframe_to_csr(powerful_urm,'UserID', 'ItemID','Data')
+
+    
     def print_statistics(self):
         """ Print statistics about dataset """
         target = self.load_target()

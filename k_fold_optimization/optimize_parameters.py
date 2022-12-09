@@ -11,6 +11,9 @@ import sys
 sys.path.append("..")
 from hybrid import HybridRecommender_2
 
+sys.path.append("..")
+from Data_Handler.DataReader import DataReader
+
 output_root_path = "./optimization_data/"
 
 # If directory does not exist, create
@@ -84,8 +87,9 @@ def optimize_parameters(URMrecommender_class: type, n_calls=100, k=5, validation
     
     if URMrecommender_class == HybridRecommender_2:
         recommenders = []
-        for i, URM_train_csr in enumerate(URM_trains):
-            recommenders.append(URMrecommender_class(URM_train_csr, i))
+        ICM= DataReader().load_icm()
+        for URM_train_csr in URM_trains:
+            recommenders.append(URMrecommender_class(URM_train_csr,ICM))
 
         @use_named_args(space)
         def objective(**params):
@@ -96,7 +100,11 @@ def optimize_parameters(URMrecommender_class: type, n_calls=100, k=5, validation
                 scores.append(-MAP)
                 print("MAP: {}".format(MAP))
                 print("Params: {}".format(params))
-            print("Just Evaluated this: {}".format(params))
+
+            print(">>> Just Evaluated this: {}".format(params))
+            print(">>> MAP: {}, diff (= max_map - min_map): {}".format(sum(scores) / len(scores), max(scores) - min(scores)))
+            print("\n")
+            
             return sum(scores) / len(scores)
     
     else:
