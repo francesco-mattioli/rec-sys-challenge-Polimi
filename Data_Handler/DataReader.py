@@ -351,7 +351,7 @@ class DataReader(object):
         """
         Load urm by stacking augmented urm and transposed icm.
         This is a smart technique to implement SLIM with side information (or S-SLIM).
-
+    
 
         Returns:
             csr: urm as csr object
