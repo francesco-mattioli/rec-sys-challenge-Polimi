@@ -8,6 +8,7 @@ from Recommenders.SLIM.SLIMElasticNetRecommender import SLIMElasticNetRecommende
 from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
 from Recommenders.GraphBased.RP3betaRecommender import RP3betaRecommender
 from Recommenders.GraphBased.P3alphaRecommender import P3alphaRecommender
+from Recommenders.MatrixFactorization.IALSRecommender import IALSRecommender
 from Recommenders.FactorizationMachines.LightFMRecommender import LightFMItemHybridRecommender
 from Evaluation.Evaluator import EvaluatorHoldout
 from Recommenders.DataIO import DataIO
@@ -21,7 +22,7 @@ dataReader = DataReader()
 #urm = dataReader.load_binary_urm()
 urm = dataReader.load_augmented_binary_urm()
 #urm = dataReader.load_powerful_binary_urm()
-urm, icm = dataReader.paddingICMandURM(urm)
+#urm, icm = dataReader.paddingICMandURM(urm)
 target = dataReader.load_target()
 # dataReader.print_statistics(target)
 
@@ -32,7 +33,7 @@ URM_train, URM_validation = split_train_in_two_percentage_global_sample(urm, tra
 evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 #evaluator_test = EvaluatorHoldout(URM_test, [10])
 
-recommender_class = LightFMItemHybridRecommender
+recommender_class = IALSRecommender
 
 output_folder_path = "result_experiments/"
 
@@ -40,18 +41,21 @@ output_folder_path = "result_experiments/"
 if not os.path.exists(output_folder_path):
     os.makedirs(output_folder_path)
     
-n_cases = 500
+n_cases = 150
 n_random_starts = int(n_cases*0.3)
 metric_to_optimize = "MAP"   
 cutoff_to_optimize = 10
 
-earlystopping_keywargs = {"validation_every_n": 5,
+earlystopping_keywargs = {"validation_every_n": 15,
                               "stop_on_validation": True,
                               "evaluator_object": evaluator_validation,
                               "lower_validations_allowed": 5,
                               "validation_metric": metric_to_optimize,
                               }
 
+
+# lightFM
+'''
 hyperparameters_range_dictionary = {
                     "epochs": Categorical([300]),
                     "n_components": Integer(1, 200),
@@ -61,9 +65,31 @@ hyperparameters_range_dictionary = {
                     "item_alpha": Real(low = 1e-5, high = 1e-2, prior = 'log-uniform'),
                     "user_alpha": Real(low = 1e-5, high = 1e-2, prior = 'log-uniform'),
                 }
+'''
+
+
+#p3alpha
+'''
+hyperparameters_range_dictionary = {
+                "topK": Integer(150, 700),
+                "alpha": Real(low = 0, high = 1.9, prior = 'uniform'),
+                "normalize_similarity": Categorical([True, False]),
+            }
+'''
+
+
+#IALS
+hyperparameters_range_dictionary = {
+                "num_factors": Integer(1, 200),
+                "epochs": Categorical([300]),
+                "confidence_scaling": Categorical(["linear", "log"]),
+                "alpha": Real(low = 1e-2, high = 1.0, prior = 'log-uniform'),
+                "epsilon": Real(low = 1e-1, high = 10.0, prior = 'log-uniform'),
+                "reg": Real(low = 1e-5, high = 1e-3, prior = 'log-uniform'),
+            }
 
 recommender_input_args = SearchInputRecommenderArgs(
-    CONSTRUCTOR_POSITIONAL_ARGS = [URM_train, icm],
+    CONSTRUCTOR_POSITIONAL_ARGS = [URM_train],
     CONSTRUCTOR_KEYWORD_ARGS = {},
     FIT_POSITIONAL_ARGS = [],
     FIT_KEYWORD_ARGS = {},
@@ -98,3 +124,5 @@ hyperparameterSearch.search(recommender_input_args,
                        metric_to_optimize = metric_to_optimize,
                        cutoff_to_optimize = cutoff_to_optimize,
                       )
+
+
