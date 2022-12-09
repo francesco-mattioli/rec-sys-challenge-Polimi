@@ -495,3 +495,33 @@ class DataReader(object):
             len(np.setdiff1d(urm['UserID'].unique(), watchers_urm['UserID'].unique()))))
 
 
+
+
+    def paddingICMandURM(self, URM_train):
+
+        """
+        Scrivo in italiano per farti capire bene quando lo leggi
+        ho preso la differenza tra URM e ICM in modo da avere gli item che mancano all'interno della ICM,
+        tramite un for li ho aggiunti al termine del dataframe della ICM assegnando la feature 1 e valore 0 -> ho fatto questo perche se mettevo feature 0, mi avrebbe aggiunto una feature in più e diventavano 6 anzichè 5 DA VEDERE
+        per la urm ho fatto lo stesso
+        alla fine sia per urm che per icm le ho riordinate e convertite in csr -> hanno tute e due stesso numero di items 27968
+        Args:
+            target (int): UserIDs on which count ItemIDs presentations occurences
+            items (numpy.array): ItemIDs on which count presentations occurences
+        Returns:
+            dict: dictionary of dictionaries, for instance { user0:{item0:2, item1:23}, user1:{item2:11, item4:3} }
+        """
+        urm=self.csr_to_dataframe(URM_train)
+        icm=self.load_icm_df()
+        DiffURM_ICM = np.setdiff1d(urm['ItemID'].unique(), icm['item_id'].unique())
+        DiffICM_URM = np.setdiff1d(icm['item_id'].unique(), urm['ItemID'].unique())
+        print(DiffURM_ICM.size)
+        for id in DiffURM_ICM:
+            icm.loc[len(icm.index)] = [id, 1, 0]
+        sorted_icm = icm.sort_values('item_id').reset_index(drop= True)
+        for id in DiffICM_URM:
+            urm.loc[len(urm.index)] = [1, id, 0]
+        sorted_urm = urm.sort_values('UserID').reset_index(drop= True)
+        URM = self.dataframe_to_csr(sorted_urm, 'UserID', 'ItemID', 'Data')
+        ICM = self.dataframe_to_csr(sorted_icm, 'item_id', 'feature_id', 'data')
+        return URM, ICM

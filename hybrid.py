@@ -195,5 +195,58 @@ class HybridRecommender_3(BaseRecommender):
         return item_weights
 
 
+class HybridLightFM(BaseRecommender):
+    RECOMMENDER_NAME = "HybridLightFM"
+    def __init__(self, URM_train: sp.csr_matrix, ICM, dataReader):
+        self.URM_train, self.ICM = dataReader.paddingICMandURM(dataReader, URM_train)
+        self.URM_train_pow = self.stackMatrixes(dataReader, URM_train)
+        super(HybridRecommender_3, self).__init__(URM_train)
 
+    def fit(self):
+        LightFM = LightFMItemHybridRecommender(self.URM_train, self.ICM)
+        LightFM.fit(epochs=50)
+    
+    def _compute_item_score(self, user_id_array, items_to_compute=None):
+        
+        item_weights = np.empty([len(user_id_array), 27968])
+        for i in tqdm(range(len(user_id_array))):
+            w = self.LightFM._compute_item_score(user_id_array[i], items_to_compute) 
+            item_weights[i,:] = w 
+        
+        return item_weights
+
+
+    def stackMatrixes(self, dataReader, URM_train):
+        # Vertical stack so ItemIDs cardinality must coincide.
+       
+        urm=dataReader.csr_to_dataframe(URM_train)
+        f=dataReader.load_icm_df()
+        swap_list = ["feature_id", "item_id", "data"]
+        f = f.reindex(columns=swap_list)
+        f = f.rename({'feature_id': 'UserID', 'item_id': 'ItemID', 'data': 'Data'}, axis=1)
+
+        urm['Data'] = 0.825 * urm['Data']
+        # f times (1-aplha)
+        f['Data'] = 0.175 * f['Data']
+        # Change UserIDs of f matrix in order to make recommender work
+        f['UserID'] = 41634 + f['UserID']
+
+        powerful_urm = pd.concat([urm, f], ignore_index=True).sort_values(['UserID', 'ItemID'])
+        return dataReader.dataframe_to_csr(powerful_urm,'UserID', 'ItemID','Data')
+
+'''
+def paddingICMandURM(self, dataReader, URM_train):
+        urm=dataReader.csr_to_dataframe(URM_train)
+        icm=dataReader.load_icm_df()
+        DiffURM_ICM = np.setdiff1d(urm['ItemID'].unique(), icm['item_id'].unique())
+        DiffICM_URM = np.setdiff1d(icm['item_id'].unique(), urm['ItemID'].unique())
+        print(DiffURM_ICM.size)
+        for id in DiffURM_ICM:
+            icm.loc[len(icm.index)] = [id, 1, 0]
+        sorted_icm = icm.sort_values('item_id').reset_index(drop= True)
+        for id in DiffICM_URM:
+            urm.loc[len(urm.index)] = [1, id, 0]
+        sorted_urm = urm.sort_values('UserID').reset_index(drop= True)
+        return sorted_urm, sorted_icm
+'''
     
