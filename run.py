@@ -9,7 +9,7 @@ import numpy as np
 # Read & split data
 dataReader = DataReader()
 URM = dataReader.load_augmented_binary_urm()
-#urm = dataReader.load_powerful_binary_urm()
+#URM = dataReader.load_powerful_binary_urm()
 ICM= dataReader.load_icm()
 
 '''
@@ -26,11 +26,11 @@ dataReader.save_impressions()
 
 #URM_train, URM_test = split_train_in_two_percentage_global_sample(urm, train_percentage = 0.90)
 #URM_train, URM_validation = split_train_in_two_percentage_global_sample(URM_train, train_percentage = 0.90)
-URM_train, URM_validation = split_train_in_two_percentage_global_sample(URM, train_percentage = 1)
+URM_train, URM_validation = split_train_in_two_percentage_global_sample(URM, train_percentage = 0.9)
 
 # Instantiate and fit hybrid recommender
 #recommender = HybridRecommender_3(URM_train,ICM)
-recommender = HybridRecommender(URM_train)
+recommender = HybridRecommender_4(URM_train)
 recommender.fit()
 
 # Create CSV for submission
