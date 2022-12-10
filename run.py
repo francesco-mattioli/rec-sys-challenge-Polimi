@@ -22,6 +22,7 @@ target = dataReader.load_target()
 # Instantiate Impressions object to update ranking at the end of recommendations
 item_ids = dataReader.get_unique_items_based_on_urm(dataReader.load_augmented_binary_urm_df())
 impressions = Impressions(target,item_ids)
+dataReader.save_impressions()
 
 #URM_train, URM_test = split_train_in_two_percentage_global_sample(urm, train_percentage = 0.90)
 #URM_train, URM_validation = split_train_in_two_percentage_global_sample(URM_train, train_percentage = 0.90)
@@ -38,7 +39,7 @@ f.write("user_id,item_list\n")
 recommended_items_for_each_user = {}
 for user_id in tqdm(target):
     recommended_items = recommender.recommend(user_id, cutoff=10, remove_seen_flag=True)
-    recommended_items=impressions.update_ranking(user_id,recommended_items)
+    recommended_items=impressions.update_ranking(user_id,recommended_items,dataReader)
     recommended_items_for_each_user[int(user_id)]=recommended_items
     well_formatted = " ".join([str(x) for x in recommended_items])
     f.write(f"{user_id}, {well_formatted}\n")
