@@ -9,7 +9,7 @@ import numpy as np
 # Read & split data
 dataReader = DataReader()
 URM = dataReader.load_augmented_binary_urm()
-#urm = dataReader.load_powerful_binary_urm()
+#URM = dataReader.load_powerful_binary_urm()
 ICM= dataReader.load_icm()
 
 '''

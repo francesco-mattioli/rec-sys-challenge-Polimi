@@ -50,8 +50,8 @@ class HybridRecommender(BaseRecommender):
 
     def _compute_item_score(self, user_id_array, items_to_compute=None):
 
-        num_items = 24507
-        # num_items = 27968
+        #num_items = 24507
+        num_items = 27968
         # num_items=19630
         # num_items = len(self.items) # num_items changes based on used urm
         item_weights = np.empty([len(user_id_array), num_items])
