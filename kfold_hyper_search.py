@@ -49,6 +49,7 @@ if __name__ == '__main__':
     )
     '''
 
+    '''
     rec_class = RP3betaRecommender
     optimize_parameters(
         URMrecommender_class=rec_class,
@@ -58,6 +59,7 @@ if __name__ == '__main__':
         limit_at=limit_at,
         forest=True,
     ) 
+    '''
 
     '''
     n_random_starts=1
@@ -85,3 +87,18 @@ if __name__ == '__main__':
         forest=True
     )
     '''
+
+
+    n_random_starts=1
+
+    rec_class = HybridRecommender_4
+    optimize_parameters(
+        URMrecommender_class=rec_class,
+        validation_percentage=val_percentage,
+        n_random_starts=n_random_starts,
+        k=k,
+        n_calls=n_calls,
+        limit_at=limit_at,
+        forest=True,
+        xi=0.001
+    )

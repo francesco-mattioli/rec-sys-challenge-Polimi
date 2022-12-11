@@ -1,3 +1,4 @@
+from hybrid import *
 from Data_Handler.DataReader import DataReader
 from Data_manager.split_functions.split_train_validation_random_holdout import split_train_in_two_percentage_global_sample
 from tqdm import tqdm
@@ -19,8 +20,8 @@ import os
 dataReader = DataReader()
 #urm = dataReader.load_urm()
 #urm = dataReader.load_binary_urm()
-#urm = dataReader.load_augmented_binary_urm()
-urm = dataReader.load_powerful_binary_urm(mult_param_urm=1,mult_param_icm=1)
+urm = dataReader.load_augmented_binary_urm()
+#urm = dataReader.load_powerful_binary_urm(mult_param_urm=1,mult_param_icm=1)
 target = dataReader.load_target()
 # dataReader.print_statistics(target)
 
@@ -32,7 +33,7 @@ URM_train, URM_validation = split_train_in_two_percentage_global_sample(urm, tra
 evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 #evaluator_test = EvaluatorHoldout(URM_test, [10])
 
-recommender_class = RP3betaRecommender
+recommender_class = HybridRecommender_4
 
 output_folder_path = "result_experiments/"
 
@@ -46,10 +47,14 @@ metric_to_optimize = "MAP"
 cutoff_to_optimize = 10
 
 hyperparameters_range_dictionary = {
-    "alpha": Real(0.1, 0.5, prior='uniform'),
-    "beta": Real(0.4, 1, prior='uniform'),
-    "topK": Integer(600, 1500),
-    "normalize_similarity": Categorical([True,False]),
+    "UserKNNCF_tier1_weight": Real(0,1,prior='uniform'),
+    "RP3beta_aug_tier1_weight": Real(0,1,prior='uniform'),
+    
+    "UserKNNCF_tier2_weight":Real(0,1,prior='uniform'),
+    "RP3beta_aug_tier2_weight": Real(0,1,prior='uniform'),
+
+    "RP3beta_aug_tier3_weight":Real(0,1,prior='uniform'),
+    "S_SLIM_tier3_weight": Real(0,1,prior='uniform'),
 }
 
 

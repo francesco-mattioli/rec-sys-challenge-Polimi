@@ -1,10 +1,11 @@
-from skopt.space import Real, Integer, Categorical
-
 from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
 from Recommenders.KNN.UserKNNCFRecommender import UserKNNCFRecommender
 from Recommenders.SLIM.SLIMElasticNetRecommender import * 
 from Recommenders.SLIM.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 from Recommenders.GraphBased.RP3betaRecommender import *
+
+from skopt.space import Real, Integer, Categorical
+
 
 import sys
 sys.path.append("..")
@@ -53,8 +54,8 @@ spaces[SLIM_BPR_Cython] = [
 # alpha=0.9188152746499686, beta=0.3150796458750398, min_rating=0, topK=61, implicit=False, normalize_similarity=True):
 names[RP3betaRecommender] = "RP3betaRecommender"
 spaces[RP3betaRecommender] = [
-    Real(0, 0.5, name='alpha'),
-    Real(0, 1, name='beta'),
+    Categorical([0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.08,0.008,0.0008,0.1,0.01,0.001,0.0001,0.00001], name="alpha"),
+    Categorical([0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.08,0.008,0.0008,0.1,0.01,0.001,0.0001,0.00001], name='beta'),
     Integer(400, 1200, name="topK"),
     Categorical([True], name="normalize_similarity"),
 ]
@@ -68,3 +69,14 @@ spaces[HybridRecommender_2] = [
 ]
 
 
+names[HybridRecommender_4] = "HybridRecommender_4"
+spaces[HybridRecommender_4] = [
+    Real(0,1,name="UserKNNCF_tier1_weight"),
+    Real(0,1,name="RP3beta_aug_tier1_weight"),
+    
+    Real(0,1,name="UserKNNCF_tier2_weight"),
+    Real(0,1,name="RP3beta_aug_tier2_weight"),
+
+    Real(0,1,name="RP3beta_pow_tier3_weight"),
+    Real(0,1,name="S_SLIM_tier3_weight"),
+]

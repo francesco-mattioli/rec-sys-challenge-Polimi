@@ -446,6 +446,42 @@ class DataReader(object):
             presentations_per_user[user]=presentations
         return presentations_per_user
 
+    def save_impressions(self):
+        df = pd.read_csv(filepath_or_buffer=os.getenv('INTERACTIONS_AND_IMPRESSIONS_PATH'),
+                         sep=',',
+                         names=[
+            'UserID', 'ItemID', 'Impressions', 'Data'],
+            header=0,
+            dtype={'UserID': np.int32, 'ItemID': np.int32, 'Impressions': np.object0, 'Data': np.int32})
+        df = df.drop(['ItemID'], axis=1)
+        df = df.drop(['Data'], axis=1)
+        df = df.dropna()
+        # add a comma at the end of each impression string in order to concat properly then
+        df['Impressions'] = df['Impressions'].apply(lambda x: str(x)+',')
+        df = df.groupby(['UserID'], as_index=False)
+        # to concat impressions of each user
+        impressions_per_user = df['Impressions'].apply(sum)
+        self.impressions_per_user = impressions_per_user
+
+    def get_impressions_count_given_user(self, items,user):
+
+        #------ separeted, it was a for
+        impressions = self.impressions_per_user[self.impressions_per_user['UserID'] == user]['Impressions']
+
+        if(impressions.empty == False):
+            impressions = impressions.iloc[0].split(",")
+            # remove last element which is a '' due to last ','
+            impressions = np.delete(impressions, -1)
+
+            counts = Counter(impressions)
+            presentations = {}
+            for item in items:
+                presentations[int(item)] = counts[str(item)]
+            return presentations
+        else:
+            return {}
+
+
 
     def stackMatrixes(self, URM_train):
         # Vertical stack so ItemIDs cardinality must coincide.
