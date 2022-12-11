@@ -545,7 +545,7 @@ class DataReader(object):
             URM (csr): URM filled with missing items present in ICM but not in URM
             ICM (csr): ICM filled with missing items present in URM but not in ICM
         """
-        urm=self.csr_to_dataframe(URM_train)
+        urm=self.csr_to_dataframe(URM)
         icm=self.load_icm_df()
 
         DiffURM_ICM = np.setdiff1d(urm['ItemID'].unique(), icm['item_id'].unique())
