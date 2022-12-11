@@ -533,7 +533,7 @@ class DataReader(object):
 
 
 
-    def paddingICMandURM(self, URM_train):
+    def pad_with_zeros_ICMandURM(self, URM_train):
 
         """
         Scrivo in italiano per farti capire bene quando lo leggi
@@ -541,11 +541,6 @@ class DataReader(object):
         tramite un for li ho aggiunti al termine del dataframe della ICM assegnando la feature 1 e valore 0 -> ho fatto questo perche se mettevo feature 0, mi avrebbe aggiunto una feature in più e diventavano 6 anzichè 5 DA VEDERE
         per la urm ho fatto lo stesso
         alla fine sia per urm che per icm le ho riordinate e convertite in csr -> hanno tute e due stesso numero di items 27968
-        Args:
-            target (int): UserIDs on which count ItemIDs presentations occurences
-            items (numpy.array): ItemIDs on which count presentations occurences
-        Returns:
-            dict: dictionary of dictionaries, for instance { user0:{item0:2, item1:23}, user1:{item2:11, item4:3} }
         """
         urm=self.csr_to_dataframe(URM_train)
         icm=self.load_icm_df()

@@ -20,15 +20,22 @@ import os
 dataReader = DataReader()
 #urm = dataReader.load_urm()
 #urm = dataReader.load_binary_urm()
-urm = dataReader.load_augmented_binary_urm()
+URM = dataReader.load_augmented_binary_urm()
 #urm = dataReader.load_powerful_binary_urm(mult_param_urm=1,mult_param_icm=1)
 target = dataReader.load_target()
 # dataReader.print_statistics(target)
 
 #URM_train_v0, URM_test = split_train_in_two_percentage_global_sample(urm, train_percentage=0.90)
 #URM_train, URM_validation = split_train_in_two_percentage_global_sample(URM_train_v0, train_percentage=0.90)
-URM_train, URM_validation = split_train_in_two_percentage_global_sample(urm, train_percentage=0.9)
+URM_train, URM_validation = split_train_in_two_percentage_global_sample(URM, train_percentage=0.9)
 
+URM_validation_aug = dataReader.pad_with_zeros_ICMandURM(URM_validation)
+URM_train_aug,icm = dataReader.pad_with_zeros_ICMandURM(URM_train)
+URM_train_pow = dataReader.stackMatrixes(URM_train)
+
+# Instantiate and fit hybrid recommender
+#recommender = HybridRecommender_3(URM_train,ICM)
+#recommender = HybridRecommender_4(URM_train_aug,URM_train_pow)
 
 evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 #evaluator_test = EvaluatorHoldout(URM_test, [10])
@@ -41,22 +48,29 @@ output_folder_path = "result_experiments/"
 if not os.path.exists(output_folder_path):
     os.makedirs(output_folder_path)
 
-n_cases = 500
+n_cases = 2000
 n_random_starts = int(n_cases*0.3)
 metric_to_optimize = "MAP"
 cutoff_to_optimize = 10
 
 hyperparameters_range_dictionary = {
     "UserKNNCF_tier1_weight": Real(0,1,prior='uniform'),
-    "RP3beta_aug_tier1_weight": Real(0,1,prior='uniform'),
+    "RP3beta_pow_tier1_weight": Real(0,1,prior='uniform'),
     
     "UserKNNCF_tier2_weight":Real(0,1,prior='uniform'),
-    "RP3beta_aug_tier2_weight": Real(0,1,prior='uniform'),
+    "RP3beta_pow_tier2_weight": Real(0,1,prior='uniform'),
 
-    "RP3beta_aug_tier3_weight":Real(0,1,prior='uniform'),
+    "RP3beta_pow_tier3_weight":Real(0,1,prior='uniform'),
     "S_SLIM_tier3_weight": Real(0,1,prior='uniform'),
 }
 
+'''
+hyperparameters_range_dictionary = {
+    "alpha": Real(0,1,prior='uniform'),
+    "beta": Real(0,1,prior='uniform'),
+    "topK": Integer(400,2000,prior='uniform'),
+}
+'''
 
 # create a bayesian optimizer object, we pass the recommender and the evaluator
 hyperparameterSearch = SearchBayesianSkopt(recommender_class,
@@ -65,7 +79,7 @@ hyperparameterSearch = SearchBayesianSkopt(recommender_class,
 # provide data needed to create instance of model (one on URM_train, the other on URM_all)
 recommender_input_args = SearchInputRecommenderArgs(
     # For a CBF model simply put [URM_train, ICM_train]
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,URM_train_pow],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
@@ -73,7 +87,7 @@ recommender_input_args = SearchInputRecommenderArgs(
 )
 
 recommender_input_args_last_test = SearchInputRecommenderArgs(
-    CONSTRUCTOR_POSITIONAL_ARGS=[urm],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_validation_aug,URM_train_pow],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
