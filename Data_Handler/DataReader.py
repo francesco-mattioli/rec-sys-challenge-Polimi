@@ -544,14 +544,19 @@ class DataReader(object):
         """
         urm=self.csr_to_dataframe(URM_train)
         icm=self.load_icm_df()
+
         DiffURM_ICM = np.setdiff1d(urm['ItemID'].unique(), icm['item_id'].unique())
         DiffICM_URM = np.setdiff1d(icm['item_id'].unique(), urm['ItemID'].unique())
+
         print(DiffURM_ICM.size)
+
         for id in DiffURM_ICM:
             icm.loc[len(icm.index)] = [id, 1, 0]
         sorted_icm = icm.sort_values('item_id').reset_index(drop= True)
+
         for id in DiffICM_URM:
             urm.loc[len(urm.index)] = [1, id, 0]
+    
         sorted_urm = urm.sort_values('UserID').reset_index(drop= True)
         URM = self.dataframe_to_csr(sorted_urm, 'UserID', 'ItemID', 'Data')
         ICM = self.dataframe_to_csr(sorted_icm, 'item_id', 'feature_id', 'data')

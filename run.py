@@ -8,7 +8,7 @@ import pandas as pd
 import numpy as np
 # Read & split data
 dataReader = DataReader()
-URM = dataReader.load_augmented_binary_urm()
+#URM = dataReader.load_augmented_binary_urm()
 #URM = dataReader.load_powerful_binary_urm()
 #ICM= dataReader.load_icm()
 
@@ -21,10 +21,16 @@ target = dataReader.load_target()
 
 #URM_train, URM_test = split_train_in_two_percentage_global_sample(urm, train_percentage = 0.90)
 #URM_train, URM_validation = split_train_in_two_percentage_global_sample(URM_train, train_percentage = 0.90)
-URM_train, URM_validation = split_train_in_two_percentage_global_sample(URM, train_percentage = 0.9)
+#URM_train, URM_validation = split_train_in_two_percentage_global_sample(URM, train_percentage = 0.9)
 
-URM_train_aug,icm = dataReader.pad_with_zeros_ICMandURM(URM_train)
-URM_train_pow = dataReader.stackMatrixes(URM_train)
+#URM_train_aug,icm = dataReader.pad_with_zeros_ICMandURM(URM_train)
+#URM_train_pow = dataReader.stackMatrixes(URM_train)
+
+URM = dataReader.load_augmented_binary_urm()
+URM_aug,icm = dataReader.pad_with_zeros_ICMandURM(URM)
+
+URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample(URM_aug, train_percentage = 0.9)
+URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
 
 # Instantiate and fit hybrid recommender
 #recommender = HybridRecommender_3(URM_train,ICM)

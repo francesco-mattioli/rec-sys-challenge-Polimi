@@ -18,27 +18,18 @@ from skopt.space import Real, Integer, Categorical
 import os
 # Read & split data
 dataReader = DataReader()
-#urm = dataReader.load_urm()
-#urm = dataReader.load_binary_urm()
-URM = dataReader.load_augmented_binary_urm()
-#urm = dataReader.load_powerful_binary_urm(mult_param_urm=1,mult_param_icm=1)
+
 target = dataReader.load_target()
-# dataReader.print_statistics(target)
 
-#URM_train_v0, URM_test = split_train_in_two_percentage_global_sample(urm, train_percentage=0.90)
-#URM_train, URM_validation = split_train_in_two_percentage_global_sample(URM_train_v0, train_percentage=0.90)
-URM_train, URM_validation = split_train_in_two_percentage_global_sample(URM, train_percentage=0.9)
+URM = dataReader.load_augmented_binary_urm()
+URM_aug,icm = dataReader.pad_with_zeros_ICMandURM(URM)
 
-URM_validation_aug = dataReader.pad_with_zeros_ICMandURM(URM_validation)
-URM_train_aug,icm = dataReader.pad_with_zeros_ICMandURM(URM_train)
-URM_train_pow = dataReader.stackMatrixes(URM_train)
+URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample(URM_aug, train_percentage = 0.9)
+URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
 
-# Instantiate and fit hybrid recommender
-#recommender = HybridRecommender_3(URM_train,ICM)
-#recommender = HybridRecommender_4(URM_train_aug,URM_train_pow)
 
 evaluator_validation = EvaluatorHoldout(URM_validation, [10])
-#evaluator_test = EvaluatorHoldout(URM_test, [10])
+
 
 recommender_class = HybridRecommender_4
 
