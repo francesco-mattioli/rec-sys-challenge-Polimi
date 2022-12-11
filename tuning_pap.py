@@ -45,14 +45,14 @@ metric_to_optimize = "MAP"
 cutoff_to_optimize = 10
 
 hyperparameters_range_dictionary = {
-    "UserKNNCF_tier1_weight": Real(0,1,prior='uniform'),
-    "RP3beta_pow_tier1_weight": Real(0,1,prior='uniform'),
+    "UserKNNCF_tier1_weight": Categorical([0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]),
+    "RP3beta_pow_tier1_weight": Categorical([0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]),
     
-    "UserKNNCF_tier2_weight":Real(0,1,prior='uniform'),
-    "RP3beta_pow_tier2_weight": Real(0,1,prior='uniform'),
+    "UserKNNCF_tier2_weight": Categorical([0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]),
+    "RP3beta_pow_tier2_weight": Categorical([0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]),
 
-    "RP3beta_pow_tier3_weight":Real(0,1,prior='uniform'),
-    "S_SLIM_tier3_weight": Real(0,1,prior='uniform'),
+    "RP3beta_pow_tier3_weight": Categorical([0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]),
+    "S_SLIM_tier3_weight": Categorical([0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]),
 }
 
 '''
