@@ -46,7 +46,7 @@ n_random_starts = int(n_cases*0.3)
 metric_to_optimize = "MAP"   
 cutoff_to_optimize = 10
 
-earlystopping_keywargs = {"validation_every_n": 15,
+earlystopping_keywargs = {"validation_every_n": 8,
                               "stop_on_validation": True,
                               "evaluator_object": evaluator_validation,
                               "lower_validations_allowed": 5,
@@ -81,11 +81,11 @@ hyperparameters_range_dictionary = {
 #IALS
 hyperparameters_range_dictionary = {
                 "num_factors": Integer(1, 200),
-                "epochs": Categorical([300]),
+                "epochs": Categorical([100]),
                 "confidence_scaling": Categorical(["linear", "log"]),
-                "alpha": Real(low = 1e-2, high = 1.0, prior = 'log-uniform'),
-                "epsilon": Real(low = 1e-1, high = 10.0, prior = 'log-uniform'),
-                "reg": Real(low = 1e-5, high = 1e-3, prior = 'log-uniform'),
+                "alpha": Real(low = 1e-2, high = 0.1, prior = 'log-uniform'),
+                "epsilon": Real(low = 1e-1, high = 1.0, prior = 'log-uniform'),
+                "reg": Real(low = 1e-4, high = 1e-3, prior = 'log-uniform'),
             }
 
 recommender_input_args = SearchInputRecommenderArgs(

@@ -21,14 +21,14 @@ target = dataReader.load_target()
 
 #URM_train, URM_test = split_train_in_two_percentage_global_sample(urm, train_percentage = 0.90)
 #URM_train, URM_validation = split_train_in_two_percentage_global_sample(URM_train, train_percentage = 0.90)
-URM_train, URM_validation = split_train_in_two_percentage_global_sample(URM, train_percentage = 0.9)
+URM_train, URM_validation = split_train_in_two_percentage_global_sample(URM, train_percentage = 1.0)
 
 URM_train_aug,icm = dataReader.pad_with_zeros_ICMandURM(URM_train)
 URM_train_pow = dataReader.stackMatrixes(URM_train)
 
 # Instantiate and fit hybrid recommender
-#recommender = HybridRecommender_3(URM_train,ICM)
-recommender = HybridRecommender_4(URM_train_aug,URM_train_pow)
+recommender = HybridRecommender_4(URM_train_aug, URM_train_pow)
+#recommender = HybridRecommender(URM_train)
 recommender.fit()
 
 # Create CSV for submission

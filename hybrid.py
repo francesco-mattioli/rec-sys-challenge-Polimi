@@ -169,12 +169,12 @@ class HybridRecommender_3(BaseRecommender):
     def fit(self):
         self.S_SLIM = SLIMElasticNetRecommender(self.URM_train_pow)
         self.RP3beta = RP3betaRecommender(self.URM_train_aug)
-        #self.ItemKNNCF = ItemKNNCFRecommender(self.URM_train_aug)
-        self.S_SLIM.fit(l1_ratio=0.007467817120176792,
-                        alpha=0.0016779515713674044, positive_only=True, topK=723)
-        self.RP3beta.fit(alpha=0.2686781702308662,
-                         beta=0.39113126168484014, topK=455, normalize_similarity=True)
-        #self.ItemKNNCF.fit(topK=1199, shrink=229.22107382005083,similarity='cosine', normalize=True, feature_weighting="TF-IDF")
+        self.ItemKNNCF = ItemKNNCFRecommender(self.URM_train_aug)
+        self.UserKNN = UserKNNCFRecommender(self.URM_train_aug)
+        self.S_SLIM.fit(l1_ratio=0.007467817120176792,alpha=0.0016779515713674044, positive_only=True, topK=723)
+        self.RP3beta.fit(alpha=0.2686781702308662, beta=0.39113126168484014, topK=455, normalize_similarity=True)
+        self.ItemKNNCF.fit(topK=1199, shrink=229.22107382005083,similarity='cosine', normalize=True, feature_weighting="TF-IDF")
+        self.UserKNN.fit(topK = 1214, shrink = 938.0611833211633, normalize = True, feature_weighting = 'TF-IDF', similarity = 'cosine')
 
     def _compute_item_score(self, user_id_array, items_to_compute=None):
 
@@ -184,20 +184,18 @@ class HybridRecommender_3(BaseRecommender):
 
         for i in tqdm(range(len(user_id_array))):
 
-            interactions_aug = len(
-                self.URM_train_aug[user_id_array[i], :].indices)
-            '''
-            if interactions < 17:
-                w = self.ItemKNNCF._compute_item_score(user_id_array[i], items_to_compute) 
+            interactions_aug = len(self.URM_train_aug[user_id_array[i],:].indices)
+    
+            if interactions_aug < 15 or (interactions_aug >=18 and interactions_aug <= 19):
+                w = self.UserKNN._compute_item_score(user_id_array[i], items_to_compute) 
                 w=np.pad(w,((0,0),(0,num_items_pow-num_items_aug)))
                 item_weights[i,:] = w
-            '''
+            
 
-            if interactions_aug >= 15 and interactions_aug < 24:
-                w = self.RP3beta._compute_item_score(
-                    user_id_array[i], items_to_compute)
-                w = np.pad(w, ((0, 0), (0, num_items_pow-num_items_aug)))
-                item_weights[i, :] = w
+            elif interactions_aug >= 15 and interactions_aug < 18:
+                w = self.RP3beta._compute_item_score(user_id_array[i], items_to_compute) 
+                w=np.pad(w,((0,0),(0,num_items_pow-num_items_aug)))
+                item_weights[i,:] = w 
 
             else:
                 w = self.S_SLIM._compute_item_score(
