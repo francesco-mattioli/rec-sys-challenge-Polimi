@@ -533,14 +533,17 @@ class DataReader(object):
 
 
 
-    def pad_with_zeros_ICMandURM(self, URM_train):
-
+    def pad_with_zeros_ICMandURM(self, URM):
         """
-        Scrivo in italiano per farti capire bene quando lo leggi
-        ho preso la differenza tra URM e ICM in modo da avere gli item che mancano all'interno della ICM,
-        tramite un for li ho aggiunti al termine del dataframe della ICM assegnando la feature 1 e valore 0 -> ho fatto questo perche se mettevo feature 0, mi avrebbe aggiunto una feature in più e diventavano 6 anzichè 5 DA VEDERE
-        per la urm ho fatto lo stesso
-        alla fine sia per urm che per icm le ho riordinate e convertite in csr -> hanno tute e due stesso numero di items 27968
+        Add items present in ICM to URM and vice versa.
+        To do so, we calculate the difference between URM_train items and ICM items and add the missing items in each matrix respectively.
+
+        Args:
+            URM (csr): user rating matrix
+
+        Returns:
+            URM (csr): URM filled with missing items present in ICM but not in URM
+            ICM (csr): ICM filled with missing items present in URM but not in ICM
         """
         urm=self.csr_to_dataframe(URM_train)
         icm=self.load_icm_df()
