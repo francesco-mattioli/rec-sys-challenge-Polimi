@@ -32,11 +32,20 @@ URM_aug,icm = dataReader.pad_with_zeros_ICMandURM(URM)
 URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample(URM_aug, train_percentage = 0.9)
 URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
 
-# Instantiate and fit hybrid recommender
-recommender = HybridRecommender_4(URM_train_aug, URM_train_pow)
-#recommender = HybridRecommender(URM_train)
-recommender.fit()
 
+UserKNNCF = UserKNNCFRecommender(URM_train_aug)
+UserKNNCF.fit()
+
+RP3beta_pow = RP3betaRecommender(URM_train_pow)
+RP3beta_pow.fit(alpha=0.3648761546066018,beta=0.5058870363874656, topK=480, normalize_similarity=True)
+
+S_SLIM = SLIMElasticNetRecommender(URM_train_pow)
+S_SLIM.fit()
+
+# Instantiate and fit hybrid recommender
+recommender = HybridRecommender_4(URM_train_aug, URM_train_pow, UserKNNCF, RP3beta_pow, S_SLIM)
+#recommender = HybridRecommender(URM_train)
+recommender.fit(UserKNNCF_tier1_weight=0.4, RP3beta_pow_tier1_weight=0.6,UserKNNCF_tier2_weight=0.2, RP3beta_pow_tier2_weight=0.8, RP3beta_pow_tier3_weight=0.5, S_SLIM_tier3_weight=0.8)
 # Create CSV for submission
 f = open("submission.csv", "w+")
 f.write("user_id,item_list\n")

@@ -6,6 +6,7 @@ from evaluator import evaluate
 from HyperparameterTuning.run_hyperparameter_search import runHyperparameterSearch_Collaborative
 from Recommenders.SLIM.SLIMElasticNetRecommender import SLIMElasticNetRecommender
 from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
+from Recommenders.KNN.ItemKNN_CFCBF_Hybrid_Recommender import ItemKNN_CFCBF_Hybrid_Recommender
 from Recommenders.GraphBased.RP3betaRecommender import RP3betaRecommender
 from Recommenders.GraphBased.P3alphaRecommender import P3alphaRecommender
 from Recommenders.MatrixFactorization.IALSRecommender import IALSRecommender
@@ -20,20 +21,23 @@ import os
 dataReader = DataReader()
 #urm = dataReader.load_urm()
 #urm = dataReader.load_binary_urm()
-urm = dataReader.load_augmented_binary_urm()
+#urm = dataReader.load_augmented_binary_urm()
 #urm = dataReader.load_powerful_binary_urm()
 #urm, icm = dataReader.paddingICMandURM(urm)
 target = dataReader.load_target()
 # dataReader.print_statistics(target)
+URM = dataReader.load_augmented_binary_urm()
+URM_aug,icm = dataReader.pad_with_zeros_ICMandURM(URM)
 
+URM_train, URM_validation = split_train_in_two_percentage_global_sample(URM_aug, train_percentage = 0.9)
 #URM_train_v0, URM_test = split_train_in_two_percentage_global_sample(urm, train_percentage=0.90)
 #URM_train, URM_validation = split_train_in_two_percentage_global_sample(URM_train_v0, train_percentage=0.90)
-URM_train, URM_validation = split_train_in_two_percentage_global_sample(urm, train_percentage=0.9)
+#URM_train, URM_validation = split_train_in_two_percentage_global_sample(urm, train_percentage=0.9)
 #URM_train, icm = dataReader.paddingICMandURM(urm)
 evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 #evaluator_test = EvaluatorHoldout(URM_test, [10])
 
-recommender_class = IALSRecommender
+recommender_class = ItemKNN_CFCBF_Hybrid_Recommender
 
 output_folder_path = "result_experiments/"
 
@@ -79,6 +83,7 @@ hyperparameters_range_dictionary = {
 
 
 #IALS
+'''
 hyperparameters_range_dictionary = {
                 "num_factors": Integer(1, 200),
                 "epochs": Categorical([100]),
@@ -87,7 +92,14 @@ hyperparameters_range_dictionary = {
                 "epsilon": Real(low = 1e-1, high = 1.0, prior = 'log-uniform'),
                 "reg": Real(low = 1e-4, high = 1e-3, prior = 'log-uniform'),
             }
+'''
 
+#ItemKNN_CFCBF_Hybrid_Recommender
+hyperparameters_range_dictionary = {}
+hyperparameters_range_dictionary["ICM_weight"] = Real(low = 1e-2, high = 1e2, prior = 'log-uniform')
+
+
+'''
 recommender_input_args = SearchInputRecommenderArgs(
     CONSTRUCTOR_POSITIONAL_ARGS = [URM_train],
     CONSTRUCTOR_KEYWORD_ARGS = {},
@@ -95,6 +107,15 @@ recommender_input_args = SearchInputRecommenderArgs(
     FIT_KEYWORD_ARGS = {},
     EARLYSTOPPING_KEYWORD_ARGS = earlystopping_keywargs,
 )
+'''
+
+recommender_input_args = SearchInputRecommenderArgs(
+                CONSTRUCTOR_POSITIONAL_ARGS = [URM_train, icm],
+                CONSTRUCTOR_KEYWORD_ARGS = {},
+                FIT_POSITIONAL_ARGS = [],
+                FIT_KEYWORD_ARGS = {},
+                EARLYSTOPPING_KEYWORD_ARGS = {},
+            )
 
 
 
@@ -104,7 +125,7 @@ hyperparameterSearch = SearchBayesianSkopt(recommender_class,
 
 
 recommender_input_args_last_test = SearchInputRecommenderArgs(
-    CONSTRUCTOR_POSITIONAL_ARGS = [urm],
+    CONSTRUCTOR_POSITIONAL_ARGS = [URM],
     CONSTRUCTOR_KEYWORD_ARGS = {},
     FIT_POSITIONAL_ARGS = [],
     FIT_KEYWORD_ARGS = {},
@@ -113,6 +134,7 @@ recommender_input_args_last_test = SearchInputRecommenderArgs(
 
 
 #let's run the bayesian search
+'''
 hyperparameterSearch.search(recommender_input_args,
                        recommender_input_args_last_test = recommender_input_args_last_test,
                        hyperparameter_search_space = hyperparameters_range_dictionary,
@@ -124,5 +146,22 @@ hyperparameterSearch.search(recommender_input_args,
                        metric_to_optimize = metric_to_optimize,
                        cutoff_to_optimize = cutoff_to_optimize,
                       )
+'''
 
 
+run_KNNCFRecommender_on_similarity_type_partial = partial(run_KNNRecommender_on_similarity_type,
+                                                           hyperparameter_search_space = hyperparameters_range_dictionary,
+                                                           recommender_input_args = recommender_input_args,
+                                                           hyperparameterSearch = hyperparameterSearch,
+                                                           resume_from_saved = resume_from_saved,
+                                                           save_model = save_model,
+                                                           evaluate_on_test = evaluate_on_test,
+                                                           max_total_time = max_total_time,
+                                                           n_cases = n_cases,
+                                                           n_random_starts = n_random_starts,
+                                                           output_folder_path = output_folder_path,
+                                                           output_file_name_root = output_file_name_root,
+                                                           metric_to_optimize = metric_to_optimize,
+                                                           cutoff_to_optimize = cutoff_to_optimize,
+                                                           allow_weighting = allow_weighting,
+                                                           recommender_input_args_last_test = recommender_input_args_last_test)

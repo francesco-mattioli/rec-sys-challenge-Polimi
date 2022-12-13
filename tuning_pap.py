@@ -30,6 +30,14 @@ URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
 
 evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 
+UserKNNCF = UserKNNCFRecommender(URM_train_aug)
+UserKNNCF.fit()
+
+RP3beta_pow = RP3betaRecommender(URM_train_pow)
+RP3beta_pow.fit(alpha=0.3648761546066018,beta=0.5058870363874656, topK=480, normalize_similarity=True)
+
+S_SLIM = SLIMElasticNetRecommender(URM_train_pow)
+S_SLIM.fit()
 
 recommender_class = HybridRecommender_4
 
@@ -47,12 +55,17 @@ cutoff_to_optimize = 10
 hyperparameters_range_dictionary = {
     "UserKNNCF_tier1_weight": Categorical([0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]),
     "RP3beta_pow_tier1_weight": Categorical([0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]),
+    #"Hybrid4_tier1_weight": Categorical([0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]),
     
     "UserKNNCF_tier2_weight": Categorical([0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]),
     "RP3beta_pow_tier2_weight": Categorical([0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]),
+    #"Hybrid4_tier2_weight": Categorical([0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]),
+
 
     "RP3beta_pow_tier3_weight": Categorical([0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]),
-    "S_SLIM_tier3_weight": Categorical([0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]),
+    "S_SLIM_tier3_weight": Categorical([0.6,0.7,0.8,0.9,1]),
+    #"Hybrid4_tier3_weight": Categorical([0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]),
+
 }
 
 '''
@@ -70,7 +83,7 @@ hyperparameterSearch = SearchBayesianSkopt(recommender_class,
 # provide data needed to create instance of model (one on URM_train, the other on URM_all)
 recommender_input_args = SearchInputRecommenderArgs(
     # For a CBF model simply put [URM_train, ICM_train]
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,URM_train_pow],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,URM_train_pow, UserKNNCF, RP3beta_pow, S_SLIM],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
@@ -78,7 +91,7 @@ recommender_input_args = SearchInputRecommenderArgs(
 )
 
 recommender_input_args_last_test = SearchInputRecommenderArgs(
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_validation,URM_train_pow],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_validation,URM_train_pow, UserKNNCF, RP3beta_pow, S_SLIM],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
