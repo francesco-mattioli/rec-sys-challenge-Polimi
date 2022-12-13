@@ -564,3 +564,9 @@ class DataReader(object):
         URM = self.dataframe_to_csr(sorted_urm, 'UserID', 'ItemID', 'Data')
         ICM = self.dataframe_to_csr(sorted_icm, 'item_id', 'feature_id', 'data')
         return URM, ICM
+
+    def load_ucm_given_urm(self, urm):
+        urm=self.csr_to_dataframe(urm)
+        icm=self.load_icm_df()
+        #TODO: SEE JUP NOTEBOOK U CREATED
+        
