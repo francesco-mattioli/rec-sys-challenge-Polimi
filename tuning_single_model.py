@@ -47,14 +47,16 @@ metric_to_optimize = "MAP"
 cutoff_to_optimize = 10
 
 hyperparameters_range_dictionary = {
-    "topK": Integer(200,1000),
-    "l2_norm": Integer(50,1000),
+    "topK": Integer(500,1500),
+    "shrink": Real(100,400),
+    #"l2_norm": Integer(50,1000),
     #"l2_norm": Categorical([70,80,90,100,200,300,1000,1500,2000,3000,10000]),
     #"topK": Integer(10,2000,prior='uniform'),
     #"shrink": Real(100,3000,prior='uniform'),
     #"similarity": Categorical(["euclidean",'dice', 'jaccard', 'tversky','cosine']),
     #"feature_weighting": Categorical(['BM25',"TF-IDF", "none"]),
 }
+# topK=1199, shrink=229.22107382005083, similarity='cosine', normalize=True, feature_weighting = "TF-IDF",
 
 '''
 hyperparameters_range_dictionary = {
