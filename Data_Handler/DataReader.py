@@ -565,8 +565,29 @@ class DataReader(object):
         ICM = self.dataframe_to_csr(sorted_icm, 'item_id', 'feature_id', 'data')
         return URM, ICM
 
-    def load_ucm_given_urm(self, urm):
-        urm=self.csr_to_dataframe(urm)
-        icm=self.load_icm_df()
-        #TODO: SEE JUP NOTEBOOK U CREATED
-        
+    def load_aug_ucm(self):
+        """Load the UCM created using URM aug and ICM
+
+        Returns:
+            UCM (csr): users on rows and features on columns
+        """
+        data_aug_ucm = pd.read_csv(filepath_or_buffer=os.getenv('DATA_AUG_UCM'),
+                                    sep=',',
+                                    names=[
+            'UserID', 'FeatureID', 'Data'],
+            header=0,
+            dtype={'UserID': np.int32, 'FeatureID': np.int32, 'Data': np.int32})
+
+        features = data_aug_ucm['FeatureID'].unique()
+        users = data_aug_ucm['UserID'].unique()
+        shape = (len(users), len(features))
+
+        # Create indices for users and items
+        features_cat = CategoricalDtype(categories=sorted(features), ordered=True)
+        user_cat = CategoricalDtype(categories=sorted(users), ordered=True)
+        features_index = data_aug_ucm["FeatureID"].astype(features_cat).cat.codes
+        user_index = data_aug_ucm["UserID"].astype(user_cat).cat.codes
+        coo = sps.coo_matrix(
+            (data_aug_ucm["Data"], (user_index.values, features_index.values)), shape=shape)
+        csr = coo.tocsr()
+        return csr   
