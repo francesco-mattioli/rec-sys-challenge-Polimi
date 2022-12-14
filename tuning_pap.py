@@ -44,10 +44,10 @@ S_SLIM.fit()
 EASE_R = EASE_R_Recommender(URM_train_aug)
 EASE_R.fit()
 
-#Hybrid_4 = HybridRecommender_4(URM_train_aug,URM_train_pow, UserKNNCF, RP3beta_pow, S_SLIM)
-#Hybrid_4.fit(UserKNNCF_tier1_weight = 0.4, RP3beta_pow_tier1_weight = 0.6, UserKNNCF_tier2_weight = 0.2, RP3beta_pow_tier2_weight = 0.8, RP3beta_pow_tier3_weight = 0.5, S_SLIM_tier3_weight = 0.8)
+Hybrid_4 = HybridRecommender_4(URM_train_aug,URM_train_pow, UserKNNCF, RP3beta_pow, S_SLIM)
+Hybrid_4.fit(UserKNNCF_tier1_weight = 0.4, RP3beta_pow_tier1_weight = 0.6, UserKNNCF_tier2_weight = 0.2, RP3beta_pow_tier2_weight = 0.8, RP3beta_pow_tier3_weight = 0.5, S_SLIM_tier3_weight = 0.8)
 
-recommender_class = HybridRecommender_5
+recommender_class = HybridRecommender_6
 
 output_folder_path = "result_experiments/"
 
@@ -61,7 +61,7 @@ metric_to_optimize = "MAP"
 cutoff_to_optimize = 10
 
 
-
+'''
 hyperparameters_range_dictionary = {
     "UserKNNCF_tier1_weight": Real(0,1),
     "RP3beta_pow_tier1_weight": Real(0,1),
@@ -80,6 +80,12 @@ hyperparameters_range_dictionary = {
     "EASE_R_tier4_weight": Real(0,1),
 
 }
+'''
+
+hyperparameters_range_dictionary = {
+    "EASE_R_weight": Real(0,1),
+    "Hybrid_4_weight": Real(0,1),
+}
 
 # create a bayesian optimizer object, we pass the recommender and the evaluator
 hyperparameterSearch = SearchBayesianSkopt(recommender_class,
@@ -88,7 +94,7 @@ hyperparameterSearch = SearchBayesianSkopt(recommender_class,
 # provide data needed to create instance of model (one on URM_train, the other on URM_all)
 recommender_input_args = SearchInputRecommenderArgs(
     # For a CBF model simply put [URM_train, ICM_train]
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,URM_train_pow, UserKNNCF, RP3beta_pow, S_SLIM, EASE_R],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,URM_train_pow, EASE_R, Hybrid_4],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
@@ -96,7 +102,7 @@ recommender_input_args = SearchInputRecommenderArgs(
 )
 
 recommender_input_args_last_test = SearchInputRecommenderArgs(
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,URM_train_pow, UserKNNCF, RP3beta_pow, S_SLIM, EASE_R],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,URM_train_pow, EASE_R, Hybrid_4],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
