@@ -6,6 +6,8 @@ from tqdm import tqdm
 from evaluator import evaluate
 import pandas as pd
 import numpy as np
+from Recommenders.EASE_R.EASE_R_Recommender import EASE_R_Recommender
+
 # Read & split data
 dataReader = DataReader()
 #URM = dataReader.load_augmented_binary_urm()
@@ -42,10 +44,15 @@ RP3beta_pow.fit(alpha=0.3648761546066018,beta=0.5058870363874656, topK=480, norm
 S_SLIM = SLIMElasticNetRecommender(URM_train_pow)
 S_SLIM.fit()
 
+EASE_R = EASE_R_Recommender(URM_train_aug)
+EASE_R.fit()
+
+
 # Instantiate and fit hybrid recommender
-recommender = HybridRecommender_4(URM_train_aug, URM_train_pow, UserKNNCF, RP3beta_pow, S_SLIM)
+recommender = HybridRecommender_5(URM_train_aug, URM_train_pow, UserKNNCF, RP3beta_pow, S_SLIM, EASE_R)
 #recommender = HybridRecommender(URM_train)
-recommender.fit(UserKNNCF_tier1_weight=0.4, RP3beta_pow_tier1_weight=0.6,UserKNNCF_tier2_weight=0.2, RP3beta_pow_tier2_weight=0.8, RP3beta_pow_tier3_weight=0.5, S_SLIM_tier3_weight=0.8)
+recommender.fit( UserKNNCF_tier1_weight=0.6345269660425519, RP3beta_pow_tier1_weight=0.33158219696928976, EASE_R_tier1_weight= 0.09597531837611298, UserKNNCF_tier2_weight=0.9792376938449392, RP3beta_pow_tier2_weight=0.570238999126259, EASE_R_tier2_weight=0.38860109710692725, RP3beta_pow_tier3_weight= 0.722924027983384, S_SLIM_tier3_weight=0.8268022628613843, EASE_R_tier3_weight=0.06536164657983635, S_SLIM_tier4_weight = 0.9465915892992056, EASE_R_tier4_weight = 0.4292689877661564)
+#'UserKNNCF_tier1_weight': 0.6345269660425519, 'RP3beta_pow_tier1_weight': 0.33158219696928976, 'EASE_R_tier1_weight': 0.09597531837611298, 'UserKNNCF_tier2_weight': 0.9792376938449392, 'RP3beta_pow_tier2_weight': 0.570238999126259, 'EASE_R_tier2_weight': 0.38860109710692725, 'RP3beta_pow_tier3_weight': 0.722924027983384, 'S_SLIM_tier3_weight': 0.8268022628613843, 'EASE_R_tier3_weight': 0.06536164657983635, 'S_SLIM_tier4_weight': 0.9465915892992056, 'EASE_R_tier4_weight': 0.4292689877661564
 # Create CSV for submission
 f = open("submission.csv", "w+")
 f.write("user_id,item_list\n")
