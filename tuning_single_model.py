@@ -24,16 +24,15 @@ dataReader = DataReader()
 
 target = dataReader.load_target()
 
-URM_aug= dataReader.load_augmented_binary_urm()
-#URM_aug,ICM = dataReader.pad_with_zeros_ICMandURM(URM)
-
+URM = dataReader.load_augmented_binary_urm()
+URM_aug,icm = dataReader.pad_with_zeros_ICMandURM(URM)
 URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample(URM_aug, train_percentage = 0.9)
-#URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
+URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
 
 evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 
 
-recommender_class = EASE_R_Recommender
+recommender_class = ItemKNNCFRecommender
 
 output_folder_path = "result_experiments/"
 
@@ -73,7 +72,7 @@ hyperparameterSearch = SearchBayesianSkopt(recommender_class,
 # provide data needed to create instance of model (one on URM_train, the other on URM_all)
 recommender_input_args = SearchInputRecommenderArgs(
     # For a CBF model simply put [URM_train, ICM_train]
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_pow],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
