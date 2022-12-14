@@ -489,19 +489,8 @@ class HybridRecommender_5(BaseRecommender):
 
                 w = self.S_SLIM_tier4_weight*w1 + self.EASE_R_tier4_weight*w2
 
-                '''
-                # At the end, add EASE_R
-                            w1 = w
-                            w1 /= LA.norm(w1, 2)
-
-                            w2 = self.EASE_R._compute_item_score(
-                                user_id_array[i], items_to_compute)
-                            w2 /= LA.norm(w2, 2)
-
-                            w = self.tiers_block_weight*w1 + self.EASE_R_weight*w2
-
-                            item_weights[i, :] = w
-                '''
+   
+            item_weights[i, :] = w
             
         return item_weights
 
@@ -730,7 +719,7 @@ class HybridRecommender_7(BaseRecommender):
                 w2 /= LA.norm(w2, 2)
 
                 w = self.S_SLIM_tier4_weight*w1 + self.EASE_R_tier4_weight*w2 + self.ItemKNNCF_tier4_weight*w4
-                
+
 
             item_weights[i, :] = w
             
