@@ -49,7 +49,7 @@ EASE_R.fit()
 # End fitting
 
 
-recommender_class = HybridRecommender_6
+recommender_class = HybridRecommender_5
 
 output_folder_path = "result_experiments/"
 
@@ -63,7 +63,7 @@ metric_to_optimize = "MAP"
 cutoff_to_optimize = 10
 
 
-'''
+
 hyperparameters_range_dictionary = {
     "UserKNNCF_tier1_weight": Real(0,1),
     "RP3beta_pow_tier1_weight": Real(0,1),
@@ -82,12 +82,14 @@ hyperparameters_range_dictionary = {
     "EASE_R_tier4_weight": Real(0,1),
 
 }
-'''
 
+'''
 hyperparameters_range_dictionary = {
     "EASE_R_tail_weight": Real(0,1),
     "tiers_block_tail_weight": Real(0,1),
 }
+
+'''
 
 # create a bayesian optimizer object, we pass the recommender and the evaluator
 hyperparameterSearch = SearchBayesianSkopt(recommender_class,
