@@ -32,6 +32,15 @@ UCM = dataReader.load_aug_ucm()
 
 evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 
+# Fitting
+UserKNNCF = UserKNNCFRecommender(URM_train_aug)
+UserKNNCF.fit()
+
+RP3beta_pow = RP3betaRecommender(URM_train_pow)
+RP3beta_pow.fit(alpha=0.3648761546066018,beta=0.5058870363874656, topK=480, normalize_similarity=True)
+
+EASE_R = EASE_R_Recommender(URM_train_aug)
+EASE_R.fit()
 
 recommender_class = UserKNNCBFRecommender
 
@@ -41,7 +50,7 @@ output_folder_path = "result_experiments/"
 if not os.path.exists(output_folder_path):
     os.makedirs(output_folder_path)
 
-n_cases = 2000
+n_cases = 300
 n_random_starts = int(n_cases*0.3)
 metric_to_optimize = "MAP"
 cutoff_to_optimize = 10
@@ -56,7 +65,6 @@ hyperparameters_range_dictionary = {
     #"similarity": Categorical(["euclidean",'dice', 'jaccard', 'tversky','cosine']),
     #"feature_weighting": Categorical(['BM25',"TF-IDF", "none"]),
 }
-# topK=1199, shrink=229.22107382005083, similarity='cosine', normalize=True, feature_weighting = "TF-IDF",
 
 '''
 hyperparameters_range_dictionary = {

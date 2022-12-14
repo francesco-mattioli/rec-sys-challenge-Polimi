@@ -489,18 +489,20 @@ class HybridRecommender_5(BaseRecommender):
 
                 w = self.S_SLIM_tier4_weight*w1 + self.EASE_R_tier4_weight*w2
 
-            # At the end, add EASE_R
-            w1 = w
-            w1 /= LA.norm(w1, 2)
+                '''
+                # At the end, add EASE_R
+                            w1 = w
+                            w1 /= LA.norm(w1, 2)
 
-            w2 = self.EASE_R._compute_item_score(
-                user_id_array[i], items_to_compute)
-            w2 /= LA.norm(w2, 2)
+                            w2 = self.EASE_R._compute_item_score(
+                                user_id_array[i], items_to_compute)
+                            w2 /= LA.norm(w2, 2)
 
-            w = self.tiers_block_weight*w1 + self.EASE_R_weight*w2
+                            w = self.tiers_block_weight*w1 + self.EASE_R_weight*w2
 
-            item_weights[i, :] = w
-
+                            item_weights[i, :] = w
+                '''
+            
         return item_weights
 
 
@@ -586,7 +588,53 @@ class HybridRecommender_6(BaseRecommender):
                 user_id_array[i], items_to_compute)
             w2 /= LA.norm(w2, 2)
 
-            w = self.tiers_block__tail_weight*w1 + self.EASE_R_tail_weight*w2
+            w = self.tiers_block_tail_weight*w1 + self.EASE_R_tail_weight*w2
+
+            item_weights[i, :] = w
+
+        return item_weights
+
+
+############################################################# Hybrids per layer ###########################################################
+
+class Hybrid_layer1(BaseRecommender):
+    RECOMMENDER_NAME= "Hybrid_layer1"
+
+    def __init__(self, URM_train_aug, URM_train_pow, UserKNNCF, RP3beta_pow, EASE_R):
+        self.URM_train_aug = URM_train_aug
+        self.URM_train_pow = URM_train_pow
+        self.UserKNNCF = UserKNNCF
+        self.RP3beta_pow = RP3beta_pow
+        self.EASE_R = EASE_R
+        super(Hybrid_layer1, self).__init__(self.URM_train_aug)
+
+    def fit(self, UserKNNCF_weight=0.5, RP3beta_pow_weight=0.5, EASE_R_weight=0.5):
+        """ Set the weights for every algorithm involved in the hybrid recommender """
+
+        self.UserKNNCF_weight = UserKNNCF_weight
+        self.RP3beta_pow_weight = RP3beta_pow_weight
+        self.EASE_R_weight = EASE_R_weight
+
+    def _compute_item_score(self, user_id_array, items_to_compute=None):
+
+        num_items_pow = 27968
+        item_weights = np.empty([len(user_id_array), num_items_pow])
+
+        for i in range(len(user_id_array)):
+
+            w1 = self.RP3beta_pow._compute_item_score(
+                user_id_array[i], items_to_compute)
+            w1 /= LA.norm(w1, 2)
+
+            w2 = self.UserKNNCF._compute_item_score(
+                user_id_array[i], items_to_compute)
+            w2 /= LA.norm(w2, 2)
+
+            w3 = self.UserKNNCF._compute_item_score(
+                user_id_array[i], items_to_compute)
+            w3 /= LA.norm(w3, 2)
+
+            w = self.RP3beta_pow_weight*w1 + self.UserKNNCF_weight*w2 + self.EASE_R_weight*w3
 
             item_weights[i, :] = w
 
