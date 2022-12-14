@@ -595,6 +595,147 @@ class HybridRecommender_6(BaseRecommender):
         return item_weights
 
 
+class HybridRecommender_7(BaseRecommender):
+
+    RECOMMENDER_NAME = "Hybrid_Recommender_7"
+
+    def __init__(self, URM_train_aug, URM_train_pow, UserKNNCF, RP3beta_pow, S_SLIM, EASE_R):
+        self.URM_train_aug = URM_train_aug
+        self.URM_train_pow = URM_train_pow
+        self.ItemKNNCF = ItemKNNCF
+        self.UserKNNCF = UserKNNCF
+        self.RP3beta_pow = RP3beta_pow
+        self.S_SLIM = S_SLIM
+        self.EASE_R = EASE_R
+        super(HybridRecommender_5, self).__init__(self.URM_train_aug)
+
+    def fit(self, ItemKNNCF_tier1_weight=0.5,UserKNNCF_tier1_weight=0.5, RP3beta_pow_tier1_weight=0.5, EASE_R_tier1_weight=0.5, ItemKNNCF_tier2_weight=0.5,UserKNNCF_tier2_weight=0.5, RP3beta_pow_tier2_weight=0.5, EASE_R_tier2_weight=0.5,ItemKNNCF_tier1_weight=0.5, RP3beta_pow_tier3_weight=0.5, S_SLIM_tier3_weight=0.5, EASE_R_tier3_weight=0.5, ItemKNNCF_tier4_weight=0.5, S_SLIM_tier4_weight=0.5, EASE_R_tier4_weight=0.5):
+        """ Set the weights for every algorithm involved in the hybrid recommender """
+
+        self.ItemKNNCF_tier1_weight = ItemKNNCF_tier1_weight
+        self.UserKNNCF_tier1_weight = UserKNNCF_tier1_weight
+        self.RP3beta_pow_tier1_weight = RP3beta_pow_tier1_weight
+        self.EASE_R_tier1_weight = EASE_R_tier1_weight
+
+        self.ItemKNNCF_tier2_weight = ItemKNNCF_tier2_weight
+        self.UserKNNCF_tier2_weight = UserKNNCF_tier2_weight
+        self.RP3beta_pow_tier2_weight = RP3beta_pow_tier2_weight
+        self.EASE_R_tier2_weight = EASE_R_tier2_weight
+
+        
+        self.ItemKNNCF_tier3_weight = ItemKNNCF_tier3_weight
+        self.RP3beta_pow_tier3_weight = RP3beta_pow_tier3_weight
+        self.S_SLIM_tier3_weight = S_SLIM_tier3_weight
+        self.EASE_R_tier3_weight = EASE_R_tier3_weight
+
+
+        self.ItemKNNCF_tier4_weight = ItemKNNCF_tier4_weight
+        self.S_SLIM_tier4_weight = S_SLIM_tier4_weight
+        self.EASE_R_tier4_weight = EASE_R_tier4_weight
+
+    '''
+    self.UserKNNCF = UserKNNCFRecommender(self.URM_train_aug)
+        self.UserKNNCF.fit()
+
+        self.RP3beta_pow = RP3betaRecommender(self.URM_train_pow)
+        self.RP3beta_pow.fit(alpha=0.3648761546066018,beta=0.5058870363874656, topK=480, normalize_similarity=True)
+
+        self.S_SLIM = SLIMElasticNetRecommender(self.URM_train_pow)
+        self.S_SLIM.fit()
+    '''
+
+    def _compute_item_score(self, user_id_array, items_to_compute=None):
+
+        #num_items_aug = 24507
+        num_items_pow = 27968
+        item_weights = np.empty([len(user_id_array), num_items_pow])
+
+        for i in range(len(user_id_array)):
+
+            interactions = len(self.URM_train_aug[user_id_array[i], :].indices)
+
+            if interactions <= 15:  # TIER 1
+                w4 = self.ItemKNNCF._compute_item_score(
+                    user_id_array[i], items_to_compute)
+                w4 /= LA.norm(w4, 2)
+
+                w1 = self.RP3beta_pow._compute_item_score(
+                    user_id_array[i], items_to_compute)
+                w1 /= LA.norm(w1, 2)
+
+                w2 = self.UserKNNCF._compute_item_score(
+                    user_id_array[i], items_to_compute)
+                w2 /= LA.norm(w2, 2)
+
+                w3 = self.EASE_R._compute_item_score(
+                    user_id_array[i], items_to_compute)
+                w3 /= LA.norm(w3, 2)
+
+                w = self.RP3beta_pow_tier1_weight*w1 + \
+                    self.UserKNNCF_tier1_weight*w2 + self.EASE_R_tier1_weight*w3 + self.ItemKNNCF_tier1_weight*w4
+                #w = np.pad(w, ((0, 0), (0, num_items_pow-num_items_aug)))
+
+            elif interactions > 15 and interactions <= 19:  # TIER 2
+                w4 = self.ItemKNNCF._compute_item_score(
+                    user_id_array[i], items_to_compute)
+                w4 /= LA.norm(w4, 2)
+
+                w1 = self.RP3beta_pow._compute_item_score(
+                    user_id_array[i], items_to_compute)
+                w1 /= LA.norm(w1, 2)
+
+                w2 = self.UserKNNCF._compute_item_score(
+                    user_id_array[i], items_to_compute)
+                w2 /= LA.norm(w2, 2)
+
+                w3 = self.EASE_R._compute_item_score(
+                    user_id_array[i], items_to_compute)
+                w3 /= LA.norm(w3, 2)
+
+                w = self.RP3beta_pow_tier2_weight*w1 + \
+                    self.UserKNNCF_tier2_weight*w2 + self.EASE_R_tier2_weight*w3 + self.ItemKNNCF_tier2_weight*W4
+                #w = np.pad(w, ((0, 0), (0, num_items_pow-num_items_aug)))
+
+            elif interactions > 19 and interactions <= 28:  # TIER 3
+                w4 = self.ItemKNNCF._compute_item_score(
+                    user_id_array[i], items_to_compute)
+                w4 /= LA.norm(w4, 2)
+
+                w1 = self.RP3beta_pow._compute_item_score(
+                    user_id_array[i], items_to_compute)
+                w1 /= LA.norm(w1, 2)
+
+                w2 = self.S_SLIM._compute_item_score(
+                    user_id_array[i], items_to_compute)
+                w2 /= LA.norm(w2, 2)
+
+                w3 = self.EASE_R._compute_item_score(
+                    user_id_array[i], items_to_compute)
+                w3 /= LA.norm(w3, 2)
+
+                w = self.RP3beta_pow_tier3_weight*w1 + \
+                    self.S_SLIM_tier3_weight*w2 + self.EASE_R_tier3_weight*w3 + self.ItemKNNCF_tier3_weight*W4
+
+            else:  # TIER 4
+                w4 = self.ItemKNNCF._compute_item_score(
+                    user_id_array[i], items_to_compute)
+                w4 /= LA.norm(w4, 2)
+
+                w1 = self.S_SLIM._compute_item_score(
+                    user_id_array[i], items_to_compute)
+                w1 /= LA.norm(w1, 2)
+
+                w2 = self.EASE_R._compute_item_score(
+                    user_id_array[i], items_to_compute)
+                w2 /= LA.norm(w2, 2)
+
+                w = self.S_SLIM_tier4_weight*w1 + self.EASE_R_tier4_weight*w2 + self.ItemKNNCF_tier4_weight*w4
+                
+
+            item_weights[i, :] = w
+            
+        return item_weights
+
 ############################################################# Hybrids per layer ###########################################################
 
 class Hybrid_layer1(BaseRecommender):
