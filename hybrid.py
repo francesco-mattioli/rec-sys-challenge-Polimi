@@ -585,33 +585,34 @@ class HybridRecommender_7(BaseRecommender):
 
     RECOMMENDER_NAME = "Hybrid_Recommender_7"
 
-    def __init__(self, URM_train_aug, URM_train_pow, UserKNNCF, RP3beta_pow, S_SLIM, EASE_R, ItemKNNCF):
+    def __init__(self, URM_train_aug, URM_train_pow, UserKNNCF, RP3beta_pow, S_SLIM, EASE_R, UserKNNCB_Hybrid):
         self.URM_train_aug = URM_train_aug
         self.URM_train_pow = URM_train_pow
-        self.ItemKNNCF = ItemKNNCF
+        self.UserKNNCB_Hybrid = UserKNNCB_Hybrid
         self.UserKNNCF = UserKNNCF
         self.RP3beta_pow = RP3beta_pow
         self.S_SLIM = S_SLIM
         self.EASE_R = EASE_R
         super(HybridRecommender_7, self).__init__(self.URM_train_aug)
 
-    def fit(self, ItemKNNCF_tier1_weight=0.5,UserKNNCF_tier1_weight=0.5, RP3beta_pow_tier1_weight=0.5, EASE_R_tier1_weight=0.5, ItemKNNCF_tier2_weight=0.5,UserKNNCF_tier2_weight=0.5, RP3beta_pow_tier2_weight=0.5, EASE_R_tier2_weight=0.5, RP3beta_pow_tier3_weight=0.5, S_SLIM_tier3_weight=0.5, EASE_R_tier3_weight=0.5, S_SLIM_tier4_weight=0.5, EASE_R_tier4_weight=0.5):
+    def fit(self, UserKNNCF_tier1_weight=0.5, RP3beta_pow_tier1_weight=0.5, EASE_R_tier1_weight=0.5, UserKNNCB_Hybrid_tier2_weight=0.5,UserKNNCF_tier2_weight=0.5, RP3beta_pow_tier2_weight=0.5, EASE_R_tier2_weight=0.5, UserKNNCB_Hybrid_tier3_weight=0.5, RP3beta_pow_tier3_weight=0.5, S_SLIM_tier3_weight=0.5, EASE_R_tier3_weight=0.5, UserKNNCB_Hybrid_tier4_weight=0.5, S_SLIM_tier4_weight=0.5, EASE_R_tier4_weight=0.5):
         """ Set the weights for every algorithm involved in the hybrid recommender """
 
-        self.ItemKNNCF_tier1_weight = ItemKNNCF_tier1_weight
         self.UserKNNCF_tier1_weight = UserKNNCF_tier1_weight
         self.RP3beta_pow_tier1_weight = RP3beta_pow_tier1_weight
         self.EASE_R_tier1_weight = EASE_R_tier1_weight
 
-        self.ItemKNNCF_tier2_weight = ItemKNNCF_tier2_weight
+        self.UserKNNCB_Hybrid_tier2_weight = UserKNNCB_Hybrid_tier2_weight
         self.UserKNNCF_tier2_weight = UserKNNCF_tier2_weight
         self.RP3beta_pow_tier2_weight = RP3beta_pow_tier2_weight
         self.EASE_R_tier2_weight = EASE_R_tier2_weight
 
+        self.UserKNNCB_Hybrid_tier3_weight = UserKNNCB_Hybrid_tier3_weight
         self.RP3beta_pow_tier3_weight = RP3beta_pow_tier3_weight
         self.S_SLIM_tier3_weight = S_SLIM_tier3_weight
         self.EASE_R_tier3_weight = EASE_R_tier3_weight
 
+        self.UserKNNCB_Hybrid_tier4_weight = UserKNNCB_Hybrid_tier4_weight
         self.S_SLIM_tier4_weight = S_SLIM_tier4_weight
         self.EASE_R_tier4_weight = EASE_R_tier4_weight
 
@@ -637,9 +638,6 @@ class HybridRecommender_7(BaseRecommender):
             interactions = len(self.URM_train_aug[user_id_array[i], :].indices)
 
             if interactions <= 15:  # TIER 1
-                w4 = self.ItemKNNCF._compute_item_score(
-                    user_id_array[i], items_to_compute)
-                w4 /= LA.norm(w4, 2)
 
                 w1 = self.RP3beta_pow._compute_item_score(
                     user_id_array[i], items_to_compute)
@@ -653,11 +651,11 @@ class HybridRecommender_7(BaseRecommender):
                     user_id_array[i], items_to_compute)
                 w3 /= LA.norm(w3, 2)
 
-                w = self.RP3beta_pow_tier1_weight*w1 + self.UserKNNCF_tier1_weight*w2 + self.EASE_R_tier1_weight*w3 + self.ItemKNNCF_tier1_weight*w4
+                w = self.RP3beta_pow_tier1_weight*w1 + self.UserKNNCF_tier1_weight*w2 + self.EASE_R_tier1_weight*w3
                 #w = np.pad(w, ((0, 0), (0, num_items_pow-num_items_aug)))
 
             elif interactions > 15 and interactions <= 19:  # TIER 2
-                w4 = self.ItemKNNCF._compute_item_score(
+                w4 = self.UserKNNCB_Hybrid._compute_item_score(
                     user_id_array[i], items_to_compute)
                 w4 /= LA.norm(w4, 2)
 
@@ -673,7 +671,7 @@ class HybridRecommender_7(BaseRecommender):
                     user_id_array[i], items_to_compute)
                 w3 /= LA.norm(w3, 2)
 
-                w = self.RP3beta_pow_tier2_weight*w1 + self.UserKNNCF_tier2_weight*w2 + self.EASE_R_tier2_weight*w3 + self.ItemKNNCF_tier2_weight*w4
+                w = self.RP3beta_pow_tier2_weight*w1 + self.UserKNNCF_tier2_weight*w2 + self.EASE_R_tier2_weight*w3 + self.UserKNNCB_Hybrid_tier2_weight*w4
                 #w = np.pad(w, ((0, 0), (0, num_items_pow-num_items_aug)))
 
             elif interactions > 19 and interactions <= 28:  # TIER 3
@@ -690,7 +688,11 @@ class HybridRecommender_7(BaseRecommender):
                     user_id_array[i], items_to_compute)
                 w3 /= LA.norm(w3, 2)
 
-                w = self.RP3beta_pow_tier3_weight*w1 + self.S_SLIM_tier3_weight*w2 + self.EASE_R_tier3_weight*w3 
+                w4 = self.UserKNNCB_Hybrid._compute_item_score(
+                    user_id_array[i], items_to_compute)
+                w4 /= LA.norm(w4, 2)
+
+                w = self.RP3beta_pow_tier3_weight*w1 + self.S_SLIM_tier3_weight*w2 + self.EASE_R_tier3_weight*w3 + self.UserKNNCB_Hybrid_tier3_weight*w4
 
             else:  # TIER 4
 
@@ -702,7 +704,11 @@ class HybridRecommender_7(BaseRecommender):
                     user_id_array[i], items_to_compute)
                 w2 /= LA.norm(w2, 2)
 
-                w = self.S_SLIM_tier4_weight*w1 + self.EASE_R_tier4_weight*w2
+                w3 = self.UserKNNCB_Hybrid._compute_item_score(
+                    user_id_array[i], items_to_compute)
+                w3 /= LA.norm(w3, 2)
+
+                w = self.S_SLIM_tier4_weight*w1 + self.EASE_R_tier4_weight*w2 + self.UserKNNCB_Hybrid_tier4_weight*w3
 
 
             item_weights[i, :] = w

@@ -9,9 +9,11 @@ from Recommenders.SLIM.SLIMElasticNetRecommender import SLIMElasticNetRecommende
 from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
 from Recommenders.KNN.ItemKNNCBFRecommender import ItemKNNCBFRecommender
 from Recommenders.KNN.UserKNNCBFRecommender import UserKNNCBFRecommender
+from Recommenders.KNN.UserKNN_CFCBF_Hybrid_Recommender import UserKNN_CFCBF_Hybrid_Recommender
 from Recommenders.GraphBased.RP3betaRecommender import RP3betaRecommender
 from Recommenders.GraphBased.P3alphaRecommender import P3alphaRecommender
 from Recommenders.EASE_R.EASE_R_Recommender import EASE_R_Recommender
+
 
 from Evaluation.Evaluator import EvaluatorHoldout
 from Recommenders.DataIO import DataIO
@@ -33,7 +35,7 @@ UCM = dataReader.load_aug_ucm()
 evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 
 
-recommender_class = UserKNNCBFRecommender
+recommender_class = UserKNN_CFCBF_Hybrid_Recommender
 
 output_folder_path = "result_experiments/"
 
@@ -47,8 +49,10 @@ metric_to_optimize = "MAP"
 cutoff_to_optimize = 10
 
 hyperparameters_range_dictionary = {
-    "topK": Integer(500,1500),
-    "shrink": Real(20,500),
+    "UCM_weight": Real(low = 1e-2, high = 1e2, prior = 'log-uniform'),
+    "topK": Integer(50,400),
+    "shrink": Integer(20,500),
+    "normalize": Categorical([False,True]),
     #"l2_norm": Integer(50,1000),
     #"l2_norm": Categorical([70,80,90,100,200,300,1000,1500,2000,3000,10000]),
     #"topK": Integer(10,2000,prior='uniform'),
