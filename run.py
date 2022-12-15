@@ -34,6 +34,8 @@ URM_aug,icm = dataReader.pad_with_zeros_ICMandURM(URM)
 URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample(URM_aug, train_percentage = 0.9)
 URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
 
+ItemKNNCF = ItemKNNCFRecommender(URM_train_pow)
+ItemKNNCF.fit()
 
 UserKNNCF = UserKNNCFRecommender(URM_train_aug)
 UserKNNCF.fit()
@@ -49,10 +51,11 @@ EASE_R.fit()
 
 
 # Instantiate and fit hybrid recommender
-recommender = HybridRecommender_5(URM_train_aug, URM_train_pow, UserKNNCF, RP3beta_pow, S_SLIM, EASE_R)
+recommender = HybridRecommender_7(URM_train_aug, URM_train_pow, UserKNNCF, RP3beta_pow, S_SLIM, EASE_R, ItemKNNCF)
 #recommender = HybridRecommender(URM_train)
-recommender.fit( UserKNNCF_tier1_weight=0.6345269660425519, RP3beta_pow_tier1_weight=0.33158219696928976, EASE_R_tier1_weight= 0.09597531837611298, UserKNNCF_tier2_weight=0.9792376938449392, RP3beta_pow_tier2_weight=0.570238999126259, EASE_R_tier2_weight=0.38860109710692725, RP3beta_pow_tier3_weight= 0.722924027983384, S_SLIM_tier3_weight=0.8268022628613843, EASE_R_tier3_weight=0.06536164657983635, S_SLIM_tier4_weight = 0.9465915892992056, EASE_R_tier4_weight = 0.4292689877661564)
-#'UserKNNCF_tier1_weight': 0.6345269660425519, 'RP3beta_pow_tier1_weight': 0.33158219696928976, 'EASE_R_tier1_weight': 0.09597531837611298, 'UserKNNCF_tier2_weight': 0.9792376938449392, 'RP3beta_pow_tier2_weight': 0.570238999126259, 'EASE_R_tier2_weight': 0.38860109710692725, 'RP3beta_pow_tier3_weight': 0.722924027983384, 'S_SLIM_tier3_weight': 0.8268022628613843, 'EASE_R_tier3_weight': 0.06536164657983635, 'S_SLIM_tier4_weight': 0.9465915892992056, 'EASE_R_tier4_weight': 0.4292689877661564
+recommender.fit( ItemKNNCF_tier1_weight=0.0,UserKNNCF_tier1_weight=1.0, RP3beta_pow_tier1_weight=0.0, EASE_R_tier1_weight=0.0, ItemKNNCF_tier2_weight=0.12092091454953455,UserKNNCF_tier2_weight=1.0, RP3beta_pow_tier2_weight=1.0, EASE_R_tier2_weight=1.0, RP3beta_pow_tier3_weight=1.0, S_SLIM_tier3_weight=1.0, EASE_R_tier3_weight=0.8905976575459513, S_SLIM_tier4_weight= 0.8191971656205302, EASE_R_tier4_weight=0.0)
+#ItemKNNCF_tier1_weight': 0.0, 'UserKNNCF_tier1_weight': 1.0, 'RP3beta_pow_tier1_weight': 0.0, 'EASE_R_tier1_weight': 0.0, 'ItemKNNCF_tier2_weight': 0.12092091454953455, 'UserKNNCF_tier2_weight': 1.0, 'RP3beta_pow_tier2_weight': 1.0, 'EASE_R_tier2_weight': 1.0, 'RP3beta_pow_tier3_weight': 1.0, 'S_SLIM_tier3_weight': 1.0, 'EASE_R_tier3_weight': 0.8905976575459513, 'S_SLIM_tier4_weight': 0.8191971656205302, 'EASE_R_tier4_weight': 0.0} - results: PRECISION: 0.0406584, PRECISION_RECALL_MIN_DEN: 0.0929893, RECALL: 0.0910246, MAP: 0.0191628, MAP_MIN_DEN: 0.0431771, MRR: 0.1414813, NDCG: 0.0795034, F1: 0.0562095, HIT_RATE: 0.2968239, ARHR_ALL_HITS: 0.1637821, NOVELTY: 0.0037414, AVERAGE_POPULARITY: 0.2030096, DIVERSITY_MEAN_INTER_LIST: 0.9409305, DIVERSITY_HERFINDAHL: 0.9940906, COVERAGE_ITEM: 0.1383009, COVERAGE_ITEM_HIT: 0.0485912, ITEMS_IN_GT: 0.8483624, COVERAGE_USER: 0.9325470, COVERAGE_USER_HIT: 0.2768022, USERS_IN_GT: 0.9325470, DIVERSITY_GINI: 0.0157205, SHANNON_ENTROPY: 8.8357298, RATIO_DIVERSITY_HERFINDAHL: 0.9944187, RATIO_DIVERSITY_GINI: 0.0352224, RATIO_SHANNON_ENTROPY: 0.6547374, RATIO_AVERAGE_POPULARITY: 3.9995146, RATIO_NOVELTY: 0.2306994, 
+#SearchBayesianSkopt: New best config found. Config 132: {'ItemKNNCF_tier1_weight': 0.0, 'UserKNNCF_tier1_weight': 1.0, 'RP3beta_pow_tier1_weight': 1.0, 'EASE_R_tier1_weight': 0.0, 'ItemKNNCF_tier2_weight': 0.0, 'UserKNNCF_tier2_weight': 1.0, 'RP3beta_pow_tier2_weight': 0.6223036954997497, 'EASE_R_tier2_weight': 0.8876201410978622, 'RP3beta_pow_tier3_weight': 0.47317532322178224, 'S_SLIM_tier3_weight': 0.3029969887759448, 'EASE_R_tier3_weight': 0.2050864706067584, 'S_SLIM_tier4_weight': 1.0, 'EASE_R_tier4_weight': 0.0
 # Create CSV for submission
 f = open("submission.csv", "w+")
 f.write("user_id,item_list\n")

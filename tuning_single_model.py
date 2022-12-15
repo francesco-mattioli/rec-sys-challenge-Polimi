@@ -27,22 +27,22 @@ target = dataReader.load_target()
 URM = dataReader.load_augmented_binary_urm()
 URM_aug,icm = dataReader.pad_with_zeros_ICMandURM(URM)
 URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample(URM_aug, train_percentage = 0.9)
-#URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
-UCM = dataReader.load_aug_ucm()
+URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
+#UCM = dataReader.load_aug_ucm()
 
 evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 
 # Fitting
-UserKNNCF = UserKNNCFRecommender(URM_train_aug)
-UserKNNCF.fit()
+#UserKNNCF = UserKNNCFRecommender(URM_train_aug)
+#UserKNNCF.fit()
 
-RP3beta_pow = RP3betaRecommender(URM_train_pow)
-RP3beta_pow.fit(alpha=0.3648761546066018,beta=0.5058870363874656, topK=480, normalize_similarity=True)
+#RP3beta_pow = RP3betaRecommender(URM_train_pow)
+#RP3beta_pow.fit(alpha=0.3648761546066018,beta=0.5058870363874656, topK=480, normalize_similarity=True)
 
-EASE_R = EASE_R_Recommender(URM_train_aug)
-EASE_R.fit()
+#EASE_R = EASE_R_Recommender(URM_train_aug)
+#EASE_R.fit()
 
-recommender_class = UserKNNCBFRecommender
+recommender_class = EASE_R_Recommender
 
 output_folder_path = "result_experiments/"
 
@@ -56,8 +56,8 @@ metric_to_optimize = "MAP"
 cutoff_to_optimize = 10
 
 hyperparameters_range_dictionary = {
-    "topK": Integer(10,500),
-    "shrink": Real(5,500),
+    "topK": Integer(300,900),
+    "l2_norm": Real(100,400),
     #"l2_norm": Integer(50,1000),
     #"l2_norm": Categorical([70,80,90,100,200,300,1000,1500,2000,3000,10000]),
     #"topK": Integer(10,2000,prior='uniform'),
@@ -81,7 +81,7 @@ hyperparameterSearch = SearchBayesianSkopt(recommender_class,
 # provide data needed to create instance of model (one on URM_train, the other on URM_all)
 recommender_input_args = SearchInputRecommenderArgs(
     # For a CBF model simply put [URM_train, ICM_train]
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,UCM],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_pow],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
@@ -89,7 +89,7 @@ recommender_input_args = SearchInputRecommenderArgs(
 )
 
 recommender_input_args_last_test = SearchInputRecommenderArgs(
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,UCM],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_pow],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
