@@ -13,11 +13,18 @@ load_dotenv()
 
 class DataReader(object):
 
-
+    '''
     def csr_to_dataframe(self,csr):
         coo=csr.tocoo(copy=False)
         df=pd.DataFrame({'UserID': coo.row, 'ItemID': coo.col, 'Data': coo.data})[['UserID', 'ItemID', 'Data']].sort_values(['UserID', 'ItemID']).reset_index(drop=True)
         return df
+    '''
+    
+    def csr_to_dataframe(self,csr, row_name,col_name,cell_name):
+        coo=csr.tocoo(copy=False)
+        df=pd.DataFrame({row_name: coo.row, col_name: coo.col, cell_name: coo.data})[[row_name, col_name, cell_name]].sort_values([row_name, col_name]).reset_index(drop=True)
+        return df
+
 
     def dataframe_to_csr(self, dataframe,row_name,col_name,cell_name):
         """This method converts a dataframe object into a csr
@@ -486,7 +493,7 @@ class DataReader(object):
     def stackMatrixes(self, URM_train):
         # Vertical stack so ItemIDs cardinality must coincide.
        
-        urm=self.csr_to_dataframe(URM_train)
+        urm=self.csr_to_dataframe(URM_train,'UserID', 'ItemID', 'Data')
         f=self.load_icm_df()
         swap_list = ["feature_id", "item_id", "data"]
         f = f.reindex(columns=swap_list)
@@ -545,7 +552,7 @@ class DataReader(object):
             URM (csr): URM filled with missing items present in ICM but not in URM
             ICM (csr): ICM filled with missing items present in URM but not in ICM
         """
-        urm=self.csr_to_dataframe(URM)
+        urm=self.csr_to_dataframe(URM,'UserID','ItemID','Data')
         icm=self.load_icm_df()
 
         DiffURM_ICM = np.setdiff1d(urm['ItemID'].unique(), icm['item_id'].unique())
