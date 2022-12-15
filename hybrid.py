@@ -595,7 +595,7 @@ class HybridRecommender_7(BaseRecommender):
         self.EASE_R = EASE_R
         super(HybridRecommender_7, self).__init__(self.URM_train_aug)
 
-    def fit(self, UserKNNCF_tier1_weight=0.5, RP3beta_pow_tier1_weight=0.5, EASE_R_tier1_weight=0.5, UserKNNCB_Hybrid_tier2_weight=0.5,UserKNNCF_tier2_weight=0.5, RP3beta_pow_tier2_weight=0.5, EASE_R_tier2_weight=0.5, UserKNNCB_Hybrid_tier3_weight=0.5, RP3beta_pow_tier3_weight=0.5, S_SLIM_tier3_weight=0.5, EASE_R_tier3_weight=0.5, UserKNNCB_Hybrid_tier4_weight=0.5, S_SLIM_tier4_weight=0.5, EASE_R_tier4_weight=0.5):
+    def fit(self, UserKNNCF_tier1_weight=0.6345269660425519, RP3beta_pow_tier1_weight=0.33158219696928976, EASE_R_tier1_weight=0.09597531837611298, UserKNNCB_Hybrid_tier2_weight=0.5,UserKNNCF_tier2_weight=0.9792376938449392, RP3beta_pow_tier2_weight=0.570238999126259, EASE_R_tier2_weight=0.38860109710692725, UserKNNCB_Hybrid_tier3_weight=0.5, RP3beta_pow_tier3_weight=0.722924027983384, S_SLIM_tier3_weight=0.8268022628613843, EASE_R_tier3_weight=0.06536164657983635, UserKNNCB_Hybrid_tier4_weight=0.5, S_SLIM_tier4_weight=0.9465915892992056, EASE_R_tier4_weight=0.4292689877661564):
         """ Set the weights for every algorithm involved in the hybrid recommender """
 
         self.UserKNNCF_tier1_weight = UserKNNCF_tier1_weight

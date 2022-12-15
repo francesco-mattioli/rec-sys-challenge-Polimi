@@ -36,8 +36,6 @@ evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 
 
 # Fitting
-#ItemKNNCF = ItemKNNCFRecommender(URM_train_pow)
-#ItemKNNCF.fit()
 
 UserKNNCB_Hybrid = UserKNN_CFCBF_Hybrid_Recommender(URM_train_aug,UCM)
 UserKNNCB_Hybrid.fit(UCM_weight = 0.030666039949562303, topK = 374, shrink = 44, normalize = True)
@@ -46,7 +44,7 @@ UserKNNCF = UserKNNCFRecommender(URM_train_aug)
 UserKNNCF.fit()
 
 RP3beta_pow = RP3betaRecommender(URM_train_pow)
-RP3beta_pow.fit(alpha=0.3648761546066018,beta=0.5058870363874656, topK=480, normalize_similarity=True)
+RP3beta_pow.fit()
 
 S_SLIM = SLIMElasticNetRecommender(URM_train_pow)
 S_SLIM.fit()
@@ -74,24 +72,24 @@ cutoff_to_optimize = 10
 
 hyperparameters_range_dictionary = {
     #"ItemKNNCF_tier1_weight": Real(0,1),
-    "UserKNNCF_tier1_weight": Real(0,1),
-    "RP3beta_pow_tier1_weight": Real(0,1),
-    "EASE_R_tier1_weight": Real(0,1),
+    #"UserKNNCF_tier1_weight": Real(0,1),
+    #"RP3beta_pow_tier1_weight": Real(0,1),
+    #"EASE_R_tier1_weight": Real(0,1),
     
-    "UserKNNCB_Hybrid_tier2_weight": Real(0,1),
-    "UserKNNCF_tier2_weight": Real(0,1),
-    "RP3beta_pow_tier2_weight": Real(0,1),
-    "EASE_R_tier2_weight": Real(0,1),
+    "UserKNNCB_Hybrid_tier2_weight": Real(0,0.3),
+    #"UserKNNCF_tier2_weight": Real(0,1),
+    #"RP3beta_pow_tier2_weight": Real(0,1),
+    #"EASE_R_tier2_weight": Real(0,1),
 
 
-    "UserKNNCB_Hybrid_tier3_weight": Real(0,1),
-    "RP3beta_pow_tier3_weight": Real(0,1),
-    "S_SLIM_tier3_weight": Real(0,1),
-    "EASE_R_tier3_weight": Real(0,1),
+    "UserKNNCB_Hybrid_tier3_weight": Real(0,0.3),
+    #"RP3beta_pow_tier3_weight": Real(0,1),
+    #"S_SLIM_tier3_weight": Real(0,1),
+    #"EASE_R_tier3_weight": Real(0,1),
 
-    "UserKNNCB_Hybrid_tier4_weight": Real(0,1),
-    "S_SLIM_tier4_weight": Real(0,1),
-    "EASE_R_tier4_weight": Real(0,1),
+    "UserKNNCB_Hybrid_tier4_weight": Real(0,0.3),
+    #"S_SLIM_tier4_weight": Real(0,1),
+    #"EASE_R_tier4_weight": Real(0,1),
 
 }
 
