@@ -34,6 +34,9 @@ evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 
 
 # Fitting
+ItemKNNCF = ItemKNNCFRecommender(URM_train_pow)
+ItemKNNCF.fit()
+
 UserKNNCF = UserKNNCFRecommender(URM_train_aug)
 UserKNNCF.fit()
 
@@ -43,7 +46,7 @@ RP3beta_pow.fit(alpha=0.3648761546066018,beta=0.5058870363874656, topK=480, norm
 S_SLIM = SLIMElasticNetRecommender(URM_train_pow)
 S_SLIM.fit()
 
-EASE_R = EASE_R_Recommender(URM_train_aug)
+EASE_R = EASE_R_Recommender(URM_train_pow)
 EASE_R.fit()
 
 # End fitting
@@ -65,10 +68,12 @@ cutoff_to_optimize = 10
 
 
 hyperparameters_range_dictionary = {
+    #"ItemKNNCF_tier1_weight": Real(0,1),
     "UserKNNCF_tier1_weight": Real(0,1),
     "RP3beta_pow_tier1_weight": Real(0,1),
     "EASE_R_tier1_weight": Real(0,1),
     
+    #"ItemKNNCF_tier2_weight": Real(0,1),
     "UserKNNCF_tier2_weight": Real(0,1),
     "RP3beta_pow_tier2_weight": Real(0,1),
     "EASE_R_tier2_weight": Real(0,1),
