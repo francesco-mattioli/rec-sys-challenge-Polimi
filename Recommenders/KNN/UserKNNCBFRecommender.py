@@ -26,7 +26,7 @@ class UserKNNCBFRecommender(BaseUserCBFRecommender, BaseUserSimilarityMatrixReco
         super(UserKNNCBFRecommender, self).__init__(URM_train, UCM_train, verbose = verbose)
 
 
-    def fit(self, topK=50, shrink=100, similarity='cosine', normalize=True, feature_weighting = "none", **similarity_args):
+    def fit(self, topK=1500, shrink=20, similarity='cosine', normalize=True, feature_weighting = "none", **similarity_args):
 
         self.topK = topK
         self.shrink = shrink
