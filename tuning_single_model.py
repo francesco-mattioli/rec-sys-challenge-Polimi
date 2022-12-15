@@ -32,15 +32,6 @@ UCM = dataReader.load_aug_ucm()
 
 evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 
-# Fitting
-UserKNNCF = UserKNNCFRecommender(URM_train_aug)
-UserKNNCF.fit()
-
-RP3beta_pow = RP3betaRecommender(URM_train_pow)
-RP3beta_pow.fit(alpha=0.3648761546066018,beta=0.5058870363874656, topK=480, normalize_similarity=True)
-
-EASE_R = EASE_R_Recommender(URM_train_aug)
-EASE_R.fit()
 
 recommender_class = UserKNNCBFRecommender
 
