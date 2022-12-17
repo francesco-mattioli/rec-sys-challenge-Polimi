@@ -127,8 +127,8 @@ def optimize_parameters(recommender_class: type, n_calls=100, k=5, validation_pe
             recommender.fit(**params)
             _, _, MAP = evaluate_algorithm(test, recommender)
             scores.append(MAP)
-            print("current MAP: {}".format(MAP))
-            print("current parameters: {}".format(params))
+            #print("current MAP: {}".format(MAP))
+            #print("current parameters: {}".format(params))
 
         print(">>> Just Evaluated this: {}".format(params))
         print(">>> MAP: {}, diff (= max_map - min_map): {}".format(sum(scores) /
