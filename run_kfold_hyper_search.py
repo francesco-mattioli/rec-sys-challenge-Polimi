@@ -15,7 +15,7 @@ if __name__ == '__main__':
     val_percentage = 0.1
     k = 10
     limit_at = 10
-    n_calls = 500
+    n_calls = 50
 
     '''
     rec_class = SLIMElasticNetRecommender
