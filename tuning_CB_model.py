@@ -49,10 +49,9 @@ metric_to_optimize = "MAP"
 cutoff_to_optimize = 10
 
 hyperparameters_range_dictionary = {
-    "UCM_weight": Real(low = 1e-2, high = 1e2, prior = 'log-uniform'),
-    "topK": Integer(50,400),
-    "shrink": Integer(20,500),
-    "normalize": Categorical([False,True]),
+    "UCM_weight": Real(low = 1e-3, high = 0.05),
+    "topK": Integer(1000,3000),
+    "shrink": Integer(100,1500),
     #"l2_norm": Integer(50,1000),
     #"l2_norm": Categorical([70,80,90,100,200,300,1000,1500,2000,3000,10000]),
     #"topK": Integer(10,2000,prior='uniform'),

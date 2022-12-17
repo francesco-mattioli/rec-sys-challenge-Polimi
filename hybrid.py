@@ -585,14 +585,37 @@ class HybridRecommender_7(BaseRecommender):
 
     RECOMMENDER_NAME = "Hybrid_Recommender_7"
 
-    def __init__(self, URM_train_aug, URM_train_pow, UserKNNCF, RP3beta_pow, S_SLIM, EASE_R, UserKNNCB_Hybrid):
+    def __init__(self, URM_train_aug, URM_train_pow,UCM, UserKNNCF, RP3beta_pow, S_SLIM, EASE_R, UserKNN_CFCBF_Hybrid):
+
         self.URM_train_aug = URM_train_aug
         self.URM_train_pow = URM_train_pow
-        self.UserKNNCB_Hybrid = UserKNNCB_Hybrid
-        self.UserKNNCF = UserKNNCF
-        self.RP3beta_pow = RP3beta_pow
-        self.S_SLIM = S_SLIM
-        self.EASE_R = EASE_R
+        self.UCM = UCM
+
+        if(UserKNNCF==None):
+            self.UserKNNCF = UserKNNCFRecommender(self.URM_train_aug)
+        else:
+            self.UserKNNCF = UserKNNCF
+
+        if(RP3beta_pow==None):
+            self.RP3beta_pow = RP3betaRecommender(self.URM_train_pow)
+        else:
+            self.RP3beta_pow = RP3beta_pow
+
+        if(S_SLIM==None):
+            self.S_SLIM = S_SLIM(self.URM_train_pow)
+        else:
+            self.S_SLIM = S_SLIM
+        
+        if(EASE_R==None):
+            self.EASE_R = EASE_R(self.URM_train_aug)
+        else:
+            self.EASE_R = EASE_R
+        
+        if(UserKNN_CFCBF_Hybrid==None):
+            self.UserKNNCB_Hybrid = UserKNN_CFCBF_Hybrid_Recommender(self.URM_train_aug,self.UCM)
+        else:
+            self.UserKNNCB_Hybrid=UserKNN_CFCBF_Hybrid
+        
         super(HybridRecommender_7, self).__init__(self.URM_train_aug)
 
     def fit(self, UserKNNCF_tier1_weight=0.6345269660425519, RP3beta_pow_tier1_weight=0.33158219696928976, EASE_R_tier1_weight=0.09597531837611298, UserKNNCB_Hybrid_tier2_weight=0.5,UserKNNCF_tier2_weight=0.9792376938449392, RP3beta_pow_tier2_weight=0.570238999126259, EASE_R_tier2_weight=0.38860109710692725, UserKNNCB_Hybrid_tier3_weight=0.5, RP3beta_pow_tier3_weight=0.722924027983384, S_SLIM_tier3_weight=0.8268022628613843, EASE_R_tier3_weight=0.06536164657983635, UserKNNCB_Hybrid_tier4_weight=0.5, S_SLIM_tier4_weight=0.9465915892992056, EASE_R_tier4_weight=0.4292689877661564):
@@ -616,16 +639,6 @@ class HybridRecommender_7(BaseRecommender):
         self.S_SLIM_tier4_weight = S_SLIM_tier4_weight
         self.EASE_R_tier4_weight = EASE_R_tier4_weight
 
-    '''
-    self.UserKNNCF = UserKNNCFRecommender(self.URM_train_aug)
-        self.UserKNNCF.fit()
-
-        self.RP3beta_pow = RP3betaRecommender(self.URM_train_pow)
-        self.RP3beta_pow.fit(alpha=0.3648761546066018,beta=0.5058870363874656, topK=480, normalize_similarity=True)
-
-        self.S_SLIM = SLIMElasticNetRecommender(self.URM_train_pow)
-        self.S_SLIM.fit()
-    '''
 
     def _compute_item_score(self, user_id_array, items_to_compute=None):
 

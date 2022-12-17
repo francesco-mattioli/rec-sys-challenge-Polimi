@@ -13,6 +13,7 @@ from hybrid import HybridRecommender_2
 
 sys.path.append("..")
 from Data_Handler.DataReader import DataReader
+from Recommenders.KNN.UserKNN_CFCBF_Hybrid_Recommender import UserKNN_CFCBF_Hybrid_Recommender
 
 output_root_path = "./optimization_data/"
 
@@ -96,8 +97,30 @@ def optimize_parameters(URMrecommender_class: type, n_calls=100, k=5, validation
             scores = []
             for recommender, test in zip(recommenders, URM_tests):
                 recommender.fit(**params)
+                _, _, MAP = k_fold_hyper.evaluate.evaluate_algorithm(test, recommender)
+                scores.append(MAP)
+                print("MAP: {}".format(MAP))
+                print("Params: {}".format(params))
+
+            print(">>> Just Evaluated this: {}".format(params))
+            print(">>> MAP: {}, diff (= max_map - min_map): {}".format(sum(scores) / len(scores), max(scores) - min(scores)))
+            print("\n")
+            
+            return sum(scores) / len(scores)
+
+    elif URMrecommender_class== UserKNN_CFCBF_Hybrid_Recommender:
+        UCM = DataReader().load_aug_ucm()
+        recommenders = []
+        for URM_train_csr in URM_trains:
+            recommenders.append(URMrecommender_class(URM_train_csr,UCM))
+
+        @use_named_args(space)
+        def objective(**params):
+            scores = []
+            for recommender, test in zip(recommenders, URM_tests):
+                recommender.fit(**params)
                 _, _, MAP = k_fold_optimization.evaluate.evaluate_algorithm(test, recommender)
-                scores.append(-MAP)
+                scores.append(MAP)
                 print("MAP: {}".format(MAP))
                 print("Params: {}".format(params))
 
@@ -108,7 +131,6 @@ def optimize_parameters(URMrecommender_class: type, n_calls=100, k=5, validation
             return sum(scores) / len(scores)
     
     else:
-    
         @use_named_args(space)
         def objective(**params):
             scores = []
