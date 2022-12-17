@@ -1,5 +1,7 @@
-from k_fold_optimization.optimize_parameters import optimize_parameters
+# Import of fucntion for executing k_fold_hyperparam_search
+from k_fold_hyperparam_search.optimize_parameters import optimize_parameters
 
+# Import of Recommenders
 from Recommenders.SLIM.SLIMElasticNetRecommender import *
 from Recommenders.SLIM.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
@@ -11,14 +13,14 @@ from hybrid import *
 
 if __name__ == '__main__':
     val_percentage = 0.1
-    k = 10 # old version: k=10
+    k = 10
     limit_at = 10
     n_calls = 500
 
     '''
     rec_class = SLIMElasticNetRecommender
     optimize_parameters(
-        URMrecommender_class=rec_class,
+        recommender_class=rec_class,
         validation_percentage=val_percentage,
         k=k,
         n_calls=50,
@@ -30,7 +32,7 @@ if __name__ == '__main__':
     '''
     rec_class = ItemKNNCFRecommender
     optimize_parameters(
-        URMrecommender_class=rec_class,
+        recommender_class=rec_class,
         validation_percentage=val_percentage,
         k=k,
         n_calls=100,
@@ -41,7 +43,7 @@ if __name__ == '__main__':
     '''
     rec_class = UserKNNCFRecommender
     optimize_parameters(
-        URMrecommender_class=rec_class,
+        recommender_class=rec_class,
         validation_percentage=val_percentage,
         k=k,
         n_calls=n_calls,
@@ -52,7 +54,7 @@ if __name__ == '__main__':
 
     rec_class = UserKNN_CFCBF_Hybrid_Recommender
     optimize_parameters(
-        URMrecommender_class=rec_class,
+        recommender_class=rec_class,
         validation_percentage=val_percentage,
         k=k,
         n_calls=n_calls,
@@ -63,7 +65,7 @@ if __name__ == '__main__':
     '''
     rec_class = RP3betaRecommender
     optimize_parameters(
-        URMrecommender_class=rec_class,
+        recommender_class=rec_class,
         validation_percentage=val_percentage,
         k=k,
         n_calls=n_calls,
@@ -77,7 +79,7 @@ if __name__ == '__main__':
 
     rec_class = HybridRecommender_2
     optimize_parameters(
-        URMrecommender_class=rec_class,
+        recommender_class=rec_class,
         validation_percentage=val_percentage,
         n_random_starts=n_random_starts,
         k=k,
@@ -90,7 +92,7 @@ if __name__ == '__main__':
     '''
     rec_class = SLIM_BPR_Cython
     optimize_parameters(
-        URMrecommender_class=rec_class,
+        recommender_class=rec_class,
         validation_percentage=val_percentage,
         k=10,
         n_calls=50,
@@ -104,7 +106,7 @@ if __name__ == '__main__':
 
     rec_class = HybridRecommender_4
     optimize_parameters(
-        URMrecommender_class=rec_class,
+        recommender_class=rec_class,
         validation_percentage=val_percentage,
         n_random_starts=n_random_starts,
         k=k,
