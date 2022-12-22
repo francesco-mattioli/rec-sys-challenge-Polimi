@@ -120,6 +120,10 @@ def optimize_parameters(recommender_class: type, n_calls=100, k=5, validation_pe
         for URM_train_aug in URM_aug_trains:
             recommenders.append(recommender_class(URM_train_aug))
 
+    elif(recommender_class == SLIMElasticNetRecommender or recommender_class == RP3betaRecommender):
+        for URM_train_pow in URM_pow_trains:
+            recommenders.append(recommender_class(URM_train_pow))
+
     else:
         for URM_train_aug, URM_train_pow in zip(URM_aug_trains, URM_pow_trains):
             recommenders.append(recommender_class(

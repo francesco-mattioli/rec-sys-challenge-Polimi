@@ -37,25 +37,25 @@ evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 
 # Fitting
 
-UserKNNCB_Hybrid = UserKNN_CFCBF_Hybrid_Recommender(URM_train_aug,UCM)
-UserKNNCB_Hybrid.fit(UCM_weight = 0.030666039949562303, topK = 374, shrink = 44, normalize = True)
+#UserKNNCB_Hybrid = UserKNN_CFCBF_Hybrid_Recommender(URM_train_aug,UCM)
+#UserKNNCB_Hybrid.fit(UCM_weight = 0.030666039949562303, topK = 374, shrink = 44, normalize = True)
 
 UserKNNCF = UserKNNCFRecommender(URM_train_aug)
 UserKNNCF.fit()
 
-RP3beta_pow = RP3betaRecommender(URM_train_pow)
-RP3beta_pow.fit()
+RP3beta_aug = RP3betaRecommender(URM_train_aug)
+RP3beta_aug.fit(alpha=0.6951524535062256,beta=0.39985511876562174, topK=82, normalize_similarity=True)
 
-S_SLIM = SLIMElasticNetRecommender(URM_train_pow)
-S_SLIM.fit()
+#S_SLIM = SLIMElasticNetRecommender(URM_train_pow)
+#S_SLIM.fit()
 
-EASE_R = EASE_R_Recommender(URM_train_aug)
-EASE_R.fit()
+#EASE_R = EASE_R_Recommender(URM_train_aug)
+#EASE_R.fit()
 
 # End fitting
 
 
-recommender_class = HybridRecommender_7
+recommender_class = Hybrid_UserKNNCF_RP3B_aug
 
 output_folder_path = "result_experiments/"
 
@@ -63,43 +63,43 @@ output_folder_path = "result_experiments/"
 if not os.path.exists(output_folder_path):
     os.makedirs(output_folder_path)
 
-n_cases = 400
+n_cases = 200
 n_random_starts = int(n_cases*0.3)
 metric_to_optimize = "MAP"
 cutoff_to_optimize = 10
 
-
-
+#hybrid 5
+'''
 hyperparameters_range_dictionary = {
     #"ItemKNNCF_tier1_weight": Real(0,1),
-    #"UserKNNCF_tier1_weight": Real(0,1),
-    #"RP3beta_pow_tier1_weight": Real(0,1),
-    #"EASE_R_tier1_weight": Real(0,1),
+    "UserKNNCF_tier1_weight": Real(0,1),
+    "RP3beta_pow_tier1_weight": Real(0,1),
+    "EASE_R_tier1_weight": Real(0,1),
     
-    "UserKNNCB_Hybrid_tier2_weight": Real(0,0.3),
-    #"UserKNNCF_tier2_weight": Real(0,1),
-    #"RP3beta_pow_tier2_weight": Real(0,1),
-    #"EASE_R_tier2_weight": Real(0,1),
+    #"UserKNNCB_Hybrid_tier2_weight": Real(0,0.3),
+    "UserKNNCF_tier2_weight": Real(0,1),
+    "RP3beta_pow_tier2_weight": Real(0,1),
+    "EASE_R_tier2_weight": Real(0,1),
 
 
-    "UserKNNCB_Hybrid_tier3_weight": Real(0,0.3),
-    #"RP3beta_pow_tier3_weight": Real(0,1),
-    #"S_SLIM_tier3_weight": Real(0,1),
-    #"EASE_R_tier3_weight": Real(0,1),
+    #"UserKNNCB_Hybrid_tier3_weight": Real(0,0.3),
+    "RP3beta_pow_tier3_weight": Real(0,1),
+    "S_SLIM_tier3_weight": Real(0,1),
+    "EASE_R_tier3_weight": Real(0,1),
 
-    "UserKNNCB_Hybrid_tier4_weight": Real(0,0.3),
-    #"S_SLIM_tier4_weight": Real(0,1),
-    #"EASE_R_tier4_weight": Real(0,1),
+    #"UserKNNCB_Hybrid_tier4_weight": Real(0,0.3),
+    "S_SLIM_tier4_weight": Real(0,1),
+    "EASE_R_tier4_weight": Real(0,1),
 
 }
-
 '''
+
+
 hyperparameters_range_dictionary = {
-    "EASE_R_tail_weight": Real(0,1),
-    "tiers_block_tail_weight": Real(0,1),
+    "UserKNNCF_weight": Real(0,1),
+    "RP3B_weight": Real(0,1),
 }
 
-'''
 
 # create a bayesian optimizer object, we pass the recommender and the evaluator
 hyperparameterSearch = SearchBayesianSkopt(recommender_class,
@@ -108,7 +108,7 @@ hyperparameterSearch = SearchBayesianSkopt(recommender_class,
 # provide data needed to create instance of model (one on URM_train, the other on URM_all)
 recommender_input_args = SearchInputRecommenderArgs(
     # For a CBF model simply put [URM_train, ICM_train]
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,URM_train_pow, UserKNNCF,RP3beta_pow,S_SLIM,EASE_R, UserKNNCB_Hybrid],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,URM_train_pow,UserKNNCF,RP3beta_aug],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
@@ -116,7 +116,7 @@ recommender_input_args = SearchInputRecommenderArgs(
 )
 
 recommender_input_args_last_test = SearchInputRecommenderArgs(
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,URM_train_pow, UserKNNCF,RP3beta_pow,S_SLIM,EASE_R, UserKNNCB_Hybrid],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,URM_train_pow,UserKNNCF,RP3beta_aug],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
