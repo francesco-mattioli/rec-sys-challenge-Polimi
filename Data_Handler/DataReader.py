@@ -552,13 +552,12 @@ class DataReader(object):
             URM (csr): URM filled with missing items present in ICM but not in URM
             ICM (csr): ICM filled with missing items present in URM but not in ICM
         """
+        print("Making augmented URM and ICM of the same shape...")
         urm=self.csr_to_dataframe(URM,'UserID','ItemID','Data')
         icm=self.load_icm_df()
 
         DiffURM_ICM = np.setdiff1d(urm['ItemID'].unique(), icm['item_id'].unique())
         DiffICM_URM = np.setdiff1d(icm['item_id'].unique(), urm['ItemID'].unique())
-
-        print(DiffURM_ICM.size)
 
         for id in DiffURM_ICM:
             icm.loc[len(icm.index)] = [id, 1, 0]
