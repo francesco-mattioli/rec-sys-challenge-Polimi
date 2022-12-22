@@ -13,19 +13,21 @@ if __name__ == '__main__':
     val_percentage = 0.1
     k = 10 # old version: k=10
     limit_at = 10
-    n_calls = 500
+    n_calls = 50
 
     '''
-    rec_class = SLIMElasticNetRecommender
+     rec_class = SLIMElasticNetRecommender
     optimize_parameters(
         URMrecommender_class=rec_class,
         validation_percentage=val_percentage,
         k=k,
-        n_calls=50,
+        n_calls=n_calls,
         limit_at=limit_at,
         forest=True,
     )
     '''
+   
+    
 
     '''
     rec_class = ItemKNNCFRecommender
@@ -50,17 +52,19 @@ if __name__ == '__main__':
     )
     '''
 
-    rec_class = UserKNN_CFCBF_Hybrid_Recommender
-    optimize_parameters(
-        URMrecommender_class=rec_class,
-        validation_percentage=val_percentage,
-        k=k,
-        n_calls=n_calls,
-        limit_at=limit_at,
-        forest=True,
-    )
-
     '''
+    rec_class = UserKNN_CFCBF_Hybrid_Recommender
+        optimize_parameters(
+            URMrecommender_class=rec_class,
+            validation_percentage=val_percentage,
+            k=k,
+            n_calls=n_calls,
+            limit_at=limit_at,
+            forest=True,
+        )
+    '''
+   
+
     rec_class = RP3betaRecommender
     optimize_parameters(
         URMrecommender_class=rec_class,
@@ -70,7 +74,6 @@ if __name__ == '__main__':
         limit_at=limit_at,
         forest=True,
     ) 
-    '''
 
     '''
     n_random_starts=1

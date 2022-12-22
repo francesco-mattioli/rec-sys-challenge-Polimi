@@ -37,23 +37,23 @@ URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
 #ItemKNNCF = ItemKNNCFRecommender(URM_train_pow)
 #ItemKNNCF.fit()
 
-UserKNNCF = UserKNNCFRecommender(URM_train_aug)
-UserKNNCF.fit()
+#UserKNNCF = UserKNNCFRecommender(URM_train_aug)
+#UserKNNCF.fit()
 
-RP3beta_pow = RP3betaRecommender(URM_train_pow)
-RP3beta_pow.fit(alpha=0.3648761546066018,beta=0.5058870363874656, topK=480, normalize_similarity=True)
+recommender = RP3betaRecommender(URM_train_aug)
+recommender.fit(alpha=0.6951524535062256,beta=0.39985511876562174, topK=82, normalize_similarity=True)
 
-S_SLIM = SLIMElasticNetRecommender(URM_train_pow)
-S_SLIM.fit()
+#S_SLIM = SLIMElasticNetRecommender(URM_train_pow)
+#S_SLIM.fit()
 
-EASE_R = EASE_R_Recommender(URM_train_aug)
-EASE_R.fit()
+#EASE_R = EASE_R_Recommender(URM_train_aug)
+#EASE_R.fit()
 
 
 # Instantiate and fit hybrid recommender
-recommender = HybridRecommender_5(URM_train_aug, URM_train_pow, UserKNNCF, RP3beta_pow, S_SLIM, EASE_R)
+#recommender = HybridRecommender_5(URM_train_aug, URM_train_pow, UserKNNCF, RP3beta_pow, S_SLIM, EASE_R)
 #recommender = HybridRecommender(URM_train)
-recommender.fit(UserKNNCF_tier1_weight=0.5729283925580592, RP3beta_pow_tier1_weight= 0.5126995921400189, EASE_R_tier1_weight=0.35135124299835835, UserKNNCF_tier2_weight=0.9573738859277221, RP3beta_pow_tier2_weight=0.8130000344620287, EASE_R_tier2_weight=0.8407574723860113, RP3beta_pow_tier3_weight=0.8153126010122613, S_SLIM_tier3_weight=0.39864407118121825, EASE_R_tier3_weight=0.8181461648227059, S_SLIM_tier4_weight= 0.3513706238839294, EASE_R_tier4_weight= 0.009916836090967942)
+#recommender.fit(UserKNNCF_tier1_weight=0.5729283925580592, RP3beta_pow_tier1_weight= 0.5126995921400189, EASE_R_tier1_weight=0.35135124299835835, UserKNNCF_tier2_weight=0.9573738859277221, RP3beta_pow_tier2_weight=0.8130000344620287, EASE_R_tier2_weight=0.8407574723860113, RP3beta_pow_tier3_weight=0.8153126010122613, S_SLIM_tier3_weight=0.39864407118121825, EASE_R_tier3_weight=0.8181461648227059, S_SLIM_tier4_weight= 0.3513706238839294, EASE_R_tier4_weight= 0.009916836090967942)
 #'UserKNNCF_tier1_weight': 0.5729283925580592, 'RP3beta_pow_tier1_weight': 0.5126995921400189, 'EASE_R_tier1_weight': 0.35135124299835835, 'UserKNNCF_tier2_weight': 0.9573738859277221, 'RP3beta_pow_tier2_weight': 0.8130000344620287, 'EASE_R_tier2_weight': 0.8407574723860113, 'RP3beta_pow_tier3_weight': 0.8153126010122613, 'S_SLIM_tier3_weight': 0.39864407118121825, 'EASE_R_tier3_weight': 0.8181461648227059, 'S_SLIM_tier4_weight': 0.3513706238839294, 'EASE_R_tier4_weight': 0.009916836090967942
 # Create CSV for submission
 f = open("submission.csv", "w+")

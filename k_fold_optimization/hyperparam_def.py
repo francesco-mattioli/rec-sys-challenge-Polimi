@@ -39,8 +39,9 @@ names[SLIMElasticNetRecommender] = "SLIMElasticNetRecommender"
 spaces[SLIMElasticNetRecommender] = [
     Real(low=0.001, high=0.01, prior='uniform', name='l1_ratio'),
     Real(low=0.001, high=0.01, prior='log-uniform', name='alpha'),
-    Integer(low=320, high=800, name='topK')
+    Integer(low=300, high=750, name='topK')
 ]
+
 
 names[SLIM_BPR_Cython] = "SLIM_BPR_Recommender"
 spaces[SLIM_BPR_Cython] = [
