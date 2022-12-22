@@ -814,7 +814,7 @@ class Hybrid_UserKNNCF_RP3B_aug(BaseRecommender):
         self.RP3B = RP3B
         super(Hybrid_UserKNNCF_RP3B_aug, self).__init__(self.URM_train_aug)
 
-    def fit(self, UserKNNCF_weight=0.5, RP3B_weight=0.5):
+    def fit(self, UserKNNCF_weight=0.2995420066475148, RP3B_weight=0.9911264072270123):
         """ Set the weights for every algorithm involved in the hybrid recommender """
 
         self.UserKNNCF_weight = UserKNNCF_weight
