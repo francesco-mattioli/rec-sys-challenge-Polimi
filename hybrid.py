@@ -840,3 +840,41 @@ class Hybrid_UserKNNCF_RP3B_aug(BaseRecommender):
             item_weights[i, :] = w
 
         return item_weights
+        
+
+class Hybrid_UserKNNCF_ItemKNNCF(BaseRecommender):
+    RECOMMENDER_NAME= "Hybrid_UserKNNCF_ItemKNNCF"
+
+    def __init__(self, URM_train_aug, URM_train_pow, UserKNNCF, ItemKNNCF):
+        self.URM_train_aug = URM_train_aug
+        self.URM_train_pow = URM_train_pow
+        self.UserKNNCF = UserKNNCF
+        self.ItemKNNCF = ItemKNNCF
+        super(Hybrid_UserKNNCF_ItemKNNCF, self).__init__(self.URM_train_aug)
+
+    def fit(self, UserKNNCF_weight=0.2995420066475148, ItemKNNCF_weight=0.9911264072270123):
+        """ Set the weights for every algorithm involved in the hybrid recommender """
+
+        self.UserKNNCF_weight = UserKNNCF_weight
+        self.ItemKNNCF_weight = ItemKNNCF_weight
+
+    def _compute_item_score(self, user_id_array, items_to_compute=None):
+
+        num_items_pow = 27968
+        item_weights = np.empty([len(user_id_array), num_items_pow])
+
+        for i in range(len(user_id_array)):
+
+            w1=self.UserKNNCF._compute_item_score(
+                user_id_array[i], items_to_compute)
+            w1 /= LA.norm(w1, 2)
+
+            w2 = self.ItemKNNCF._compute_item_score(
+                user_id_array[i], items_to_compute)
+            w2 /= LA.norm(w2, 2)
+
+            w = self.UserKNNCF_weight*w1 + self.ItemKNNCF_weight*w2
+
+            item_weights[i, :] = w
+
+        return item_weights
