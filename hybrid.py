@@ -840,3 +840,106 @@ class Hybrid_UserKNNCF_RP3B_aug(BaseRecommender):
             item_weights[i, :] = w
 
         return item_weights
+
+    def _compute_item_score_per_user(self, user_id, items_to_compute=None):
+
+            w1=self.UserKNNCF._compute_item_score(
+                user_id, items_to_compute)
+            w1 /= LA.norm(w1, 2)
+
+            w2 = self.RP3B._compute_item_score(
+                user_id, items_to_compute)
+            w2 /= LA.norm(w2, 2)
+
+            w = self.UserKNNCF_weight*w1 + self.RP3B_weight*w2
+
+            return w
+
+        
+#######################################################################################################
+#######################################################################################################
+
+class Hybrid_of_Hybrids(BaseRecommender):
+
+    RECOMMENDER_NAME = "Hybrid_of_Hybrids"
+
+    def __init__(self, URM_train_aug, URM_train_pow,UCM, Hybrid_1_tier1=None,Hybrid_2_tier1=None,Hybrid_1_tier2=None,Hybrid_2_tier2=None):
+
+        self.URM_train_aug = URM_train_aug
+        self.URM_train_pow = URM_train_pow
+        self.UCM = UCM
+
+        if(Hybrid_1_tier1==None):
+            self.Hybrid_1_tier1 = Hybrid_1_tier1(self.URM_train_aug)
+        else:
+            self.Hybrid_1_tier1 = Hybrid_1_tier1
+        
+        
+        if(Hybrid_2_tier1==None):
+            self.Hybrid_2_tier1 = Hybrid_2_tier1(self.URM_train_aug)
+        else:
+            self.Hybrid_2_tier1 = Hybrid_2_tier1
+        
+
+        if(Hybrid_1_tier2==None):
+            self.Hybrid_1_tier2 = Hybrid_1_tier2(self.URM_train_pow)
+        else:
+            self.Hybrid_1_tier2 = Hybrid_1_tier2
+
+        
+        if(Hybrid_2_tier2==None):
+            self.Hybrid_2_tier2 = Hybrid_2_tier2(self.URM_train_pow)
+        else:
+            self.Hybrid_2_tier2 = Hybrid_2_tier2
+        
+        super(Hybrid_of_Hybrids, self).__init__(self.URM_train_aug)
+
+    def fit(self, Hybrid_1_tier1_weight=0.5, Hybrid_2_tier1_weight=0.5,Hybrid_1_tier2_weight=0.5,Hybrid_2_tier2_weight=0.5):
+        """ Set the weights for every algorithm involved in the hybrid recommender """
+
+        self.Hybrid_1_tier1_weight = Hybrid_1_tier1_weight
+        self.Hybrid_2_tier1_weight = Hybrid_2_tier1_weight
+
+        self.Hybrid_1_tier2_weight = Hybrid_1_tier2_weight
+        self.Hybrid_2_tier2_weight = Hybrid_2_tier2_weight
+
+
+    def _compute_item_score(self, user_id_array, items_to_compute=None):
+
+        #num_items_aug = 24507
+        num_items_pow = 27968
+        item_weights = np.empty([len(user_id_array), num_items_pow])
+
+        for i in range(len(user_id_array)):
+
+            interactions = len(self.URM_train_aug[user_id_array[i], :].indices)
+
+            if interactions <= 15:  # TIER 1
+
+                w1 = self.Hybrid_1_tier1._compute_item_score_per_user(
+                    user_id_array[i], items_to_compute)
+                w1 /= LA.norm(w1, 2)
+
+                w2 = self.Hybrid_2_tier1._compute_item_score_per_user(
+                    user_id_array[i], items_to_compute)
+                w2 /= LA.norm(w2, 2)
+
+                w = self.Hybrid_1_tier1_weight*w1 + self.Hybrid_2_tier1_weight*w2
+
+
+            else:  # TIER 2
+
+                w1 = self.Hybrid_1_tier2._compute_item_score_per_user(
+                    user_id_array[i], items_to_compute)
+                w1 /= LA.norm(w1, 2)
+
+                w2 = self.Hybrid_2_tier2._compute_item_score_per_user(
+                    user_id_array[i], items_to_compute)
+                w2 /= LA.norm(w2, 2)
+
+                w = self.Hybrid_1_tier2*w1 + self.Hybrid_2_tier2_weight*w2
+
+
+            item_weights[i, :] = w
+            
+        return item_weights
