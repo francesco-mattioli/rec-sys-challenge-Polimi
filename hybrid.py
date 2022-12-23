@@ -2,6 +2,7 @@
 from Recommenders.BaseRecommender import BaseRecommender
 from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
 from Recommenders.KNN.UserKNNCFRecommender import UserKNNCFRecommender
+from Recommenders.KNN.UserKNN_CFCBF_Hybrid_Recommender import UserKNN_CFCBF_Hybrid_Recommender
 from Recommenders.SLIM.SLIMElasticNetRecommender import *
 from Recommenders.GraphBased.RP3betaRecommender import RP3betaRecommender
 from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
@@ -127,8 +128,8 @@ class HybridRecommender_2(BaseRecommender):
                     temp_rec.fit()
                     self.recommenders[rec_class] = temp_rec
                     #end = time.time()
-                    print("Fitted new instance of {}. Employed time: {} seconds".format(
-                        rec_class.__name__, end - start))
+                    print("Fitted new instance of {}.".format(
+                        rec_class.__name__))
 
     def _compute_item_score(self, user_id_array, items_to_compute=None):
 
@@ -210,7 +211,7 @@ class HybridRecommender_3(BaseRecommender):
 
         return item_weights
 
-
+'''
 class HybridLightFM(BaseRecommender):
     RECOMMENDER_NAME = "HybridLightFM"
 
@@ -253,7 +254,7 @@ class HybridLightFM(BaseRecommender):
         powerful_urm = pd.concat(
             [urm, f], ignore_index=True).sort_values(['UserID', 'ItemID'])
         return dataReader.dataframe_to_csr(powerful_urm, 'UserID', 'ItemID', 'Data')
-
+'''
 
 '''
 def paddingICMandURM(self, dataReader, URM_train):
@@ -840,106 +841,41 @@ class Hybrid_UserKNNCF_RP3B_aug(BaseRecommender):
             item_weights[i, :] = w
 
         return item_weights
-
-    def _compute_item_score_per_user(self, user_id, items_to_compute=None):
-
-            w1=self.UserKNNCF._compute_item_score(
-                user_id, items_to_compute)
-            w1 /= LA.norm(w1, 2)
-
-            w2 = self.RP3B._compute_item_score(
-                user_id, items_to_compute)
-            w2 /= LA.norm(w2, 2)
-
-            w = self.UserKNNCF_weight*w1 + self.RP3B_weight*w2
-
-            return w
-
         
-#######################################################################################################
-#######################################################################################################
 
-class Hybrid_of_Hybrids(BaseRecommender):
+class Hybrid_UserKNNCF_ItemKNNCF(BaseRecommender):
+    RECOMMENDER_NAME= "Hybrid_UserKNNCF_ItemKNNCF"
 
-    RECOMMENDER_NAME = "Hybrid_of_Hybrids"
-
-    def __init__(self, URM_train_aug, URM_train_pow,UCM, Hybrid_1_tier1=None,Hybrid_2_tier1=None,Hybrid_1_tier2=None,Hybrid_2_tier2=None):
-
+    def __init__(self, URM_train_aug, URM_train_pow, UserKNNCF, ItemKNNCF):
         self.URM_train_aug = URM_train_aug
         self.URM_train_pow = URM_train_pow
-        self.UCM = UCM
+        self.UserKNNCF = UserKNNCF
+        self.ItemKNNCF = ItemKNNCF
+        super(Hybrid_UserKNNCF_ItemKNNCF, self).__init__(self.URM_train_aug)
 
-        if(Hybrid_1_tier1==None):
-            self.Hybrid_1_tier1 = Hybrid_1_tier1(self.URM_train_aug)
-        else:
-            self.Hybrid_1_tier1 = Hybrid_1_tier1
-        
-        
-        if(Hybrid_2_tier1==None):
-            self.Hybrid_2_tier1 = Hybrid_2_tier1(self.URM_train_aug)
-        else:
-            self.Hybrid_2_tier1 = Hybrid_2_tier1
-        
-
-        if(Hybrid_1_tier2==None):
-            self.Hybrid_1_tier2 = Hybrid_1_tier2(self.URM_train_pow)
-        else:
-            self.Hybrid_1_tier2 = Hybrid_1_tier2
-
-        
-        if(Hybrid_2_tier2==None):
-            self.Hybrid_2_tier2 = Hybrid_2_tier2(self.URM_train_pow)
-        else:
-            self.Hybrid_2_tier2 = Hybrid_2_tier2
-        
-        super(Hybrid_of_Hybrids, self).__init__(self.URM_train_aug)
-
-    def fit(self, Hybrid_1_tier1_weight=0.5, Hybrid_2_tier1_weight=0.5,Hybrid_1_tier2_weight=0.5,Hybrid_2_tier2_weight=0.5):
+    def fit(self, UserKNNCF_weight=0.2995420066475148, ItemKNNCF_weight=0.9911264072270123):
         """ Set the weights for every algorithm involved in the hybrid recommender """
 
-        self.Hybrid_1_tier1_weight = Hybrid_1_tier1_weight
-        self.Hybrid_2_tier1_weight = Hybrid_2_tier1_weight
-
-        self.Hybrid_1_tier2_weight = Hybrid_1_tier2_weight
-        self.Hybrid_2_tier2_weight = Hybrid_2_tier2_weight
-
+        self.UserKNNCF_weight = UserKNNCF_weight
+        self.ItemKNNCF_weight = ItemKNNCF_weight
 
     def _compute_item_score(self, user_id_array, items_to_compute=None):
 
-        #num_items_aug = 24507
         num_items_pow = 27968
         item_weights = np.empty([len(user_id_array), num_items_pow])
 
         for i in range(len(user_id_array)):
 
-            interactions = len(self.URM_train_aug[user_id_array[i], :].indices)
+            w1=self.UserKNNCF._compute_item_score(
+                user_id_array[i], items_to_compute)
+            w1 /= LA.norm(w1, 2)
 
-            if interactions <= 15:  # TIER 1
+            w2 = self.ItemKNNCF._compute_item_score(
+                user_id_array[i], items_to_compute)
+            w2 /= LA.norm(w2, 2)
 
-                w1 = self.Hybrid_1_tier1._compute_item_score_per_user(
-                    user_id_array[i], items_to_compute)
-                w1 /= LA.norm(w1, 2)
-
-                w2 = self.Hybrid_2_tier1._compute_item_score_per_user(
-                    user_id_array[i], items_to_compute)
-                w2 /= LA.norm(w2, 2)
-
-                w = self.Hybrid_1_tier1_weight*w1 + self.Hybrid_2_tier1_weight*w2
-
-
-            else:  # TIER 2
-
-                w1 = self.Hybrid_1_tier2._compute_item_score_per_user(
-                    user_id_array[i], items_to_compute)
-                w1 /= LA.norm(w1, 2)
-
-                w2 = self.Hybrid_2_tier2._compute_item_score_per_user(
-                    user_id_array[i], items_to_compute)
-                w2 /= LA.norm(w2, 2)
-
-                w = self.Hybrid_1_tier2*w1 + self.Hybrid_2_tier2_weight*w2
-
+            w = self.UserKNNCF_weight*w1 + self.ItemKNNCF_weight*w2
 
             item_weights[i, :] = w
-            
+
         return item_weights

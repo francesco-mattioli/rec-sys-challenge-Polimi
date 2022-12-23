@@ -48,6 +48,8 @@ metric_to_optimize = "MAP"
 cutoff_to_optimize = 10
 
 hyperparameters_range_dictionary = {
+    "topK": Integer(270,400),
+    "l2_norm": Integer(90,200),
     "ICM_weight": Real(0.001,0.1),
     "topK": Integer(600,1000),
     "shrink": Integer(20,100),
@@ -70,6 +72,12 @@ hyperparameters_range_dictionary = {
     "topK": Integer(400,2000,prior='uniform'),
 }
 '''
+earlystopping_keywargs = {"validation_every_n": 5,
+                              "stop_on_validation": True,
+                              "evaluator_object": evaluator_validation,
+                              "lower_validations_allowed": 5,
+                              "validation_metric": metric_to_optimize,
+                              }
 
 # create a bayesian optimizer object, we pass the recommender and the evaluator
 hyperparameterSearch = SearchBayesianSkopt(recommender_class,

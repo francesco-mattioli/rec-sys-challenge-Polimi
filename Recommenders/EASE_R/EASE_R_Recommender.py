@@ -50,7 +50,7 @@ class EASE_R_Recommender(BaseItemSimilarityMatrixRecommender):
         super(EASE_R_Recommender, self).__init__(URM_train, verbose = verbose)
         self.sparse_threshold_quota = sparse_threshold_quota
 
-    def fit(self, topK=703, l2_norm = 109.1463349241648, normalize_matrix = False):
+    def fit(self, topK=373, l2_norm = 111.12863230985445, normalize_matrix = False):
 #with augmented: topk = 792 l2_norm =128
         start_time = time.time()
         self._print("Fitting model... ")

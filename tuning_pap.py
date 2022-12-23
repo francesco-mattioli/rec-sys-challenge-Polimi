@@ -43,8 +43,11 @@ evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 UserKNNCF = UserKNNCFRecommender(URM_train_aug)
 UserKNNCF.fit()
 
-RP3beta_aug = RP3betaRecommender(URM_train_aug)
-RP3beta_aug.fit(alpha=0.6951524535062256,beta=0.39985511876562174, topK=82, normalize_similarity=True)
+ItemKNNCF = ItemKNNCFRecommender(URM_train_pow)
+ItemKNNCF.fit()
+
+#RP3beta_aug = RP3betaRecommender(URM_train_aug)
+#RP3beta_aug.fit(alpha=0.6951524535062256,beta=0.39985511876562174, topK=82, normalize_similarity=True)
 
 #S_SLIM = SLIMElasticNetRecommender(URM_train_pow)
 #S_SLIM.fit()
@@ -55,7 +58,7 @@ RP3beta_aug.fit(alpha=0.6951524535062256,beta=0.39985511876562174, topK=82, norm
 # End fitting
 
 
-recommender_class = Hybrid_UserKNNCF_RP3B_aug
+recommender_class = Hybrid_UserKNNCF_ItemKNNCF
 
 output_folder_path = "result_experiments/"
 
@@ -97,7 +100,7 @@ hyperparameters_range_dictionary = {
 
 hyperparameters_range_dictionary = {
     "UserKNNCF_weight": Real(0,1),
-    "RP3B_weight": Real(0,1),
+    "ItemKNNCF_weight": Real(0,1),
 }
 
 
@@ -108,7 +111,7 @@ hyperparameterSearch = SearchBayesianSkopt(recommender_class,
 # provide data needed to create instance of model (one on URM_train, the other on URM_all)
 recommender_input_args = SearchInputRecommenderArgs(
     # For a CBF model simply put [URM_train, ICM_train]
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,URM_train_pow,UserKNNCF,RP3beta_aug],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,URM_train_pow,UserKNNCF,ItemKNNCF],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
@@ -116,7 +119,7 @@ recommender_input_args = SearchInputRecommenderArgs(
 )
 
 recommender_input_args_last_test = SearchInputRecommenderArgs(
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,URM_train_pow,UserKNNCF,RP3beta_aug],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,URM_train_pow,UserKNNCF,ItemKNNCF],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
