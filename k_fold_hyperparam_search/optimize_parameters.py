@@ -13,6 +13,7 @@ from k_fold_hyperparam_search.hyperparam_def import names, spaces
 # Import some recommenders for instantiating them properly
 from hybrid import *
 from Recommenders.KNN.UserKNN_CFCBF_Hybrid_Recommender import UserKNN_CFCBF_Hybrid_Recommender
+from Recommenders.KNN.ItemKNN_CFCBF_Hybrid_Recommender import ItemKNN_CFCBF_Hybrid_Recommender
 from Recommenders.KNN.UserKNNCFRecommender import UserKNNCFRecommender
 
 
@@ -110,6 +111,10 @@ def optimize_parameters(recommender_class: type, n_calls=100, k=5, validation_pe
     elif(recommender_class == UserKNN_CFCBF_Hybrid_Recommender):
         for URM_train_aug in URM_aug_trains:
             recommenders.append(recommender_class(URM_train_aug, UCM))
+
+    elif(recommender_class == ItemKNN_CFCBF_Hybrid_Recommender):
+        for URM_train_pow in URM_pow_trains:
+            recommenders.append(recommender_class(URM_train_pow,ICM))
 
     elif(recommender_class == UserKNNCFRecommender):
         for URM_train_aug in URM_aug_trains:

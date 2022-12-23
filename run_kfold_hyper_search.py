@@ -7,6 +7,7 @@ from Recommenders.SLIM.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
 from Recommenders.KNN.UserKNNCFRecommender import UserKNNCFRecommender
 from Recommenders.KNN.UserKNN_CFCBF_Hybrid_Recommender import UserKNN_CFCBF_Hybrid_Recommender
+from Recommenders.KNN.ItemKNN_CFCBF_Hybrid_Recommender import ItemKNN_CFCBF_Hybrid_Recommender
 from Recommenders.GraphBased.RP3betaRecommender import RP3betaRecommender
 from hybrid import *
 
@@ -40,6 +41,16 @@ if __name__ == '__main__':
         forest=True,
     )   
     '''
+    rec_class = ItemKNN_CFCBF_Hybrid_Recommender
+    optimize_parameters(
+        recommender_class=rec_class,
+        validation_percentage=val_percentage,
+        k=k,
+        n_calls=100,
+        limit_at=limit_at,
+        forest=True,
+    )   
+
     '''
     rec_class = UserKNNCFRecommender
     optimize_parameters(
@@ -51,7 +62,7 @@ if __name__ == '__main__':
         forest=True,
     )
     '''
-
+    '''
     rec_class = UserKNN_CFCBF_Hybrid_Recommender
     optimize_parameters(
         recommender_class=rec_class,
@@ -61,6 +72,7 @@ if __name__ == '__main__':
         limit_at=limit_at,
         forest=True,
     )
+    '''
 
     '''
     rec_class = RP3betaRecommender

@@ -1,6 +1,7 @@
 from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
 from Recommenders.KNN.UserKNNCFRecommender import UserKNNCFRecommender
 from Recommenders.KNN.UserKNN_CFCBF_Hybrid_Recommender import UserKNN_CFCBF_Hybrid_Recommender
+from Recommenders.KNN.ItemKNN_CFCBF_Hybrid_Recommender import ItemKNN_CFCBF_Hybrid_Recommender
 from Recommenders.SLIM.SLIMElasticNetRecommender import * 
 from Recommenders.SLIM.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 from Recommenders.GraphBased.RP3betaRecommender import *
@@ -89,4 +90,11 @@ spaces[UserKNN_CFCBF_Hybrid_Recommender] = [
     Real(low = 1e-3, high = 0.05,name="UCM_weight"),
     Integer(500,1000,name="topK"),
     Integer(30,200,name="shrink"),
+]
+
+names[ItemKNN_CFCBF_Hybrid_Recommender] = "ItemKNN_CFCBF_HybridRecommender"
+spaces[ItemKNN_CFCBF_Hybrid_Recommender] = [
+    Real(low = 1e-3, high = 0.05,name="ICM_weight"),
+    Integer(1000, 10000, name='topK'),
+    Real(10, 1000, name='shrink'),
 ]
