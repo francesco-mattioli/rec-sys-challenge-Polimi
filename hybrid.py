@@ -6,7 +6,7 @@ from Recommenders.KNN.UserKNN_CFCBF_Hybrid_Recommender import UserKNN_CFCBF_Hybr
 from Recommenders.SLIM.SLIMElasticNetRecommender import *
 from Recommenders.GraphBased.RP3betaRecommender import RP3betaRecommender
 from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
-#from Recommenders.FactorizationMachines.LightFMRecommender import LightFMItemHybridRecommender
+# from Recommenders.FactorizationMachines.LightFMRecommender import LightFMItemHybridRecommender
 from Data_Handler.DataReader import DataReader
 
 
@@ -24,8 +24,8 @@ class HybridRecommender(BaseRecommender):
 
     def __init__(self, URM_train):
         self.URM_train_aug = URM_train
-        #self.ICM = ICM
-        #self.URM_train_pow = self.stackMatrixes(dataReader, URM_train)
+        # self.ICM = ICM
+        # self.URM_train_pow = self.stackMatrixes(dataReader, URM_train)
         # URM_train_aug_df=dataReader.csr_to_dataframe(URM_train)
         # self.URM_train_pow=dataReader.load_powerful_binary_urm_given_URM_train_df(URM_train_aug_df)
 
@@ -33,14 +33,14 @@ class HybridRecommender(BaseRecommender):
 
     def fit(self):
         # Stack and normalize URM and ICM
-        #URM_stacked = sps.vstack([self.URM_train, self.ICM.T])
+        # URM_stacked = sps.vstack([self.URM_train, self.ICM.T])
 
         # Instantiate & fit the recommenders
-        #self.ItemCF = ItemKNNCFRecommender(self.URM_train_pow)
-        #self.ItemCF.fit(topK=1199, shrink=229.22107382005083,similarity='cosine', normalize=True, feature_weighting="TF-IDF")
+        # self.ItemCF = ItemKNNCFRecommender(self.URM_train_pow)
+        # self.ItemCF.fit(topK=1199, shrink=229.22107382005083,similarity='cosine', normalize=True, feature_weighting="TF-IDF")
 
-        #self.SLIM_ElasticNet = SLIMElasticNetRecommender(self.URM_train)
-        #self.SLIM_ElasticNet.fit(l1_ratio=0.008213119901673099,alpha=0.0046000272149077145, positive_only=True, topK=498)
+        # self.SLIM_ElasticNet = SLIMElasticNetRecommender(self.URM_train)
+        # self.SLIM_ElasticNet.fit(l1_ratio=0.008213119901673099,alpha=0.0046000272149077145, positive_only=True, topK=498)
 
         # self.LightFMItemHybridRecommender = LightFMItemHybridRecommender(self.URM_train, self.ICM)
         # self.LightFMItemHybridRecommender.fit(epochs = 10)
@@ -51,7 +51,7 @@ class HybridRecommender(BaseRecommender):
 
     def _compute_item_score(self, user_id_array, items_to_compute=None):
 
-        #num_items = 24507
+        # num_items = 24507
         num_items = 27968
         # num_items=19630
         # num_items = len(self.items) # num_items changes based on used urm
@@ -69,10 +69,10 @@ class HybridRecommender(BaseRecommender):
             w = w1 + w2
             '''
 
-            #w = self.ItemCF._compute_item_score(user_id_array[i], items_to_compute)
+            # w = self.ItemCF._compute_item_score(user_id_array[i], items_to_compute)
             w = self.RP3beta._compute_item_score(
                 user_id_array[i], items_to_compute)
-            #w = self.SLIM_ElasticNet._compute_item_score(user_id_array[i], items_to_compute)
+            # w = self.SLIM_ElasticNet._compute_item_score(user_id_array[i], items_to_compute)
             # w = self.SLIM_BPR_Cython._compute_item_score(user_id_array[i], items_to_compute)
             # w = self.LightFMItemHybridRecommender._compute_item_score(user_id_array[i], items_to_compute)
 
@@ -120,14 +120,14 @@ class HybridRecommender_2(BaseRecommender):
         for rec_class in self.weights.keys():
             if self.weights[rec_class] > 0.0:
                 if rec_class not in self.recommenders:
-                    #start = time.time()
+                    # start = time.time()
                     if rec_class == SLIMElasticNetRecommender:
                         temp_rec = rec_class(self.URM_train_pow)
                     else:
                         temp_rec = rec_class(self.URM_train_aug)
                     temp_rec.fit()
                     self.recommenders[rec_class] = temp_rec
-                    #end = time.time()
+                    # end = time.time()
                     print("Fitted new instance of {}.".format(
                         rec_class.__name__))
 
@@ -211,6 +211,7 @@ class HybridRecommender_3(BaseRecommender):
 
         return item_weights
 
+
 '''
 class HybridLightFM(BaseRecommender):
     RECOMMENDER_NAME = "HybridLightFM"
@@ -260,8 +261,10 @@ class HybridLightFM(BaseRecommender):
 def paddingICMandURM(self, dataReader, URM_train):
         urm=dataReader.csr_to_dataframe(URM_train)
         icm=dataReader.load_icm_df()
-        DiffURM_ICM = np.setdiff1d(urm['ItemID'].unique(), icm['item_id'].unique())
-        DiffICM_URM = np.setdiff1d(icm['item_id'].unique(), urm['ItemID'].unique())
+        DiffURM_ICM = np.setdiff1d(
+            urm['ItemID'].unique(), icm['item_id'].unique())
+        DiffICM_URM = np.setdiff1d(
+            icm['item_id'].unique(), urm['ItemID'].unique())
         print(DiffURM_ICM.size)
         for id in DiffURM_ICM:
             icm.loc[len(icm.index)] = [id, 1, 0]
@@ -307,7 +310,8 @@ class HybridRecommender_4(BaseRecommender):
         self.UserKNNCF.fit()
 
         self.RP3beta_pow = RP3betaRecommender(self.URM_train_pow)
-        self.RP3beta_pow.fit(alpha=0.3648761546066018,beta=0.5058870363874656, topK=480, normalize_similarity=True)
+        self.RP3beta_pow.fit(
+            alpha=0.3648761546066018,beta=0.5058870363874656, topK=480, normalize_similarity=True)
 
         self.S_SLIM = SLIMElasticNetRecommender(self.URM_train_pow)
         self.S_SLIM.fit()
@@ -315,7 +319,7 @@ class HybridRecommender_4(BaseRecommender):
 
     def _compute_item_score(self, user_id_array, items_to_compute=None):
 
-        #num_items_aug = 24507
+        # num_items_aug = 24507
         num_items_pow = 27968
         item_weights = np.empty([len(user_id_array), num_items_pow])
 
@@ -333,7 +337,7 @@ class HybridRecommender_4(BaseRecommender):
                 w2 /= LA.norm(w2, 2)
 
                 w = self.RP3beta_pow_tier1_weight*w1 + self.UserKNNCF_tier1_weight*w2
-                #w = np.pad(w, ((0, 0), (0, num_items_pow-num_items_aug)))
+                # w = np.pad(w, ((0, 0), (0, num_items_pow-num_items_aug)))
                 item_weights[i, :] = w
 
             elif interactions > 15 and interactions <= 19:  # TIER 2
@@ -346,7 +350,7 @@ class HybridRecommender_4(BaseRecommender):
                 w2 /= LA.norm(w2, 2)
 
                 w = self.RP3beta_pow_tier2_weight*w1 + self.UserKNNCF_tier2_weight*w2
-                #w = np.pad(w, ((0, 0), (0, num_items_pow-num_items_aug)))
+                # w = np.pad(w, ((0, 0), (0, num_items_pow-num_items_aug)))
                 item_weights[i, :] = w
 
             elif interactions > 19 and interactions <= 28:  # TIER 3
@@ -391,7 +395,7 @@ class HybridRecommender_5(BaseRecommender):
         super(HybridRecommender_5, self).__init__(self.URM_train_aug)
 
     def fit(self, UserKNNCF_tier1_weight=0.6345269660425519, RP3beta_pow_tier1_weight=0.33158219696928976, EASE_R_tier1_weight=0.09597531837611298, UserKNNCF_tier2_weight=0.9792376938449392, RP3beta_pow_tier2_weight=0.57023899912625, EASE_R_tier2_weight=0.38860109710692725, RP3beta_pow_tier3_weight=0.722924027983384, S_SLIM_tier3_weight=0.8268022628613843, EASE_R_tier3_weight=0.06536164657983635, S_SLIM_tier4_weight=0.9465915892992056, EASE_R_tier4_weight=0.4292689877661564):
-       #'UserKNNCF_tier1_weight': 0.6345269660425519, 'RP3beta_pow_tier1_weight': 0.33158219696928976, 'EASE_R_tier1_weight': 0.09597531837611298, 'UserKNNCF_tier2_weight': 0.9792376938449392, 'RP3beta_pow_tier2_weight': 0.570238999126259, 'EASE_R_tier2_weight': 0.38860109710692725, 'RP3beta_pow_tier3_weight': 0.722924027983384, 'S_SLIM_tier3_weight': 0.8268022628613843, 'EASE_R_tier3_weight': 0.06536164657983635, 'S_SLIM_tier4_weight': 0.9465915892992056, 'EASE_R_tier4_weight': 0.4292689877661564
+       # 'UserKNNCF_tier1_weight': 0.6345269660425519, 'RP3beta_pow_tier1_weight': 0.33158219696928976, 'EASE_R_tier1_weight': 0.09597531837611298, 'UserKNNCF_tier2_weight': 0.9792376938449392, 'RP3beta_pow_tier2_weight': 0.570238999126259, 'EASE_R_tier2_weight': 0.38860109710692725, 'RP3beta_pow_tier3_weight': 0.722924027983384, 'S_SLIM_tier3_weight': 0.8268022628613843, 'EASE_R_tier3_weight': 0.06536164657983635, 'S_SLIM_tier4_weight': 0.9465915892992056, 'EASE_R_tier4_weight': 0.4292689877661564
         """ Set the weights for every algorithm involved in the hybrid recommender """
 
         self.UserKNNCF_tier1_weight = UserKNNCF_tier1_weight
@@ -413,14 +417,15 @@ class HybridRecommender_5(BaseRecommender):
     self.UserKNNCF = UserKNNCFRecommender(self.URM_train_aug)
         self.UserKNNCF.fit()
         self.RP3beta_pow = RP3betaRecommender(self.URM_train_pow)
-        self.RP3beta_pow.fit(alpha=0.3648761546066018,beta=0.5058870363874656, topK=480, normalize_similarity=True)
+        self.RP3beta_pow.fit(
+            alpha=0.3648761546066018,beta=0.5058870363874656, topK=480, normalize_similarity=True)
         self.S_SLIM = SLIMElasticNetRecommender(self.URM_train_pow)
         self.S_SLIM.fit()
     '''
 
     def _compute_item_score(self, user_id_array, items_to_compute=None):
 
-        #num_items_aug = 24507
+        # num_items_aug = 24507
         num_items_pow = 27968
         item_weights = np.empty([len(user_id_array), num_items_pow])
 
@@ -441,8 +446,9 @@ class HybridRecommender_5(BaseRecommender):
                     user_id_array[i], items_to_compute)
                 w3 /= LA.norm(w3, 2)
 
-                w = self.RP3beta_pow_tier1_weight*w1 + self.UserKNNCF_tier1_weight*w2 + self.EASE_R_tier1_weight*w3
-                #w = np.pad(w, ((0, 0), (0, num_items_pow-num_items_aug)))
+                w = self.RP3beta_pow_tier1_weight*w1 + \
+                    self.UserKNNCF_tier1_weight*w2 + self.EASE_R_tier1_weight*w3
+                # w = np.pad(w, ((0, 0), (0, num_items_pow-num_items_aug)))
 
             elif interactions > 15 and interactions <= 19:  # TIER 2
                 w1 = self.RP3beta_pow._compute_item_score(
@@ -457,8 +463,9 @@ class HybridRecommender_5(BaseRecommender):
                     user_id_array[i], items_to_compute)
                 w3 /= LA.norm(w3, 2)
 
-                w = self.RP3beta_pow_tier2_weight*w1 + self.UserKNNCF_tier2_weight*w2 + self.EASE_R_tier2_weight*w3
-                #w = np.pad(w, ((0, 0), (0, num_items_pow-num_items_aug)))
+                w = self.RP3beta_pow_tier2_weight*w1 + \
+                    self.UserKNNCF_tier2_weight*w2 + self.EASE_R_tier2_weight*w3
+                # w = np.pad(w, ((0, 0), (0, num_items_pow-num_items_aug)))
 
             elif interactions > 19 and interactions <= 28:  # TIER 3
                 w1 = self.RP3beta_pow._compute_item_score(
@@ -473,7 +480,8 @@ class HybridRecommender_5(BaseRecommender):
                     user_id_array[i], items_to_compute)
                 w3 /= LA.norm(w3, 2)
 
-                w = self.RP3beta_pow_tier3_weight*w1 + self.S_SLIM_tier3_weight*w2 + self.EASE_R_tier3_weight*w3
+                w = self.RP3beta_pow_tier3_weight*w1 + \
+                    self.S_SLIM_tier3_weight*w2 + self.EASE_R_tier3_weight*w3
 
             else:  # TIER 4
                 w1 = self.S_SLIM._compute_item_score(
@@ -486,10 +494,10 @@ class HybridRecommender_5(BaseRecommender):
 
                 w = self.S_SLIM_tier4_weight*w1 + self.EASE_R_tier4_weight*w2
 
-   
             item_weights[i, :] = w
-            
+
         return item_weights
+
 
 class HybridRecommender_6(BaseRecommender):
 
@@ -584,40 +592,41 @@ class HybridRecommender_7(BaseRecommender):
 
     RECOMMENDER_NAME = "Hybrid_Recommender_7"
 
-    def __init__(self, URM_train_aug, URM_train_pow,UCM, UserKNNCF, RP3beta_pow, S_SLIM, EASE_R, UserKNN_CFCBF_Hybrid):
+    def __init__(self, URM_train_aug, URM_train_pow, UCM, UserKNNCF, RP3beta_pow, S_SLIM, EASE_R, UserKNN_CFCBF_Hybrid):
 
         self.URM_train_aug = URM_train_aug
         self.URM_train_pow = URM_train_pow
         self.UCM = UCM
 
-        if(UserKNNCF==None):
+        if(UserKNNCF == None):
             self.UserKNNCF = UserKNNCFRecommender(self.URM_train_aug)
         else:
             self.UserKNNCF = UserKNNCF
 
-        if(RP3beta_pow==None):
+        if(RP3beta_pow == None):
             self.RP3beta_pow = RP3betaRecommender(self.URM_train_pow)
         else:
             self.RP3beta_pow = RP3beta_pow
 
-        if(S_SLIM==None):
+        if(S_SLIM == None):
             self.S_SLIM = S_SLIM(self.URM_train_pow)
         else:
             self.S_SLIM = S_SLIM
-        
-        if(EASE_R==None):
+
+        if(EASE_R == None):
             self.EASE_R = EASE_R(self.URM_train_aug)
         else:
             self.EASE_R = EASE_R
-        
-        if(UserKNN_CFCBF_Hybrid==None):
-            self.UserKNNCB_Hybrid = UserKNN_CFCBF_Hybrid_Recommender(self.URM_train_aug,self.UCM)
+
+        if(UserKNN_CFCBF_Hybrid == None):
+            self.UserKNNCB_Hybrid = UserKNN_CFCBF_Hybrid_Recommender(
+                self.URM_train_aug, self.UCM)
         else:
-            self.UserKNNCB_Hybrid=UserKNN_CFCBF_Hybrid
-        
+            self.UserKNNCB_Hybrid = UserKNN_CFCBF_Hybrid
+
         super(HybridRecommender_7, self).__init__(self.URM_train_aug)
 
-    def fit(self, UserKNNCF_tier1_weight=0.6345269660425519, RP3beta_pow_tier1_weight=0.33158219696928976, EASE_R_tier1_weight=0.09597531837611298, UserKNNCB_Hybrid_tier2_weight=0.5,UserKNNCF_tier2_weight=0.9792376938449392, RP3beta_pow_tier2_weight=0.570238999126259, EASE_R_tier2_weight=0.38860109710692725, UserKNNCB_Hybrid_tier3_weight=0.5, RP3beta_pow_tier3_weight=0.722924027983384, S_SLIM_tier3_weight=0.8268022628613843, EASE_R_tier3_weight=0.06536164657983635, UserKNNCB_Hybrid_tier4_weight=0.5, S_SLIM_tier4_weight=0.9465915892992056, EASE_R_tier4_weight=0.4292689877661564):
+    def fit(self, UserKNNCF_tier1_weight=0.6345269660425519, RP3beta_pow_tier1_weight=0.33158219696928976, EASE_R_tier1_weight=0.09597531837611298, UserKNNCB_Hybrid_tier2_weight=0.5, UserKNNCF_tier2_weight=0.9792376938449392, RP3beta_pow_tier2_weight=0.570238999126259, EASE_R_tier2_weight=0.38860109710692725, UserKNNCB_Hybrid_tier3_weight=0.5, RP3beta_pow_tier3_weight=0.722924027983384, S_SLIM_tier3_weight=0.8268022628613843, EASE_R_tier3_weight=0.06536164657983635, UserKNNCB_Hybrid_tier4_weight=0.5, S_SLIM_tier4_weight=0.9465915892992056, EASE_R_tier4_weight=0.4292689877661564):
         """ Set the weights for every algorithm involved in the hybrid recommender """
 
         self.UserKNNCF_tier1_weight = UserKNNCF_tier1_weight
@@ -638,10 +647,9 @@ class HybridRecommender_7(BaseRecommender):
         self.S_SLIM_tier4_weight = S_SLIM_tier4_weight
         self.EASE_R_tier4_weight = EASE_R_tier4_weight
 
-
     def _compute_item_score(self, user_id_array, items_to_compute=None):
 
-        #num_items_aug = 24507
+        # num_items_aug = 24507
         num_items_pow = 27968
         item_weights = np.empty([len(user_id_array), num_items_pow])
 
@@ -663,8 +671,9 @@ class HybridRecommender_7(BaseRecommender):
                     user_id_array[i], items_to_compute)
                 w3 /= LA.norm(w3, 2)
 
-                w = self.RP3beta_pow_tier1_weight*w1 + self.UserKNNCF_tier1_weight*w2 + self.EASE_R_tier1_weight*w3
-                #w = np.pad(w, ((0, 0), (0, num_items_pow-num_items_aug)))
+                w = self.RP3beta_pow_tier1_weight*w1 + \
+                    self.UserKNNCF_tier1_weight*w2 + self.EASE_R_tier1_weight*w3
+                # w = np.pad(w, ((0, 0), (0, num_items_pow-num_items_aug)))
 
             elif interactions > 15 and interactions <= 19:  # TIER 2
                 w4 = self.UserKNNCB_Hybrid._compute_item_score(
@@ -683,8 +692,9 @@ class HybridRecommender_7(BaseRecommender):
                     user_id_array[i], items_to_compute)
                 w3 /= LA.norm(w3, 2)
 
-                w = self.RP3beta_pow_tier2_weight*w1 + self.UserKNNCF_tier2_weight*w2 + self.EASE_R_tier2_weight*w3 + self.UserKNNCB_Hybrid_tier2_weight*w4
-                #w = np.pad(w, ((0, 0), (0, num_items_pow-num_items_aug)))
+                w = self.RP3beta_pow_tier2_weight*w1 + self.UserKNNCF_tier2_weight*w2 + \
+                    self.EASE_R_tier2_weight*w3 + self.UserKNNCB_Hybrid_tier2_weight*w4
+                # w = np.pad(w, ((0, 0), (0, num_items_pow-num_items_aug)))
 
             elif interactions > 19 and interactions <= 28:  # TIER 3
 
@@ -704,7 +714,8 @@ class HybridRecommender_7(BaseRecommender):
                     user_id_array[i], items_to_compute)
                 w4 /= LA.norm(w4, 2)
 
-                w = self.RP3beta_pow_tier3_weight*w1 + self.S_SLIM_tier3_weight*w2 + self.EASE_R_tier3_weight*w3 + self.UserKNNCB_Hybrid_tier3_weight*w4
+                w = self.RP3beta_pow_tier3_weight*w1 + self.S_SLIM_tier3_weight*w2 + \
+                    self.EASE_R_tier3_weight*w3 + self.UserKNNCB_Hybrid_tier3_weight*w4
 
             else:  # TIER 4
 
@@ -720,17 +731,18 @@ class HybridRecommender_7(BaseRecommender):
                     user_id_array[i], items_to_compute)
                 w3 /= LA.norm(w3, 2)
 
-                w = self.S_SLIM_tier4_weight*w1 + self.EASE_R_tier4_weight*w2 + self.UserKNNCB_Hybrid_tier4_weight*w3
-
+                w = self.S_SLIM_tier4_weight*w1 + self.EASE_R_tier4_weight * \
+                    w2 + self.UserKNNCB_Hybrid_tier4_weight*w3
 
             item_weights[i, :] = w
-            
+
         return item_weights
 
 ############################################################# Hybrids per layer ###########################################################
 
+
 class Hybrid_SSLIM_EASER(BaseRecommender):
-    RECOMMENDER_NAME= "Hybrid_layer1"
+    RECOMMENDER_NAME = "Hybrid_layer1"
 
     def __init__(self, URM_train_aug, URM_train_pow, SSLIM, EASE_R):
         self.URM_train_aug = URM_train_aug
@@ -752,7 +764,7 @@ class Hybrid_SSLIM_EASER(BaseRecommender):
 
         for i in range(len(user_id_array)):
 
-            w1=self.SSLIM._compute_item_score(
+            w1 = self.SSLIM._compute_item_score(
                 user_id_array[i], items_to_compute)
             w1 /= LA.norm(w1, 2)
 
@@ -768,7 +780,7 @@ class Hybrid_SSLIM_EASER(BaseRecommender):
 
 
 class Hybrid_SSLIM_RP3B_aug(BaseRecommender):
-    RECOMMENDER_NAME= "Hybrid_SSLIM_RP3B_aug"
+    RECOMMENDER_NAME = "Hybrid_SSLIM_RP3B_aug"
 
     def __init__(self, URM_train_aug, URM_train_pow, SSLIM, RP3B):
         self.URM_train_aug = URM_train_aug
@@ -790,7 +802,7 @@ class Hybrid_SSLIM_RP3B_aug(BaseRecommender):
 
         for i in range(len(user_id_array)):
 
-            w1=self.SSLIM._compute_item_score(
+            w1 = self.SSLIM._compute_item_score(
                 user_id_array[i], items_to_compute)
             w1 /= LA.norm(w1, 2)
 
@@ -804,9 +816,9 @@ class Hybrid_SSLIM_RP3B_aug(BaseRecommender):
 
         return item_weights
 
-    
+
 class Hybrid_UserKNNCF_RP3B_aug(BaseRecommender):
-    RECOMMENDER_NAME= "Hybrid_UserKNNCF_RP3B_aug"
+    RECOMMENDER_NAME = "Hybrid_UserKNNCF_RP3B_aug"
 
     def __init__(self, URM_train_aug, URM_train_pow, UserKNNCF, RP3B):
         self.URM_train_aug = URM_train_aug
@@ -828,7 +840,7 @@ class Hybrid_UserKNNCF_RP3B_aug(BaseRecommender):
 
         for i in range(len(user_id_array)):
 
-            w1=self.UserKNNCF._compute_item_score(
+            w1 = self.UserKNNCF._compute_item_score(
                 user_id_array[i], items_to_compute)
             w1 /= LA.norm(w1, 2)
 
@@ -841,10 +853,24 @@ class Hybrid_UserKNNCF_RP3B_aug(BaseRecommender):
             item_weights[i, :] = w
 
         return item_weights
-        
+
+    def _compute_item_score_per_user(self, user_id, items_to_compute=None):
+
+        w1 = self.UserKNNCF._compute_item_score(
+            user_id, items_to_compute)
+        w1 /= LA.norm(w1, 2)
+
+        w2 = self.RP3B._compute_item_score(
+            user_id, items_to_compute)
+        w2 /= LA.norm(w2, 2)
+
+        w = self.UserKNNCF_weight*w1 + self.RP3B_weight*w2
+
+        return w
+
 
 class Hybrid_UserKNNCF_ItemKNNCF(BaseRecommender):
-    RECOMMENDER_NAME= "Hybrid_UserKNNCF_ItemKNNCF"
+    RECOMMENDER_NAME = "Hybrid_UserKNNCF_ItemKNNCF"
 
     def __init__(self, URM_train_aug, URM_train_pow, UserKNNCF, ItemKNNCF):
         self.URM_train_aug = URM_train_aug
@@ -866,7 +892,7 @@ class Hybrid_UserKNNCF_ItemKNNCF(BaseRecommender):
 
         for i in range(len(user_id_array)):
 
-            w1=self.UserKNNCF._compute_item_score(
+            w1 = self.UserKNNCF._compute_item_score(
                 user_id_array[i], items_to_compute)
             w1 /= LA.norm(w1, 2)
 
@@ -875,6 +901,108 @@ class Hybrid_UserKNNCF_ItemKNNCF(BaseRecommender):
             w2 /= LA.norm(w2, 2)
 
             w = self.UserKNNCF_weight*w1 + self.ItemKNNCF_weight*w2
+
+            item_weights[i, :] = w
+
+        return item_weights
+
+    def _compute_item_score_per_user(self, user_id, items_to_compute=None):
+
+        w1 = self.UserKNNCF._compute_item_score(
+            user_id, items_to_compute)
+        w1 /= LA.norm(w1, 2)
+
+        w2 = self.ItemKNNCF._compute_item_score(
+            user_id, items_to_compute)
+        w2 /= LA.norm(w2, 2)
+
+        w = self.UserKNNCF_weight*w1 + self.ItemKNNCF_weight*w2
+
+        return w
+
+#######################################################################################################
+##################### Hybrid of Hybrids ###############################################################
+#######################################################################################################
+
+
+class Hybrid_of_Hybrids(BaseRecommender):
+
+    RECOMMENDER_NAME = "Hybrid_of_Hybrids"
+
+    def __init__(self, URM_train_aug, URM_train_pow, UCM, Hybrid_1_tier1=None, Hybrid_2_tier1=None, Hybrid_1_tier2=None, Hybrid_2_tier2=None):
+
+        self.URM_train_aug = URM_train_aug
+        self.URM_train_pow = URM_train_pow
+        self.UCM = UCM
+
+        if(Hybrid_1_tier1 == None):
+            # TODO: based on hybrid
+            self.Hybrid_1_tier1 = Hybrid_1_tier1(self.URM_train_aug)
+        else:
+            self.Hybrid_1_tier1 = Hybrid_1_tier1
+
+        if(Hybrid_2_tier1 == None):
+            # TODO: based on hybrid
+            self.Hybrid_2_tier1 = Hybrid_2_tier1(self.URM_train_aug)
+        else:
+            self.Hybrid_2_tier1 = Hybrid_2_tier1
+
+        if(Hybrid_1_tier2 == None):
+            # TODO: based on hybrid
+            self.Hybrid_1_tier2 = Hybrid_1_tier2(self.URM_train_pow)
+        else:
+            self.Hybrid_1_tier2 = Hybrid_1_tier2
+
+        if(Hybrid_2_tier2 == None):
+            # TODO: based on hybrid
+            self.Hybrid_2_tier2 = Hybrid_2_tier2(self.URM_train_pow)
+        else:
+            self.Hybrid_2_tier2 = Hybrid_2_tier2
+
+        super(Hybrid_of_Hybrids, self).__init__(self.URM_train_aug)
+
+    def fit(self, Hybrid_1_tier1_weight=0.5, Hybrid_2_tier1_weight=0.5, Hybrid_1_tier2_weight=0.5, Hybrid_2_tier2_weight=0.5):
+        """ Set the weights for every algorithm involved in the hybrid recommender """
+
+        self.Hybrid_1_tier1_weight = Hybrid_1_tier1_weight
+        self.Hybrid_2_tier1_weight = Hybrid_2_tier1_weight
+
+        self.Hybrid_1_tier2_weight = Hybrid_1_tier2_weight
+        self.Hybrid_2_tier2_weight = Hybrid_2_tier2_weight
+
+    def _compute_item_score(self, user_id_array, items_to_compute=None):
+        
+        num_items_pow = 27968
+        item_weights = np.empty([len(user_id_array), num_items_pow])
+        
+        for i in range(len(user_id_array)):
+
+            interactions = len(self.URM_train_aug[user_id_array[i], :].indices)
+
+            if interactions <= 15:  # TIER 1
+
+                w1 = self.Hybrid_1_tier1._compute_item_score_per_user(
+                    user_id_array[i], items_to_compute)
+                w1 /= LA.norm(w1, 2)
+
+                w2 = self.Hybrid_2_tier1._compute_item_score_per_user(
+                    user_id_array[i], items_to_compute)
+                w2 /= LA.norm(w2, 2)
+
+                w = self.Hybrid_1_tier1_weight*w1 + self.Hybrid_2_tier1_weight*w2
+
+
+            else:  # TIER 2
+
+                w1 = self.Hybrid_1_tier2._compute_item_score_per_user(
+                    user_id_array[i], items_to_compute)
+                w1 /= LA.norm(w1, 2)
+
+                w2 = self.Hybrid_2_tier2._compute_item_score_per_user(
+                    user_id_array[i], items_to_compute)
+                w2 /= LA.norm(w2, 2)
+
+                w = self.Hybrid_1_tier2_weight*w1 + self.Hybrid_2_tier2_weight*w2
 
             item_weights[i, :] = w
 
