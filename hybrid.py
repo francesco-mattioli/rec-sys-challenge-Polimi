@@ -3,9 +3,11 @@ from Recommenders.BaseRecommender import BaseRecommender
 from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
 from Recommenders.KNN.UserKNNCFRecommender import UserKNNCFRecommender
 from Recommenders.KNN.UserKNN_CFCBF_Hybrid_Recommender import UserKNN_CFCBF_Hybrid_Recommender
+from Recommenders.KNN.ItemKNN_CFCBF_Hybrid_Recommender import ItemKNN_CFCBF_Hybrid_Recommender
 from Recommenders.SLIM.SLIMElasticNetRecommender import *
 from Recommenders.GraphBased.RP3betaRecommender import RP3betaRecommender
 from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
+
 # from Recommenders.FactorizationMachines.LightFMRecommender import LightFMItemHybridRecommender
 from Data_Handler.DataReader import DataReader
 
@@ -920,6 +922,60 @@ class Hybrid_UserKNNCF_ItemKNNCF(BaseRecommender):
 
         return w
 
+
+
+class Hybrid_User_and_Item_KNN_CFCBF_Hybrid(BaseRecommender):
+    RECOMMENDER_NAME = "Hybrid_UserKNNCF_ItemKNNCF"
+
+    def __init__(self, URM_train_aug, URM_train_pow, ItemKNN_CFCBF_Hybrid_Recommender, UserKNN_CFCBF_Hybrid_Recommender):
+        self.URM_train_aug = URM_train_aug
+        self.URM_train_pow = URM_train_pow
+        self.ItemKNN_CFCBF_Hybrid_Recommender = ItemKNN_CFCBF_Hybrid_Recommender
+        self.UserKNN_CFCBF_Hybrid_Recommender = UserKNN_CFCBF_Hybrid_Recommender
+        super(Hybrid_User_and_Item_KNN_CFCBF_Hybrid, self).__init__(self.URM_train_aug)
+
+    def fit(self, ItemKNN_CFCBF_Hybrid_Recommender_weight=0.5, UserKNN_CFCBF_Hybrid_Recommender_weight=0.5):
+        """ Set the weights for every algorithm involved in the hybrid recommender """
+
+        self.ItemKNN_CFCBF_Hybrid_Recommender_weight = ItemKNN_CFCBF_Hybrid_Recommender_weight
+        self.UserKNN_CFCBF_Hybrid_Recommender_weight = UserKNN_CFCBF_Hybrid_Recommender_weight
+
+    def _compute_item_score(self, user_id_array, items_to_compute=None):
+
+        num_items_pow = 27968
+        item_weights = np.empty([len(user_id_array), num_items_pow])
+
+        for i in range(len(user_id_array)):
+
+            w1 = self.ItemKNN_CFCBF_Hybrid_Recommender._compute_item_score(
+                user_id_array[i], items_to_compute)
+            w1 /= LA.norm(w1, 2)
+
+            w2 = self.UserKNN_CFCBF_Hybrid_Recommender._compute_item_score(
+                user_id_array[i], items_to_compute)
+            w2 /= LA.norm(w2, 2)
+
+            w = self.ItemKNN_CFCBF_Hybrid_Recommender_weight*w1 + self.UserKNN_CFCBF_Hybrid_Recommender_weight*w2
+
+            item_weights[i, :] = w
+
+        return item_weights
+
+    def _compute_item_score_per_user(self, user_id, items_to_compute=None):
+
+        w1 = self.ItemKNN_CFCBF_Hybrid_Recommender._compute_item_score(
+            user_id, items_to_compute)
+        w1 /= LA.norm(w1, 2)
+
+        w2 = self.UserKNN_CFCBF_Hybrid_Recommender._compute_item_score(
+            user_id, items_to_compute)
+        w2 /= LA.norm(w2, 2)
+
+        w = self.ItemKNN_CFCBF_Hybrid_Recommender_weight*w1 + self.UserKNN_CFCBF_Hybrid_Recommender_weight*w2
+
+        return w
+
+
 #######################################################################################################
 ##################### Hybrid of Hybrids ###############################################################
 #######################################################################################################
@@ -1007,3 +1063,4 @@ class Hybrid_of_Hybrids(BaseRecommender):
             item_weights[i, :] = w
 
         return item_weights
+
