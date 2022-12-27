@@ -25,7 +25,7 @@ dataReader = DataReader()
 target = dataReader.load_target()
 
 URM = dataReader.load_augmented_binary_urm()
-URM_aug,icm = dataReader.pad_with_zeros_ICMandURM(URM)
+URM_aug,ICM = dataReader.pad_with_zeros_ICMandURM(URM)
 
 URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample(URM_aug, train_percentage = 0.9)
 URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
@@ -40,11 +40,11 @@ evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 #UserKNNCB_Hybrid = UserKNN_CFCBF_Hybrid_Recommender(URM_train_aug,UCM)
 #UserKNNCB_Hybrid.fit(UCM_weight = 0.030666039949562303, topK = 374, shrink = 44, normalize = True)
 
-UserKNNCF = UserKNNCFRecommender(URM_train_aug)
-UserKNNCF.fit()
+ItemKNN_CFCBF_Hybrid_Recommender = ItemKNN_CFCBF_Hybrid_Recommender(URM_train_aug,ICM)
+ItemKNN_CFCBF_Hybrid_Recommender.fit(0.011278462705558101,topK=661,shrink=36)
 
-ItemKNNCF = ItemKNNCFRecommender(URM_train_pow)
-ItemKNNCF.fit()
+UserKNN_CFCBF_Hybrid_Recommender = UserKNN_CFCBF_Hybrid_Recommender(URM_train_aug,UCM)
+UserKNN_CFCBF_Hybrid_Recommender.fit(0.01,topK=669,shrink=50)
 
 #RP3beta_aug = RP3betaRecommender(URM_train_aug)
 #RP3beta_aug.fit(alpha=0.6951524535062256,beta=0.39985511876562174, topK=82, normalize_similarity=True)
@@ -75,7 +75,7 @@ HybridRecommender_5.fit()
 # End fitting
 
 
-recommender_class = Hybrid_UserKNNCF_ItemKNNCF
+recommender_class = Hybrid_User_and_Item_KNN_CFCBF_Hybrid
 
 output_folder_path = "result_experiments/"
 
@@ -83,7 +83,7 @@ output_folder_path = "result_experiments/"
 if not os.path.exists(output_folder_path):
     os.makedirs(output_folder_path)
 
-n_cases = 200
+n_cases = 3000
 n_random_starts = int(n_cases*0.3)
 metric_to_optimize = "MAP"
 cutoff_to_optimize = 10
@@ -130,8 +130,8 @@ hyperparameters_range_dictionary = {
 '''
 
 hyperparameters_range_dictionary = {
-    "UserKNNCF_weight": Real(0,1),
-    "ItemKNNCF_weight": Real(0,1),
+    "ItemKNN_CFCBF_Hybrid_Recommender_weight": Real(0.4,0.6),
+    "UserKNN_CFCBF_Hybrid_Recommender_weight": Real(0.4,0.6),
 }
 
 
