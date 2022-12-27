@@ -46,6 +46,12 @@ ItemKNN_CFCBF_Hybrid_Recommender.fit(0.011278462705558101,topK=661,shrink=36)
 UserKNN_CFCBF_Hybrid_Recommender = UserKNN_CFCBF_Hybrid_Recommender(URM_train_aug,UCM)
 UserKNN_CFCBF_Hybrid_Recommender.fit(0.01,topK=669,shrink=50)
 
+UserKNNCF = UserKNNCFRecommender(URM_train_aug)
+UserKNNCF.fit()
+
+ItemKNNCF = ItemKNNCFRecommender(URM_train_pow)
+ItemKNNCF.fit()
+
 #RP3beta_aug = RP3betaRecommender(URM_train_aug)
 #RP3beta_aug.fit(alpha=0.6951524535062256,beta=0.39985511876562174, topK=82, normalize_similarity=True)
 
