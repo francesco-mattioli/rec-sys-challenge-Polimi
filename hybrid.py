@@ -925,7 +925,7 @@ class Hybrid_UserKNNCF_ItemKNNCF(BaseRecommender):
 
 
 class Hybrid_User_and_Item_KNN_CFCBF_Hybrid(BaseRecommender):
-    RECOMMENDER_NAME = "Hybrid_UserKNNCF_ItemKNNCF"
+    RECOMMENDER_NAME = "Hybrid_User_and_Item_KNN_CFCBF_Hybrid"
 
     def __init__(self, URM_train_aug, URM_train_pow, ItemKNN_CFCBF_Hybrid_Recommender, UserKNN_CFCBF_Hybrid_Recommender):
         self.URM_train_aug = URM_train_aug

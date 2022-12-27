@@ -66,7 +66,7 @@ output_folder_path = "result_experiments/"
 if not os.path.exists(output_folder_path):
     os.makedirs(output_folder_path)
 
-n_cases = 200
+n_cases = 3000
 n_random_starts = int(n_cases*0.3)
 metric_to_optimize = "MAP"
 cutoff_to_optimize = 10
@@ -97,10 +97,9 @@ hyperparameters_range_dictionary = {
 }
 '''
 
-
 hyperparameters_range_dictionary = {
-    "ItemKNN_CFCBF_Hybrid_Recommender_weight": Real(0,1),
-    "UserKNN_CFCBF_Hybrid_Recommender_weight": Real(0,1),
+    "ItemKNN_CFCBF_Hybrid_Recommender_weight": Real(0.4,0.6),
+    "UserKNN_CFCBF_Hybrid_Recommender_weight": Real(0.4,0.6),
 }
 
 
