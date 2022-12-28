@@ -1201,7 +1201,7 @@ class Hybrid_of_Hybrids(BaseRecommender):
                     user_id_array[i], items_to_compute)
                 w2 /= LA.norm(w2, 2)
 
-                w3 = self.Hybrid_User_and_Item_KNN_CFCBF_Hybrid._compute_item_score_per(
+                w3 = self.Hybrid_User_and_Item_KNN_CFCBF_Hybrid._compute_item_score_per_user(
                     user_id_array[i], items_to_compute)
                 w3 /= LA.norm(w3, 2)
 
