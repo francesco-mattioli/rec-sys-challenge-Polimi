@@ -93,7 +93,7 @@ Hybrid_UserKNNCF_ItemKNNCF.fit(
     UserKNNCF_weight=1.0, ItemKNNCF_weight=0.8072073132929845)
 
 Hybrid_User_and_Item_KNN_CFCBF_Hybrid = Hybrid_User_and_Item_KNN_CFCBF_Hybrid(
-    URM_train_aug, URM_train_pow, ItemKNNCBFRecommender, UserKNNCBFRecommender)
+    URM_train_aug, URM_train_pow, ItemKNN_CFCBF_Hybrid_Recommender, UserKNN_CFCBF_Hybrid_Recommender)
 Hybrid_User_and_Item_KNN_CFCBF_Hybrid.fit()
 
 #HybridRecommender_5 = HybridRecommender_5(URM_train_aug, URM_train_pow, UserKNNCF, RP3beta_pow, S_SLIM, EASE_R)
