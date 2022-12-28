@@ -145,7 +145,6 @@ hyperparameters_range_dictionary = {
     "Hybrid_1_tier1_weight": Real(0, 1),
     "Hybrid_2_tier1_weight": Real(0, 1),
     "Hybrid_3_tier1_weight": Real(0, 1),
-    "Hybrid_4_tier1_weight": Real(0, 1),
 
     "Hybrid_1_tier2_weight": Real(0, 1),
     "Hybrid_2_tier2_weight": Real(0, 1),
