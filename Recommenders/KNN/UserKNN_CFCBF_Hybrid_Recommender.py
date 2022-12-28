@@ -18,7 +18,7 @@ class UserKNN_CFCBF_Hybrid_Recommender(UserKNNCBFRecommender, BaseSimilarityMatr
 
     RECOMMENDER_NAME = "UserKNN_CFCBF_Hybrid_Recommender"
 
-    def fit(self, UCM_weight = 1.0, **fit_args):
+    def fit(self, UCM_weight = 0.01, **fit_args):
 
         self.UCM_train = self.UCM_train*UCM_weight
         self.UCM_train = sps.hstack([self.UCM_train, self.URM_train], format='csr')
