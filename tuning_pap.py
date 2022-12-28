@@ -11,7 +11,8 @@ from Recommenders.GraphBased.RP3betaRecommender import RP3betaRecommender
 from Recommenders.GraphBased.P3alphaRecommender import P3alphaRecommender
 from Recommenders.EASE_R.EASE_R_Recommender import EASE_R_Recommender
 from Recommenders.KNN.UserKNN_CFCBF_Hybrid_Recommender import UserKNN_CFCBF_Hybrid_Recommender
-
+from Recommenders.KNN.UserKNNCBFRecommender import UserKNNCBFRecommender
+from Recommenders.KNN.ItemKNNCBFRecommender import ItemKNNCBFRecommender
 
 from Evaluation.Evaluator import EvaluatorHoldout
 from Recommenders.DataIO import DataIO
@@ -59,6 +60,14 @@ S_SLIM.fit()
 EASE_R = EASE_R_Recommender(URM_train_aug)
 EASE_R.fit()
 
+UserKNNCBFRecommender = UserKNNCBFRecommender(URM_train_aug, UCM)
+UserKNN_CFCBF_Hybrid_Recommender = UserKNN_CFCBF_Hybrid_Recommender(UserKNNCBFRecommender)
+
+ItemKNNCBFRecommender = ItemKNNCBFRecommender(URM_train_aug, ICM)
+ItemKNN_CFCBF_Hybrid_Recommender = ItemKNN_CFCBF_Hybrid_Recommender(ItemKNNCBFRecommender)
+
+##########################################################################################################
+
 Hybrid_UserKNNCF_RP3B_aug = Hybrid_UserKNNCF_RP3B_aug(URM_train_aug, URM_train_pow, UserKNNCF, RP3beta_aug)
 Hybrid_UserKNNCF_RP3B_aug.fit(UserKNNCF_weight = 0.4348857237366932, RP3B_weight = 0.027648314372221712)
 
@@ -71,6 +80,10 @@ Hybrid_SSLIM_RP3B_aug.fit(SSLIM_weight= 0.26204559437361846, RP3B_weight=0.46562
 Hybrid_UserKNNCF_ItemKNNCF = Hybrid_UserKNNCF_ItemKNNCF(URM_train_aug, URM_train_pow, UserKNNCF, ItemKNNCF)
 Hybrid_UserKNNCF_ItemKNNCF.fit(UserKNNCF_weight= 1.0, ItemKNNCF_weight= 0.8072073132929845)
 
+
+Hybrid_User_and_Item_KNN_CFCBF_Hybrid = Hybrid_User_and_Item_KNN_CFCBF_Hybrid(URM_train_aug, URM_train_pow,ItemKNNCBFRecommender,UserKNNCBFRecommender)
+
+###############################################################################################################
 #HybridRecommender_5 = HybridRecommender_5(URM_train_aug, URM_train_pow, UserKNNCF, RP3beta_pow, S_SLIM, EASE_R)
 #HybridRecommender_5.fit()
 
@@ -121,19 +134,24 @@ hyperparameters_range_dictionary = {
     "Hybrid_1_tier1_weight": Real(0,1),
     "Hybrid_2_tier1_weight": Real(0,1),
     "Hybrid_3_tier1_weight": Real(0,1),
+    "Hybrid_4_tier1_weight": Real(0,1),
     
     "Hybrid_1_tier2_weight": Real(0,1),
     "Hybrid_2_tier2_weight": Real(0,1),
+    "Hybrid_3_tier2_weight": Real(0,1),
 
     "Hybrid_1_tier3_weight": Real(0,1),
     "Hybrid_2_tier3_weight": Real(0,1),
+    "Hybrid_3_tier3_weight": Real(0,1),
 }
 
 
+'''
 hyperparameters_range_dictionary = {
     "ItemKNN_CFCBF_Hybrid_Recommender_weight": Real(0.4,0.6),
     "UserKNN_CFCBF_Hybrid_Recommender_weight": Real(0.4,0.6),
 }
+'''
 
 
 # create a bayesian optimizer object, we pass the recommender and the evaluator
@@ -143,7 +161,7 @@ hyperparameterSearch = SearchBayesianSkopt(recommender_class,
 # provide data needed to create instance of model (one on URM_train, the other on URM_all)
 recommender_input_args = SearchInputRecommenderArgs(
     # For a CBF model simply put [URM_train, ICM_train]
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug, URM_train_pow, Hybrid_SSLIM_RP3B_aug, Hybrid_UserKNNCF_ItemKNNCF,Hybrid_UserKNNCF_RP3B_aug, Hybrid_SSLIM_EASER],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug, URM_train_pow, Hybrid_SSLIM_RP3B_aug, Hybrid_UserKNNCF_ItemKNNCF, Hybrid_User_and_Item_KNN_CFCBF_Hybrid,Hybrid_UserKNNCF_RP3B_aug, Hybrid_SSLIM_EASER],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
@@ -151,7 +169,7 @@ recommender_input_args = SearchInputRecommenderArgs(
 )
 
 recommender_input_args_last_test = SearchInputRecommenderArgs(
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug, URM_train_pow, Hybrid_SSLIM_RP3B_aug, Hybrid_UserKNNCF_ItemKNNCF,Hybrid_UserKNNCF_RP3B_aug, Hybrid_SSLIM_EASER],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug, URM_train_pow, Hybrid_SSLIM_RP3B_aug, Hybrid_UserKNNCF_ItemKNNCF, Hybrid_User_and_Item_KNN_CFCBF_Hybrid,Hybrid_UserKNNCF_RP3B_aug, Hybrid_SSLIM_EASER],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
