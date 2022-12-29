@@ -103,7 +103,7 @@ Hybrid_User_and_Item_KNN_CFCBF_Hybrid.fit()
 ############################ TUNING ######################################################
 
 recommender_class = Hybrid_of_Hybrids
-output_folder_path = "result_experiments/"
+output_folder_path = "new_result_experiments/"
 
 # If directory does not exist, create
 if not os.path.exists(output_folder_path):

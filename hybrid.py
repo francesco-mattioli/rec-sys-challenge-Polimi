@@ -1171,8 +1171,7 @@ class Hybrid_of_Hybrids(BaseRecommender):
                     user_id_array[i], items_to_compute)
                 w3 /= LA.norm(w3, 2)
 
-                w = self.Hybrid_1_tier1_weight*w1 + self.Hybrid_2_tier1_weight * \
-                    w2 + self.Hybrid_3_tier1_weight*w3
+                w = self.Hybrid_1_tier1_weight*w1 + self.Hybrid_2_tier1_weight*w2 + self.Hybrid_3_tier1_weight*w3
 
             elif interactions > 22 and interactions <= 24:  # TIER 2
 
@@ -1188,8 +1187,7 @@ class Hybrid_of_Hybrids(BaseRecommender):
                     user_id_array[i], items_to_compute)
                 w3 /= LA.norm(w3, 2)
 
-                w = self.Hybrid_1_tier2_weight*w1 + self.Hybrid_2_tier2_weight * \
-                    w2 + self.Hybrid_3_tier2_weight*w3
+                w = self.Hybrid_1_tier2_weight*w1 + self.Hybrid_2_tier2_weight*w2 + self.Hybrid_3_tier2_weight*w3
 
             else:  # TIER 3
 
@@ -1205,8 +1203,7 @@ class Hybrid_of_Hybrids(BaseRecommender):
                     user_id_array[i], items_to_compute)
                 w3 /= LA.norm(w3, 2)
 
-                w = self.Hybrid_1_tier3_weight*w1 + self.Hybrid_2_tier3_weight * \
-                    w2 + self.Hybrid_3_tier3_weight*w3
+                w = self.Hybrid_1_tier3_weight*w1 + self.Hybrid_2_tier3_weight*w2 + self.Hybrid_3_tier3_weight*w3
 
             item_weights[i, :] = w
 
