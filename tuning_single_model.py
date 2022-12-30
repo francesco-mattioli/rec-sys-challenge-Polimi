@@ -28,13 +28,14 @@ target = dataReader.load_target()
 URM = dataReader.load_augmented_binary_urm()
 URM_aug,ICM = dataReader.pad_with_zeros_ICMandURM(URM)
 URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample(URM_aug, train_percentage = 0.9)
-URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
+#URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
+URM_train_super_pow = dataReader.stackMatrixes_with_impressions(URM_train_aug)
 #UCM = dataReader.load_aug_ucm()
 
 evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 
 
-recommender_class = ItemKNN_CFCBF_Hybrid_Recommender
+recommender_class = ItemKNNCFRecommender
 
 output_folder_path = "result_experiments/"
 
@@ -48,11 +49,11 @@ metric_to_optimize = "MAP"
 cutoff_to_optimize = 10
 
 hyperparameters_range_dictionary = {
-    "topK": Integer(270,400),
-    "l2_norm": Integer(90,200),
-    "ICM_weight": Real(0.001,0.1),
-    "topK": Integer(600,1000),
-    "shrink": Integer(20,100),
+    "topK": Integer(1000,2000),
+    #"l2_norm": Integer(90,200),
+    #"ICM_weight": Real(0.001,0.1),
+    #"topK": Integer(600,1000),
+    "shrink": Integer(50,500),
     #"alpha": Real(0.5,0.9),
     #"beta": Real(0.2,0.5),
     #"implicit": Categorical([True, False]),
@@ -86,7 +87,7 @@ hyperparameterSearch = SearchBayesianSkopt(recommender_class,
 # provide data needed to create instance of model (one on URM_train, the other on URM_all)
 recommender_input_args = SearchInputRecommenderArgs(
     # For a CBF model simply put [URM_train, ICM_train]
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_pow,ICM],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_super_pow],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
@@ -94,7 +95,7 @@ recommender_input_args = SearchInputRecommenderArgs(
 )
 
 recommender_input_args_last_test = SearchInputRecommenderArgs(
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_pow,ICM],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_super_pow],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
