@@ -508,6 +508,41 @@ class DataReader(object):
         powerful_urm = pd.concat([urm, f], ignore_index=True).sort_values(['UserID', 'ItemID'])
         return self.dataframe_to_csr(powerful_urm,'UserID', 'ItemID','Data')
 
+
+    def stackMatrixes_with_impressions(self, URM_train):
+        """
+            Returns super_powerful_urm that stack URM, ICM.T, and impressions.T
+        """
+        # Vertical stack so ItemIDs cardinality must coincide.
+
+        urm=self.csr_to_dataframe(URM_train,'UserID', 'ItemID', 'Data')
+        f=self.load_icm_df()
+        swap_list = ["feature_id", "item_id", "data"]
+        f = f.reindex(columns=swap_list)
+        f = f.rename({'feature_id': 'UserID', 'item_id': 'ItemID', 'data': 'Data'}, axis=1)
+
+        urm['Data'] = 0.825 * urm['Data']
+        # f times (1-aplha)
+        f['Data'] = 0.175 * f['Data']
+        # Change UserIDs of f matrix in order to make recommender work
+        f['UserID'] = 41634 + f['UserID']
+
+        impressionURM = pd.read_csv(filepath_or_buffer=os.getenv('IMPRESSIONS_URM'),
+                                                    sep=',',
+                                                    names=[
+                                                        'UserID', 'ItemID', 'Data'],
+                                                    header=0,
+                                                    dtype={'UserID': np.int32, 'ItemID': np.int32, 'Data': np.int32})
+        # removing duplicated (user_id,item_id) pairs
+        impressionURM = impressionURM.drop_duplicates(keep='first')
+
+        impressionURM['Data']= 0.15 * impressionURM['Data']
+
+        powerful_urm = pd.concat([urm, f], ignore_index=True).sort_values(['UserID', 'ItemID'])
+        super_powerful_urm = pd.concat([powerful_urm,impressionURM], ignore_index=True).sort_values(['UserID', 'ItemID'])
+        
+        return self.dataframe_to_csr(super_powerful_urm,'UserID', 'ItemID','Data')
+
     
     def print_statistics(self):
         """ Print statistics about dataset """
