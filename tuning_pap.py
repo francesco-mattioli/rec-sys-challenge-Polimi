@@ -109,7 +109,7 @@ output_folder_path = "new_result_experiments/"
 if not os.path.exists(output_folder_path):
     os.makedirs(output_folder_path)
 
-n_cases = 1000
+n_cases = 150
 n_random_starts = int(n_cases*0.3)
 metric_to_optimize = "MAP"
 cutoff_to_optimize = 10
