@@ -20,8 +20,8 @@ URM_aug, ICM = dataReader.pad_with_zeros_ICMandURM(URM)
 
 
 URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample( URM_aug, train_percentage=0.9)
-URM_train_super_pow = dataReader.stackMatrixes_with_impressions(URM_train_aug)
-
+#URM_train_super_pow = dataReader.stackMatrixes_with_impressions(URM_train_aug)
+URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
 
 # Instantiate Impressions object to update ranking at the end of recommendations
 #item_ids = dataReader.get_unique_items_based_on_urm(dataReader.load_augmented_binary_urm_df())
@@ -31,10 +31,6 @@ URM_train_super_pow = dataReader.stackMatrixes_with_impressions(URM_train_aug)
 ########################## iNSTANTIATE & FIT SINGLE MODELS ##########################
 
 
-recommender = ItemKNNCFRecommender(URM_train_super_pow)
-recommender.fit()
-
-'''
 
 RP3beta_aug = RP3betaRecommender(URM_train_aug)
 RP3beta_aug.fit()
@@ -48,7 +44,9 @@ S_SLIM.fit()
 EASE_R = EASE_R_Recommender(URM_train_aug)
 EASE_R.fit()
 
-
+UserKNNCF = UserKNNCFRecommender(URM_train_aug)
+UserKNNCF.fit()
+'''
 UserKNN_CFCBF_Hybrid_Recommender = UserKNN_CFCBF_Hybrid_Recommender(
     URM_train_aug, UCM)
 UserKNN_CFCBF_Hybrid_Recommender.fit()
@@ -57,15 +55,20 @@ ItemKNN_CFCBF_Hybrid_Recommender = ItemKNN_CFCBF_Hybrid_Recommender(
     URM_train_aug, ICM)
 ItemKNN_CFCBF_Hybrid_Recommender.fit()
 
+'''
+
+
 ##########################################################################################################
 
 
 
-
+'''
 Hybrid_UserKNNCF_RP3B_aug = Hybrid_UserKNNCF_RP3B_aug(
     URM_train_aug, URM_train_pow, UserKNNCF, RP3beta_aug)
 Hybrid_UserKNNCF_RP3B_aug.fit(
     UserKNNCF_weight=0.4348857237366932, RP3B_weight=0.027648314372221712)
+
+'''
 
 Hybrid_SSLIM_EASER = Hybrid_SSLIM_EASER(
     URM_train_aug, URM_train_pow, S_SLIM, EASE_R)
@@ -75,35 +78,24 @@ Hybrid_SSLIM_RP3B_aug = Hybrid_SSLIM_RP3B_aug(
     URM_train_aug, URM_train_pow, S_SLIM, RP3beta_aug)
 Hybrid_SSLIM_RP3B_aug.fit(
     SSLIM_weight=0.26204559437361846, RP3B_weight=0.46562963809236146)
-Hybrid_SSLIM_RP3B_aug = Hybrid_SSLIM_RP3B_aug(
-    URM_train_aug, URM_train_pow, S_SLIM, RP3beta_aug)
-Hybrid_SSLIM_RP3B_aug.fit(
-    SSLIM_weight=0.26204559437361846, RP3B_weight=0.46562963809236146)
 
-Hybrid_UserKNNCF_ItemKNNCF = Hybrid_UserKNNCF_ItemKNNCF(
-    URM_train_aug, URM_train_pow, UserKNNCF, ItemKNNCF)
-Hybrid_UserKNNCF_ItemKNNCF.fit(
-    UserKNNCF_weight=1.0, ItemKNNCF_weight=0.8072073132929845)
+'''
 Hybrid_UserKNNCF_ItemKNNCF = Hybrid_UserKNNCF_ItemKNNCF(
     URM_train_aug, URM_train_pow, UserKNNCF, ItemKNNCF)
 Hybrid_UserKNNCF_ItemKNNCF.fit(
     UserKNNCF_weight=1.0, ItemKNNCF_weight=0.8072073132929845)
 
+
 Hybrid_User_and_Item_KNN_CFCBF_Hybrid = Hybrid_User_and_Item_KNN_CFCBF_Hybrid(
     URM_train_aug, URM_train_pow, ItemKNN_CFCBF_Hybrid_Recommender, UserKNN_CFCBF_Hybrid_Recommender)
 Hybrid_User_and_Item_KNN_CFCBF_Hybrid.fit()
-Hybrid_User_and_Item_KNN_CFCBF_Hybrid = Hybrid_User_and_Item_KNN_CFCBF_Hybrid(
-    URM_train_aug, URM_train_pow, ItemKNN_CFCBF_Hybrid_Recommender, UserKNN_CFCBF_Hybrid_Recommender)
-Hybrid_User_and_Item_KNN_CFCBF_Hybrid.fit()
+'''
 
 ########################## INSTANTIATE & FIT FINAL HYBIRD MODEL ##########################
 
 recommender = Hybrid_of_Hybrids(URM_train_aug, URM_train_pow, ICM, UCM, Hybrid_SSLIM_RP3B_aug,
-                                 Hybrid_UserKNNCF_ItemKNNCF, Hybrid_User_and_Item_KNN_CFCBF_Hybrid, Hybrid_UserKNNCF_RP3B_aug, Hybrid_SSLIM_EASER)
-recommender.fit(Hybrid_1_tier1_weight= 1.0, Hybrid_2_tier1_weight= 1.0, Hybrid_3_tier1_weight=0.0, Hybrid_1_tier2_weight= 1.0, Hybrid_2_tier2_weight= 0.0, Hybrid_3_tier2_weight=0.32189088873693356, Hybrid_1_tier3_weight=0.7842915481168058, Hybrid_2_tier3_weight= 1.0, Hybrid_3_tier3_weight= 0.0)
-#'Hybrid_1_tier1_weight': 0.48083086131108177, 'Hybrid_2_tier1_weight': 0.9416609281680022, 'Hybrid_3_tier1_weight': 0.3546172336968278, 'Hybrid_1_tier2_weight': 0.5638851197915085, 'Hybrid_2_tier2_weight': 0.6054976347581102, 'Hybrid_1_tier3_weight': 0.8004513261662709, 'Hybrid_2_tier3_weight': 0.8451498113742357
-'''
-
+                                 Hybrid_UserKNNCF_ItemKNNCF, UserKNNCF, Hybrid_UserKNNCF_RP3B_aug, Hybrid_SSLIM_EASER)
+recommender.fit(Hybrid_1_tier1_weight= 0.6258500247333247, Hybrid_2_tier1_weight= 0.5726031281907658, Hybrid_1_tier2_weight= 0.7576816026029057, Hybrid_2_tier2_weight= 0.5431445231359324, Hybrid_1_tier3_weight=0.8326145335441836, Hybrid_2_tier3_weight=  0.978657067809586)
 ########################## CREATE CSV FOR SUBMISISON ##########################
 f = open("submission.csv", "w+")
 f.write("user_id,item_list\n")

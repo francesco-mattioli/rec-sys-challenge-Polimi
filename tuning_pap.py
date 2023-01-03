@@ -63,14 +63,6 @@ EASE_R = EASE_R_Recommender(URM_train_aug)
 EASE_R.fit()
 
 
-UserKNN_CFCBF_Hybrid_Recommender = UserKNN_CFCBF_Hybrid_Recommender(
-    URM_train_aug, UCM)
-UserKNN_CFCBF_Hybrid_Recommender.fit()
-
-ItemKNN_CFCBF_Hybrid_Recommender = ItemKNN_CFCBF_Hybrid_Recommender(
-    URM_train_aug, ICM)
-ItemKNN_CFCBF_Hybrid_Recommender.fit()
-
 ##########################################################################################################
 
 Hybrid_UserKNNCF_RP3B_aug = Hybrid_UserKNNCF_RP3B_aug(
@@ -144,15 +136,12 @@ hyperparameters_range_dictionary = {
 hyperparameters_range_dictionary = {
     "Hybrid_1_tier1_weight": Real(0, 1),
     "Hybrid_2_tier1_weight": Real(0, 1),
-    "Hybrid_3_tier1_weight": Real(0, 1),
 
     "Hybrid_1_tier2_weight": Real(0, 1),
     "Hybrid_2_tier2_weight": Real(0, 1),
-    "Hybrid_3_tier2_weight": Real(0, 1),
 
     "Hybrid_1_tier3_weight": Real(0, 1),
     "Hybrid_2_tier3_weight": Real(0, 1),
-    "Hybrid_3_tier3_weight": Real(0, 1),
 }
 
 
@@ -164,7 +153,7 @@ hyperparameterSearch = SearchBayesianSkopt(recommender_class,
 recommender_input_args = SearchInputRecommenderArgs(
     # For a CBF model simply put [URM_train, ICM_train]
     CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug, URM_train_pow, ICM, UCM, Hybrid_SSLIM_RP3B_aug,
-                                 Hybrid_UserKNNCF_ItemKNNCF, Hybrid_User_and_Item_KNN_CFCBF_Hybrid, Hybrid_UserKNNCF_RP3B_aug, Hybrid_SSLIM_EASER],
+                                 Hybrid_UserKNNCF_ItemKNNCF, UserKNNCF, Hybrid_UserKNNCF_RP3B_aug, EASE_R],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
@@ -173,7 +162,7 @@ recommender_input_args = SearchInputRecommenderArgs(
 
 recommender_input_args_last_test = SearchInputRecommenderArgs(
     CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug, URM_train_pow, ICM, UCM, Hybrid_SSLIM_RP3B_aug,
-                                 Hybrid_UserKNNCF_ItemKNNCF, Hybrid_User_and_Item_KNN_CFCBF_Hybrid, Hybrid_UserKNNCF_RP3B_aug, Hybrid_SSLIM_EASER],
+                                 Hybrid_UserKNNCF_ItemKNNCF, UserKNNCF, Hybrid_UserKNNCF_RP3B_aug, EASE_R],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
