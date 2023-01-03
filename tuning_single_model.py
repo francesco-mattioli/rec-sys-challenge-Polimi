@@ -80,6 +80,7 @@ hyperparameterSearch = SearchBayesianSkopt(recommender_class,
 recommender_input_args = SearchInputRecommenderArgs(
     # For a CBF model simply put [URM_train, ICM_train]
     CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_super_pow],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_super_pow],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
@@ -87,6 +88,7 @@ recommender_input_args = SearchInputRecommenderArgs(
 )
 
 recommender_input_args_last_test = SearchInputRecommenderArgs(
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_super_pow],
     CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_super_pow],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
