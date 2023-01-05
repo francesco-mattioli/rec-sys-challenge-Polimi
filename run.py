@@ -13,7 +13,7 @@ from Recommenders.EASE_R.EASE_R_Recommender import EASE_R_Recommender
 dataReader = DataReader()
 
 target = dataReader.load_target()
-
+'''
 UCM = dataReader.load_aug_ucm()
 URM = dataReader.load_augmented_binary_urm()
 URM_aug, ICM = dataReader.pad_with_zeros_ICMandURM(URM)
@@ -27,9 +27,23 @@ URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
 #item_ids = dataReader.get_unique_items_based_on_urm(dataReader.load_augmented_binary_urm_df())
 #impressions = Impressions(target,item_ids)
 # dataReader.save_impressions()
+'''
+
+URM = dataReader.load_augmented_binary_urm()
+
+ICM_stacked_with_binary_impressions = dataReader.load_ICM_stacked_with_binary_impressions(
+    0.8)
+URM_aug, ICM = dataReader.pad_with_zeros_given_ICMandURM(
+    ICM_stacked_with_binary_impressions, URM)
+
+URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample(
+    URM_aug, train_percentage=0.9)
+
+URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
+URM_train_super_pow = dataReader.load_super_powerful_URM(
+    URM_train_aug, ICM_stacked_with_binary_impressions, 0.8)
 
 ########################## iNSTANTIATE & FIT SINGLE MODELS ##########################
-
 
 
 RP3beta_aug = RP3betaRecommender(URM_train_aug)
@@ -38,11 +52,15 @@ RP3beta_aug.fit()
 ItemKNNCF = ItemKNNCFRecommender(URM_train_pow)
 ItemKNNCF.fit()
 
+ItemKNNCF = ItemKNNCFRecommender(URM_train_pow)
+ItemKNNCF.fit()
+
 #RP3beta_pow = RP3betaRecommender(URM_train_pow)
 #RP3beta_pow.fit(alpha=0.3648761546066018,beta=0.5058870363874656, topK=480, normalize_similarity=True)
 
-S_SLIM = SLIMElasticNetRecommender(URM_train_pow)
-S_SLIM.fit()
+S_SLIM = SLIMElasticNetRecommender(URM_train_super_pow)
+S_SLIM.fit(l1_ratio=0.006011021694075882,
+           alpha=0.0013369897413235414, topK=459)
 
 EASE_R = EASE_R_Recommender(URM_train_aug)
 EASE_R.fit()
@@ -62,7 +80,6 @@ ItemKNN_CFCBF_Hybrid_Recommender.fit()
 
 
 ##########################################################################################################
-
 
 
 '''
@@ -96,8 +113,11 @@ Hybrid_User_and_Item_KNN_CFCBF_Hybrid.fit()
 
 ########################## INSTANTIATE & FIT FINAL HYBIRD MODEL ##########################
 
-recommender = Hybrid_of_Hybrids(URM_train_aug, URM_train_pow, ICM, UCM, Hybrid_SSLIM_RP3B_aug, Hybrid_UserKNNCF_ItemKNNCF, UserKNNCF, Hybrid_UserKNNCF_RP3B_aug, Hybrid_SSLIM_EASER)
-recommender.fit(Hybrid_1_tier1_weight= 0.9964197284216268, Hybrid_2_tier1_weight= 0.9346598949850278, Hybrid_1_tier2_weight= 0.30239869852719997, Hybrid_2_tier2_weight= 0.6814223783443759, Hybrid_1_tier3_weight=0.08426841765897498, Hybrid_2_tier3_weight=  0.9083465156858167)
+recommender = Hybrid_of_Hybrids(
+    URM_train_aug, Hybrid_SSLIM_RP3B_aug, UserKNNCF, Hybrid_SSLIM_EASER)
+
+recommender.fit(Hybrid_1_tier1_weight=0.5960289190957877, Hybrid_2_tier1_weight=1, Hybrid_1_tier2_weight=1,
+                Hybrid_2_tier2_weight=0, Hybrid_1_tier3_weight=0.4001445272204769, Hybrid_2_tier3_weight=0.6909775763230392)
 ########################## CREATE CSV FOR SUBMISISON ##########################
 f = open("submission.csv", "w+")
 f.write("user_id,item_list\n")
