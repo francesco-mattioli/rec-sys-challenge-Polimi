@@ -35,6 +35,9 @@ URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
 RP3beta_aug = RP3betaRecommender(URM_train_aug)
 RP3beta_aug.fit()
 
+ItemKNNCF = ItemKNNCFRecommender(URM_train_pow)
+ItemKNNCF.fit()
+
 #RP3beta_pow = RP3betaRecommender(URM_train_pow)
 #RP3beta_pow.fit(alpha=0.3648761546066018,beta=0.5058870363874656, topK=480, normalize_similarity=True)
 
@@ -79,13 +82,13 @@ Hybrid_SSLIM_RP3B_aug = Hybrid_SSLIM_RP3B_aug(
 Hybrid_SSLIM_RP3B_aug.fit(
     SSLIM_weight=0.26204559437361846, RP3B_weight=0.46562963809236146)
 
-'''
+
 Hybrid_UserKNNCF_ItemKNNCF = Hybrid_UserKNNCF_ItemKNNCF(
     URM_train_aug, URM_train_pow, UserKNNCF, ItemKNNCF)
 Hybrid_UserKNNCF_ItemKNNCF.fit(
     UserKNNCF_weight=1.0, ItemKNNCF_weight=0.8072073132929845)
 
-
+'''
 Hybrid_User_and_Item_KNN_CFCBF_Hybrid = Hybrid_User_and_Item_KNN_CFCBF_Hybrid(
     URM_train_aug, URM_train_pow, ItemKNN_CFCBF_Hybrid_Recommender, UserKNN_CFCBF_Hybrid_Recommender)
 Hybrid_User_and_Item_KNN_CFCBF_Hybrid.fit()
@@ -93,9 +96,8 @@ Hybrid_User_and_Item_KNN_CFCBF_Hybrid.fit()
 
 ########################## INSTANTIATE & FIT FINAL HYBIRD MODEL ##########################
 
-recommender = Hybrid_of_Hybrids(URM_train_aug, URM_train_pow, ICM, UCM, Hybrid_SSLIM_RP3B_aug,
-                                 Hybrid_UserKNNCF_ItemKNNCF, UserKNNCF, Hybrid_UserKNNCF_RP3B_aug, Hybrid_SSLIM_EASER)
-recommender.fit(Hybrid_1_tier1_weight= 0.6258500247333247, Hybrid_2_tier1_weight= 0.5726031281907658, Hybrid_1_tier2_weight= 0.7576816026029057, Hybrid_2_tier2_weight= 0.5431445231359324, Hybrid_1_tier3_weight=0.8326145335441836, Hybrid_2_tier3_weight=  0.978657067809586)
+recommender = Hybrid_of_Hybrids(URM_train_aug, URM_train_pow, ICM, UCM, Hybrid_SSLIM_RP3B_aug, Hybrid_UserKNNCF_ItemKNNCF, UserKNNCF, Hybrid_UserKNNCF_RP3B_aug, Hybrid_SSLIM_EASER)
+recommender.fit(Hybrid_1_tier1_weight= 0.9964197284216268, Hybrid_2_tier1_weight= 0.9346598949850278, Hybrid_1_tier2_weight= 0.30239869852719997, Hybrid_2_tier2_weight= 0.6814223783443759, Hybrid_1_tier3_weight=0.08426841765897498, Hybrid_2_tier3_weight=  0.9083465156858167)
 ########################## CREATE CSV FOR SUBMISISON ##########################
 f = open("submission.csv", "w+")
 f.write("user_id,item_list\n")
