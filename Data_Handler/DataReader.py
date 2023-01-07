@@ -560,7 +560,8 @@ class DataReader(object):
         #print("Making augmented URM and ICM of the same shape...")
         urm = self.csr_to_dataframe(URM, 'UserID', 'ItemID', 'Data')
         icm = self.load_icm_df()
-
+        print("---> ", len(icm['item_id'].unique()))
+        print("==>", len(urm['ItemID'].unique()))
         DiffURM_ICM = np.setdiff1d(
             urm['ItemID'].unique(), icm['item_id'].unique())
         DiffICM_URM = np.setdiff1d(
@@ -606,8 +607,8 @@ class DataReader(object):
 
         for id in DiffICM_URM:
             urm.loc[len(urm.index)] = [1, id, 0]
-
         sorted_urm = urm.sort_values('UserID').reset_index(drop=True)
+
         URM = self.dataframe_to_csr(sorted_urm, 'UserID', 'ItemID', 'Data')
         ICM = self.dataframe_to_csr(sorted_icm, 'ItemID', 'FeatureID', 'Data')
         return URM, ICM
@@ -653,41 +654,49 @@ class DataReader(object):
 
     def load_ICM_stacked_with_binary_impressions(self, icm_weigth=0.7):
         # Vertical stack so ItemIDs cardinality must coincide.
-
-        icm = self.load_icm_df()
         binary_impressions_icm = self.csr_to_dataframe(
-            self.load_binary_impressions_ICM(), 'ItemID', 'FeatureID', 'Data')
+                self.load_binary_impressions_ICM(), 'ItemID', 'FeatureID', 'Data')
+        if(icm_weigth!=0):
+            icm = self.load_icm_df()
+            
+            icm = icm.rename(
+                {'item_id': 'ItemID', 'feature_id': 'FeatureID', 'data': 'Data'}, axis=1)
 
-        icm = icm.rename(
-            {'item_id': 'ItemID', 'feature_id': 'FeatureID', 'data': 'Data'}, axis=1)
+            # If alpha is 0.5 then we don't need to assign different weights, so we keeep Data as '1'. Otherwise, we multiply by alpha and 1-alpha.
+            if(icm_weigth != 0.5):
+                icm['Data'] = icm_weigth * icm['Data']
+                # times (1-aplha)
+                binary_impressions_icm['Data'] = (
+                    1-icm_weigth) * binary_impressions_icm['Data']
 
-        # If alpha is 0.5 then we don't need to assign different weights, so we keeep Data as '1'. Otherwise, we multiply by alpha and 1-alpha.
-        if(icm_weigth!=0.5):
-            icm['Data'] = icm_weigth * icm['Data']
-            # times (1-aplha)
-            binary_impressions_icm['Data'] = (1-icm_weigth) * binary_impressions_icm['Data']
+            # Change FeatureIDs of binary_impressions_icm in order to make recommender work
+            # If we keep same FeatureIDs then some of the real feature IDs of ICM would be confounded with fake FeatureIDs of binary_impressions_icm, which are items!
+            binary_impressions_icm['FeatureID'] = 8 + \
+                binary_impressions_icm['FeatureID']
+           
 
-        # Change FeatureIDs of binary_impressions_icm in order to make recommender work
-        # If we keep same FeatureIDs then some of the real feature IDs of ICM would be confounded with fake FeatureIDs of binary_impressions_icm, which are items!
-        binary_impressions_icm['FeatureID'] = 7 + \
-            binary_impressions_icm['FeatureID']
+            ICM_stacked_with_binary_impressions = pd.concat([icm, binary_impressions_icm],
+                                                            ignore_index=True).sort_values(['ItemID', 'FeatureID'])
+                                                        
 
-        ICM_stacked_with_binary_impressions = pd.concat([icm, binary_impressions_icm],
-                                 ignore_index=True).sort_values(['ItemID', 'FeatureID'])
-        return self.dataframe_to_csr(ICM_stacked_with_binary_impressions, 'ItemID', 'FeatureID', 'Data')
+            return self.dataframe_to_csr(ICM_stacked_with_binary_impressions, 'ItemID', 'FeatureID', 'Data')
+        else:
+            binary_impressions_icm['FeatureID'] = 8 + binary_impressions_icm['FeatureID']
+            return self.dataframe_to_csr(binary_impressions_icm, 'ItemID', 'FeatureID', 'Data')
+
 
     def load_ICM_stacked_with_weighted_impressions(self):
         # Vertical stack so ItemIDs cardinality must coincide.
 
         icm = self.load_icm_df()
-        binary_impressions_icm = self.load_weighted_impressions_ICM()
+        binary_impressions_icm = self.csr_to_dataframe(self.load_weighted_impressions_ICM(),'ItemID','FeatureID','Data')
 
         icm = icm.rename(
             {'item_id': 'ItemID', 'feature_id': 'FeatureID', 'data': 'Data'}, axis=1)
 
-        icm['Data'] = 0.815 * icm['Data']
+        icm['Data'] = 0.8 * icm['Data']
         # times (1-aplha)
-        binary_impressions_icm['Data'] = 0.175 * binary_impressions_icm['Data']
+        binary_impressions_icm['Data'] = 0.2 * binary_impressions_icm['Data']
         # Change FeatureIDs of binary_impressions_icm in order to make recommender work
         # If we keep same FeatureIDs then some of the real feature IDs of ICM would be confounded with fake FeatureIDs of binary_impressions_icm, which are items!
         binary_impressions_icm['FeatureID'] = 7 + \
@@ -704,19 +713,24 @@ class DataReader(object):
         # Vertical stack so ItemIDs cardinality must coincide.
 
         urm = self.csr_to_dataframe(URM_train, 'UserID', 'ItemID', 'Data')
-        ICM_stacked_with_binary_impressions = self.csr_to_dataframe(ICM, 'ItemID', 'FeatureID', 'Data')
+        ICM_stacked_with_binary_impressions = self.csr_to_dataframe(
+            ICM, 'ItemID', 'FeatureID', 'Data')
 
         # Transpose ICM
         swap_list = ["FeatureID", "ItemID", "Data"]
-        ICM_stacked_with_binary_impressions = ICM_stacked_with_binary_impressions.reindex(columns=swap_list)
-        ICM_stacked_with_binary_impressions = ICM_stacked_with_binary_impressions.rename({'FeatureID': 'UserID', 'ItemID': 'ItemID', 'Data': 'Data'}, axis=1)
+        ICM_stacked_with_binary_impressions = ICM_stacked_with_binary_impressions.reindex(
+            columns=swap_list)
+        ICM_stacked_with_binary_impressions = ICM_stacked_with_binary_impressions.rename(
+            {'FeatureID': 'UserID', 'ItemID': 'ItemID', 'Data': 'Data'}, axis=1)
 
         # Adjust URM and ICM weights
         urm['Data'] = alpha * urm['Data']
         # f times (1-aplha)
-        ICM_stacked_with_binary_impressions['Data'] = (1-alpha) * ICM_stacked_with_binary_impressions['Data']
+        ICM_stacked_with_binary_impressions['Data'] = (
+            1-alpha) * ICM_stacked_with_binary_impressions['Data']
         # Change UserIDs of f matrix in order to make recommender work
-        ICM_stacked_with_binary_impressions['UserID'] = 41634 + ICM_stacked_with_binary_impressions['UserID']
+        ICM_stacked_with_binary_impressions['UserID'] = 41634 + \
+            ICM_stacked_with_binary_impressions['UserID']
         '''
         impressionURM = pd.read_csv(filepath_or_buffer=os.getenv('IMPRESSIONS_URM'),
                                                     sep=',',
