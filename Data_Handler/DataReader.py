@@ -19,14 +19,14 @@ class DataReader(object):
         df=pd.DataFrame({'UserID': coo.row, 'ItemID': coo.col, 'Data': coo.data})[['UserID', 'ItemID', 'Data']].sort_values(['UserID', 'ItemID']).reset_index(drop=True)
         return df
     '''
-    
-    def csr_to_dataframe(self,csr, row_name,col_name,cell_name):
-        coo=csr.tocoo(copy=False)
-        df=pd.DataFrame({row_name: coo.row, col_name: coo.col, cell_name: coo.data})[[row_name, col_name, cell_name]].sort_values([row_name, col_name]).reset_index(drop=True)
+
+    def csr_to_dataframe(self, csr, row_name, col_name, cell_name):
+        coo = csr.tocoo(copy=False)
+        df = pd.DataFrame({row_name: coo.row, col_name: coo.col, cell_name: coo.data})[
+            [row_name, col_name, cell_name]].sort_values([row_name, col_name]).reset_index(drop=True)
         return df
 
-
-    def dataframe_to_csr(self, dataframe,row_name,col_name,cell_name):
+    def dataframe_to_csr(self, dataframe, row_name, col_name, cell_name):
         """This method converts a dataframe object into a csr
 
         Args:
@@ -73,7 +73,7 @@ class DataReader(object):
         watchers_urm = urm[urm.Data != 1]
         # replacing data which is 0 with 1
         watchers_urm = watchers_urm.replace({'Data': {0: 1}})
-        return self.dataframe_to_csr(watchers_urm,'UserID','ItemID','Data')
+        return self.dataframe_to_csr(watchers_urm, 'UserID', 'ItemID', 'Data')
 
     '''
     def load_augmented_binary_urm_df_old(self):
@@ -124,7 +124,8 @@ class DataReader(object):
             'UserID', 'ItemID', 'Impressions', 'Data'],
             header=0,
             dtype={'UserID': np.int32, 'ItemID': np.int32, 'Impressions': np.object0, 'Data': np.int32})
-        interactions = interactions_and_impressions.drop(['Impressions'], axis=1)
+        interactions = interactions_and_impressions.drop(
+            ['Impressions'], axis=1)
         df = interactions.replace({'Data': {0: 1}})
         df = df.drop_duplicates(keep='first')
         return df
@@ -141,15 +142,16 @@ class DataReader(object):
             'UserID', 'ItemID', 'Impressions', 'Data'],
             header=0,
             dtype={'UserID': np.int32, 'ItemID': np.int32, 'Impressions': np.object0, 'Data': np.int32})
-        interactions = interactions_and_impressions.drop(['Impressions'], axis=1)
+        interactions = interactions_and_impressions.drop(
+            ['Impressions'], axis=1)
         interactions = interactions.replace({'Data': {0: 1}})
         interactions = interactions.drop_duplicates(keep='first')
         icm = self.load_augmented_binary_icm_less_items_df()
-        diff = np.setdiff1d(interactions['ItemID'].unique(), icm['item_id'].unique())
-        df = interactions[interactions.ItemID.isin(diff)==False]
+        diff = np.setdiff1d(
+            interactions['ItemID'].unique(), icm['item_id'].unique())
+        df = interactions[interactions.ItemID.isin(diff) == False]
         df.reset_index(drop=True, inplace=True)
         return df
-
 
     def load_augmented_binary_icm_less_items_df(self):
         interactions_and_impressions = pd.read_csv(filepath_or_buffer=os.getenv('INTERACTIONS_AND_IMPRESSIONS_PATH'),
@@ -158,29 +160,31 @@ class DataReader(object):
             'UserID', 'ItemID', 'Impressions', 'Data'],
             header=0,
             dtype={'UserID': np.int32, 'ItemID': np.int32, 'Impressions': np.object0, 'Data': np.int32})
-        interactions = interactions_and_impressions.drop(['Impressions'], axis=1)
+        interactions = interactions_and_impressions.drop(
+            ['Impressions'], axis=1)
         interactions = interactions.replace({'Data': {0: 1}})
         interactions = interactions.drop_duplicates(keep='first')
         icm = self.load_icm_df()
-        diff = np.setdiff1d(icm['item_id'].unique(), interactions['ItemID'].unique())
-        df = icm[icm.item_id.isin(diff)==False]
+        diff = np.setdiff1d(icm['item_id'].unique(),
+                            interactions['ItemID'].unique())
+        df = icm[icm.item_id.isin(diff) == False]
         df.reset_index(drop=True, inplace=True)
         return df
 
-
     def load_augmented_binary_icm_less_items(self):
-        
+
         data_icm_type = self.load_augmented_binary_icm_less_items_df()
-        
+
         features = data_icm_type['feature_id'].unique()
         items = data_icm_type['item_id'].unique()
         shape = (len(items), len(features))
 
-
         # Create indices for users and items
-        features_cat = CategoricalDtype(categories=sorted(features), ordered=True)
+        features_cat = CategoricalDtype(
+            categories=sorted(features), ordered=True)
         item_cat = CategoricalDtype(categories=sorted(items), ordered=True)
-        features_index = data_icm_type["feature_id"].astype(features_cat).cat.codes
+        features_index = data_icm_type["feature_id"].astype(
+            features_cat).cat.codes
         item_index = data_icm_type["item_id"].astype(item_cat).cat.codes
         coo = sps.coo_matrix(
             (data_icm_type["data"], (item_index.values, features_index.values)), shape=shape)
@@ -194,7 +198,7 @@ class DataReader(object):
             csr: urm as csr object
         """
         urm = self.load_augmented_binary_urm_less_items_df()
-        return self.dataframe_to_csr(urm,'UserID','ItemID','Data')
+        return self.dataframe_to_csr(urm, 'UserID', 'ItemID', 'Data')
 
     def load_augmented_binary_urm(self):
         """Load urm in which pairs (user,item) are '1' iff user has either watched item or opened item's details page
@@ -203,7 +207,7 @@ class DataReader(object):
             csr: urm as csr object
         """
         urm = self.load_augmented_binary_urm_df()
-        return self.dataframe_to_csr(urm,'UserID','ItemID','Data')
+        return self.dataframe_to_csr(urm, 'UserID', 'ItemID', 'Data')
 
     def load_weighted_urm(self):
         """
@@ -240,14 +244,16 @@ class DataReader(object):
         average_number_of_episodes = data_ICM_length['Data'].mean()
         # create personalized urm
         # join df_number_of_watched_episodes with data_ICM_length on ItemID and fill NaN values with the average number of episodes
-        df = df_number_of_watched_episodes.merge(data_ICM_length, on='ItemID', how='left').fillna({'Data_y': average_number_of_episodes})
-        df = df.rename({'Data_x': 'NumWatchedEpisodes', 'Data_y': 'TotNumEpisodes'}, axis=1)
+        df = df_number_of_watched_episodes.merge(data_ICM_length, on='ItemID', how='left').fillna({
+            'Data_y': average_number_of_episodes})
+        df = df.rename({'Data_x': 'NumWatchedEpisodes',
+                       'Data_y': 'TotNumEpisodes'}, axis=1)
         df['A'] = df['NumWatchedEpisodes']/df['TotNumEpisodes']
 
         # produce urm
         df = df.drop(['NumWatchedEpisodes', 'TotNumEpisodes'], axis=1)
         urm = df.rename({'A': 'Data'}, axis=1)
-        return self.dataframe_to_csr(urm,'UserID','ItemID','Data')
+        return self.dataframe_to_csr(urm, 'UserID', 'ItemID', 'Data')
 
     def load_target(self):
         """Load target that is the set of users to which recommend items
@@ -262,7 +268,7 @@ class DataReader(object):
         df_original.columns = ['user_id']
         user_id_list = df_original['user_id'].values
         user_id_unique = np.unique(user_id_list)
-        print(">>> number of target users: {}".format(len(user_id_list)))
+        #print(">>> number of target users: {}".format(len(user_id_list)))
         return user_id_unique
 
     def load_target_df(self):
@@ -294,11 +300,12 @@ class DataReader(object):
         items = data_icm_type['item_id'].unique()
         shape = (len(items), len(features))
 
-
         # Create indices for users and items
-        features_cat = CategoricalDtype(categories=sorted(features), ordered=True)
+        features_cat = CategoricalDtype(
+            categories=sorted(features), ordered=True)
         item_cat = CategoricalDtype(categories=sorted(items), ordered=True)
-        features_index = data_icm_type["feature_id"].astype(features_cat).cat.codes
+        features_index = data_icm_type["feature_id"].astype(
+            features_cat).cat.codes
         item_index = data_icm_type["item_id"].astype(item_cat).cat.codes
         coo = sps.coo_matrix(
             (data_icm_type["data"], (item_index.values, features_index.values)), shape=shape)
@@ -320,7 +327,7 @@ class DataReader(object):
 
         return data_icm_type
 
-    def load_powerful_binary_urm_df(self,mult_param_urm=0.825,mult_param_icm=0.175):
+    def load_powerful_binary_urm_df(self, mult_param_urm=0.825, mult_param_icm=0.175):
         """
         Load urm by stacking augmented urm and transposed icm.
         This is a smart technique to implement SLIM with side information (or S-SLIM).
@@ -354,20 +361,21 @@ class DataReader(object):
             [urm, f], ignore_index=True).sort_values(['UserID', 'ItemID'])
         return powerful_urm
 
-    def load_powerful_binary_urm(self,mult_param_urm=0.825,mult_param_icm=0.175):
+    def load_powerful_binary_urm(self, mult_param_urm=0.825, mult_param_icm=0.175):
         """
         Load urm by stacking augmented urm and transposed icm.
         This is a smart technique to implement SLIM with side information (or S-SLIM).
-    
+
 
         Returns:
             csr: urm as csr object
         """
-        powerful_urm = self.load_powerful_binary_urm_df(mult_param_urm=mult_param_urm,mult_param_icm=mult_param_icm)
-        return self.dataframe_to_csr(powerful_urm,'UserID','ItemID','Data')
+        powerful_urm = self.load_powerful_binary_urm_df(
+            mult_param_urm=mult_param_urm, mult_param_icm=mult_param_icm)
+        return self.dataframe_to_csr(powerful_urm, 'UserID', 'ItemID', 'Data')
 
-
-    def load_powerful_binary_urm_df_given_URM_train_df(self,URM_train_df): #NEW
+    # NEW
+    def load_powerful_binary_urm_df_given_URM_train_df(self, URM_train_df):
         data_icm_type = pd.read_csv(filepath_or_buffer=os.getenv('DATA_ICM_TYPE_PATH'),
                                     sep=',',
                                     names=[
@@ -392,11 +400,11 @@ class DataReader(object):
         powerful_urm = pd.concat(
             [urm, f], ignore_index=True).sort_values(['UserID', 'ItemID'])
         return powerful_urm
-    
-    def load_powerful_binary_urm_given_URM_train_df(self,URM_train_df): #NEW
-        powerful_urm = self.load_powerful_binary_urm_df_given_URM_train_df(URM_train_df)
-        return self.dataframe_to_csr(powerful_urm,'UserID','ItemID','Data')
 
+    def load_powerful_binary_urm_given_URM_train_df(self, URM_train_df):  # NEW
+        powerful_urm = self.load_powerful_binary_urm_df_given_URM_train_df(
+            URM_train_df)
+        return self.dataframe_to_csr(powerful_urm, 'UserID', 'ItemID', 'Data')
 
     def get_unique_items_based_on_urm(self, urm):
         """Returns numpy.array of unique items contained in the given urm
@@ -438,10 +446,10 @@ class DataReader(object):
         # to concat impressions of each user
         impressions_per_user = df['Impressions'].apply(sum)
 
-        presentations_per_user={}
+        presentations_per_user = {}
         for user in target:
             impressions = impressions_per_user[impressions_per_user['UserID']
-                                            == user]['Impressions']
+                                               == user]['Impressions']
             impressions = impressions.iloc[0].split(",")
             # remove last element which is a '' due to last ','
             impressions = np.delete(impressions, -1)
@@ -450,7 +458,7 @@ class DataReader(object):
             presentations = {}
             for item in items:
                 presentations[item] = counts[item]
-            presentations_per_user[user]=presentations
+            presentations_per_user[user] = presentations
         return presentations_per_user
 
     def save_impressions(self):
@@ -470,10 +478,11 @@ class DataReader(object):
         impressions_per_user = df['Impressions'].apply(sum)
         self.impressions_per_user = impressions_per_user
 
-    def get_impressions_count_given_user(self, items,user):
+    def get_impressions_count_given_user(self, items, user):
 
-        #------ separeted, it was a for
-        impressions = self.impressions_per_user[self.impressions_per_user['UserID'] == user]['Impressions']
+        # ------ separeted, it was a for
+        impressions = self.impressions_per_user[self.impressions_per_user['UserID']
+                                                == user]['Impressions']
 
         if(impressions.empty == False):
             impressions = impressions.iloc[0].split(",")
@@ -488,16 +497,15 @@ class DataReader(object):
         else:
             return {}
 
-
-
     def stackMatrixes(self, URM_train):
         # Vertical stack so ItemIDs cardinality must coincide.
-       
-        urm=self.csr_to_dataframe(URM_train,'UserID', 'ItemID', 'Data')
-        f=self.load_icm_df()
+
+        urm = self.csr_to_dataframe(URM_train, 'UserID', 'ItemID', 'Data')
+        f = self.load_icm_df()
         swap_list = ["feature_id", "item_id", "data"]
         f = f.reindex(columns=swap_list)
-        f = f.rename({'feature_id': 'UserID', 'item_id': 'ItemID', 'data': 'Data'}, axis=1)
+        f = f.rename(
+            {'feature_id': 'UserID', 'item_id': 'ItemID', 'data': 'Data'}, axis=1)
 
         urm['Data'] = 0.825 * urm['Data']
         # f times (1-aplha)
@@ -505,45 +513,10 @@ class DataReader(object):
         # Change UserIDs of f matrix in order to make recommender work
         f['UserID'] = 41634 + f['UserID']
 
-        powerful_urm = pd.concat([urm, f], ignore_index=True).sort_values(['UserID', 'ItemID'])
-        return self.dataframe_to_csr(powerful_urm,'UserID', 'ItemID','Data')
+        powerful_urm = pd.concat(
+            [urm, f], ignore_index=True).sort_values(['UserID', 'ItemID'])
+        return self.dataframe_to_csr(powerful_urm, 'UserID', 'ItemID', 'Data')
 
-
-    def stackMatrixes_with_impressions(self, URM_train):
-        """
-            Returns super_powerful_urm that stack URM, ICM.T, and impressions.T
-        """
-        # Vertical stack so ItemIDs cardinality must coincide.
-
-        urm=self.csr_to_dataframe(URM_train,'UserID', 'ItemID', 'Data')
-        f=self.load_icm_df()
-        swap_list = ["feature_id", "item_id", "data"]
-        f = f.reindex(columns=swap_list)
-        f = f.rename({'feature_id': 'UserID', 'item_id': 'ItemID', 'data': 'Data'}, axis=1)
-
-        urm['Data'] = 0.825 * urm['Data']
-        # f times (1-aplha)
-        f['Data'] = 0.175 * f['Data']
-        # Change UserIDs of f matrix in order to make recommender work
-        f['UserID'] = 41634 + f['UserID']
-
-        impressionURM = pd.read_csv(filepath_or_buffer=os.getenv('IMPRESSIONS_URM'),
-                                                    sep=',',
-                                                    names=[
-                                                        'UserID', 'ItemID', 'Data'],
-                                                    header=0,
-                                                    dtype={'UserID': np.int32, 'ItemID': np.int32, 'Data': np.int32})
-        # removing duplicated (user_id,item_id) pairs
-        impressionURM = impressionURM.drop_duplicates(keep='first')
-
-        impressionURM['Data']= 0.15 * impressionURM['Data']
-
-        powerful_urm = pd.concat([urm, f], ignore_index=True).sort_values(['UserID', 'ItemID'])
-        super_powerful_urm = pd.concat([powerful_urm,impressionURM], ignore_index=True).sort_values(['UserID', 'ItemID'])
-        
-        return self.dataframe_to_csr(super_powerful_urm,'UserID', 'ItemID','Data')
-
-    
     def print_statistics(self):
         """ Print statistics about dataset """
         target = self.load_target()
@@ -572,9 +545,6 @@ class DataReader(object):
         print('>>> number of unique users in interactions_and_impressions that are not in "list of users that have watched at least a movie": {}'.format(
             len(np.setdiff1d(urm['UserID'].unique(), watchers_urm['UserID'].unique()))))
 
-
-
-
     def pad_with_zeros_ICMandURM(self, URM):
         """
         Add items present in ICM to URM and vice versa.
@@ -587,23 +557,60 @@ class DataReader(object):
             URM (csr): URM filled with missing items present in ICM but not in URM
             ICM (csr): ICM filled with missing items present in URM but not in ICM
         """
-        print("Making augmented URM and ICM of the same shape...")
-        urm=self.csr_to_dataframe(URM,'UserID','ItemID','Data')
-        icm=self.load_icm_df()
-
-        DiffURM_ICM = np.setdiff1d(urm['ItemID'].unique(), icm['item_id'].unique())
-        DiffICM_URM = np.setdiff1d(icm['item_id'].unique(), urm['ItemID'].unique())
+        #print("Making augmented URM and ICM of the same shape...")
+        urm = self.csr_to_dataframe(URM, 'UserID', 'ItemID', 'Data')
+        icm = self.load_icm_df()
+        print("---> ", len(icm['item_id'].unique()))
+        print("==>", len(urm['ItemID'].unique()))
+        DiffURM_ICM = np.setdiff1d(
+            urm['ItemID'].unique(), icm['item_id'].unique())
+        DiffICM_URM = np.setdiff1d(
+            icm['item_id'].unique(), urm['ItemID'].unique())
 
         for id in DiffURM_ICM:
             icm.loc[len(icm.index)] = [id, 1, 0]
-        sorted_icm = icm.sort_values('item_id').reset_index(drop= True)
+        sorted_icm = icm.sort_values('item_id').reset_index(drop=True)
 
         for id in DiffICM_URM:
             urm.loc[len(urm.index)] = [1, id, 0]
-    
-        sorted_urm = urm.sort_values('UserID').reset_index(drop= True)
+
+        sorted_urm = urm.sort_values('UserID').reset_index(drop=True)
         URM = self.dataframe_to_csr(sorted_urm, 'UserID', 'ItemID', 'Data')
-        ICM = self.dataframe_to_csr(sorted_icm, 'item_id', 'feature_id', 'data')
+        ICM = self.dataframe_to_csr(
+            sorted_icm, 'item_id', 'feature_id', 'data')
+        return URM, ICM
+
+    def pad_with_zeros_given_ICMandURM(self, ICM, URM):
+        """
+        Add items present in ICM to URM and vice versa.
+        To do so, we calculate the difference between URM_train items and ICM items and add the missing items in each matrix respectively.
+
+        Args:
+            URM (csr): user rating matrix
+
+        Returns:
+            URM (csr): URM filled with missing items present in ICM but not in URM
+            ICM (csr): ICM filled with missing items present in URM but not in ICM
+        """
+        #print("Making augmented URM and ICM of the same shape...")
+        urm = self.csr_to_dataframe(URM, 'UserID', 'ItemID', 'Data')
+        icm = self.csr_to_dataframe(ICM, 'ItemID', 'FeatureID', 'Data')
+
+        DiffURM_ICM = np.setdiff1d(
+            urm['ItemID'].unique(), icm['ItemID'].unique())
+        DiffICM_URM = np.setdiff1d(
+            icm['ItemID'].unique(), urm['ItemID'].unique())
+
+        for id in DiffURM_ICM:
+            icm.loc[len(icm.index)] = [id, 1, 0]
+        sorted_icm = icm.sort_values('ItemID').reset_index(drop=True)
+
+        for id in DiffICM_URM:
+            urm.loc[len(urm.index)] = [1, id, 0]
+        sorted_urm = urm.sort_values('UserID').reset_index(drop=True)
+
+        URM = self.dataframe_to_csr(sorted_urm, 'UserID', 'ItemID', 'Data')
+        ICM = self.dataframe_to_csr(sorted_icm, 'ItemID', 'FeatureID', 'Data')
         return URM, ICM
 
     def load_aug_ucm(self):
@@ -613,22 +620,130 @@ class DataReader(object):
             UCM (csr): users on rows and features on columns
         """
         data_aug_ucm = pd.read_csv(filepath_or_buffer=os.getenv('DATA_AUG_UCM'),
-                                    sep=',',
-                                    names=[
+                                   sep=',',
+                                   names=[
             'UserID', 'FeatureID', 'Data'],
             header=0,
             dtype={'UserID': np.int32, 'FeatureID': np.int32, 'Data': np.int32})
 
-        features = data_aug_ucm['FeatureID'].unique()
-        users = data_aug_ucm['UserID'].unique()
-        shape = (len(users), len(features))
+        return self.dataframe_to_csr(data_aug_ucm, 'UserID', 'FeatureID', 'Data')
 
-        # Create indices for users and items
-        features_cat = CategoricalDtype(categories=sorted(features), ordered=True)
-        user_cat = CategoricalDtype(categories=sorted(users), ordered=True)
-        features_index = data_aug_ucm["FeatureID"].astype(features_cat).cat.codes
-        user_index = data_aug_ucm["UserID"].astype(user_cat).cat.codes
-        coo = sps.coo_matrix(
-            (data_aug_ucm["Data"], (user_index.values, features_index.values)), shape=shape)
-        csr = coo.tocsr()
-        return csr   
+    #######################################################################################################################
+    #######################################################################################################################
+    #################### NEW ICM WITH IMPRESSIONS METHODS #################################################################
+
+    def load_weighted_impressions_ICM(self):
+        data_icm_type = pd.read_csv(filepath_or_buffer=os.getenv('WEIGHTED_IMPRESSIONS_ICM'),
+                                    sep=',',
+                                    names=[
+            'ItemID', 'FeatureID', 'Data'],
+            header=0,
+            dtype={'ItemID': np.int32, 'FeatureID': np.int32, 'Data': np.float64})
+
+        return self.dataframe_to_csr(data_icm_type, 'ItemID', 'FeatureID', 'Data')
+
+    def load_binary_impressions_ICM(self):
+        data_icm_type = pd.read_csv(filepath_or_buffer=os.getenv('BINARY_IMPRESSIONS_ICM'),
+                                    sep=',',
+                                    names=[
+            'ItemID', 'FeatureID', 'Data'],
+            header=0,
+            dtype={'ItemID': np.int32, 'FeatureID': np.int32, 'Data': np.int32})
+
+        return self.dataframe_to_csr(data_icm_type, 'ItemID', 'FeatureID', 'Data')
+
+    def load_ICM_stacked_with_binary_impressions(self, icm_weigth=0.7):
+        # Vertical stack so ItemIDs cardinality must coincide.
+        binary_impressions_icm = self.csr_to_dataframe(
+                self.load_binary_impressions_ICM(), 'ItemID', 'FeatureID', 'Data')
+        if(icm_weigth!=0):
+            icm = self.load_icm_df()
+            
+            icm = icm.rename(
+                {'item_id': 'ItemID', 'feature_id': 'FeatureID', 'data': 'Data'}, axis=1)
+
+            # If alpha is 0.5 then we don't need to assign different weights, so we keeep Data as '1'. Otherwise, we multiply by alpha and 1-alpha.
+            if(icm_weigth != 0.5):
+                icm['Data'] = icm_weigth * icm['Data']
+                # times (1-aplha)
+                binary_impressions_icm['Data'] = (
+                    1-icm_weigth) * binary_impressions_icm['Data']
+
+            # Change FeatureIDs of binary_impressions_icm in order to make recommender work
+            # If we keep same FeatureIDs then some of the real feature IDs of ICM would be confounded with fake FeatureIDs of binary_impressions_icm, which are items!
+            binary_impressions_icm['FeatureID'] = 8 + \
+                binary_impressions_icm['FeatureID']
+           
+
+            ICM_stacked_with_binary_impressions = pd.concat([icm, binary_impressions_icm],
+                                                            ignore_index=True).sort_values(['ItemID', 'FeatureID'])
+                                                        
+
+            return self.dataframe_to_csr(ICM_stacked_with_binary_impressions, 'ItemID', 'FeatureID', 'Data')
+        else:
+            binary_impressions_icm['FeatureID'] = 8 + binary_impressions_icm['FeatureID']
+            return self.dataframe_to_csr(binary_impressions_icm, 'ItemID', 'FeatureID', 'Data')
+
+
+    def load_ICM_stacked_with_weighted_impressions(self):
+        # Vertical stack so ItemIDs cardinality must coincide.
+
+        icm = self.load_icm_df()
+        binary_impressions_icm = self.csr_to_dataframe(self.load_weighted_impressions_ICM(),'ItemID','FeatureID','Data')
+
+        icm = icm.rename(
+            {'item_id': 'ItemID', 'feature_id': 'FeatureID', 'data': 'Data'}, axis=1)
+
+        icm['Data'] = 0.8 * icm['Data']
+        # times (1-aplha)
+        binary_impressions_icm['Data'] = 0.2 * binary_impressions_icm['Data']
+        # Change FeatureIDs of binary_impressions_icm in order to make recommender work
+        # If we keep same FeatureIDs then some of the real feature IDs of ICM would be confounded with fake FeatureIDs of binary_impressions_icm, which are items!
+        binary_impressions_icm['FeatureID'] = 7 + \
+            binary_impressions_icm['FeatureID']
+
+        powerful_urm = pd.concat([icm, binary_impressions_icm],
+                                 ignore_index=True).sort_values(['ItemID', 'FeatureID'])
+        return self.dataframe_to_csr(powerful_urm, 'ItemID', 'FeatureID', 'Data')
+
+    def load_super_powerful_URM(self, URM_train, ICM, alpha=0.825):
+        """
+            Given URM_train_aug, returns super_powerful_urm that stack URM and ICM_stacked_with_binary_impressions.T
+        """
+        # Vertical stack so ItemIDs cardinality must coincide.
+
+        urm = self.csr_to_dataframe(URM_train, 'UserID', 'ItemID', 'Data')
+        ICM_stacked_with_binary_impressions = self.csr_to_dataframe(
+            ICM, 'ItemID', 'FeatureID', 'Data')
+
+        # Transpose ICM
+        swap_list = ["FeatureID", "ItemID", "Data"]
+        ICM_stacked_with_binary_impressions = ICM_stacked_with_binary_impressions.reindex(
+            columns=swap_list)
+        ICM_stacked_with_binary_impressions = ICM_stacked_with_binary_impressions.rename(
+            {'FeatureID': 'UserID', 'ItemID': 'ItemID', 'Data': 'Data'}, axis=1)
+
+        # Adjust URM and ICM weights
+        urm['Data'] = alpha * urm['Data']
+        # f times (1-aplha)
+        ICM_stacked_with_binary_impressions['Data'] = (
+            1-alpha) * ICM_stacked_with_binary_impressions['Data']
+        # Change UserIDs of f matrix in order to make recommender work
+        ICM_stacked_with_binary_impressions['UserID'] = 41634 + \
+            ICM_stacked_with_binary_impressions['UserID']
+        '''
+        impressionURM = pd.read_csv(filepath_or_buffer=os.getenv('IMPRESSIONS_URM'),
+                                                    sep=',',
+                                                    names=[
+                                                        'UserID', 'ItemID', 'Data'],
+                                                    header=0,
+                                                    dtype={'UserID': np.int32, 'ItemID': np.int32, 'Data': np.int32})
+        # removing duplicated (user_id,item_id) pairs
+        impressionURM = impressionURM.drop_duplicates(keep='first')
+
+        impressionURM['Data']= 0.15 * impressionURM['Data']
+        '''
+        super_powerful_urm = pd.concat(
+            [urm, ICM_stacked_with_binary_impressions], ignore_index=True).sort_values(['UserID', 'ItemID'])
+
+        return self.dataframe_to_csr(super_powerful_urm, 'UserID', 'ItemID', 'Data')

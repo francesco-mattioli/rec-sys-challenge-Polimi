@@ -24,18 +24,39 @@ import os
 dataReader = DataReader()
 
 target = dataReader.load_target()
-
+'''
 UCM = dataReader.load_aug_ucm()
 URM = dataReader.load_augmented_binary_urm()
 URM_aug, ICM = dataReader.pad_with_zeros_ICMandURM(URM)
-
-
 URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample( URM_aug, train_percentage=0.9)
 URM_train_super_pow = dataReader.stackMatrixes_with_impressions(URM_train_aug)
-#UCM = dataReader.load_aug_ucm()
+'''
+URM = dataReader.load_augmented_binary_urm()
+URM_aug, ICM = dataReader.pad_with_zeros_ICMandURM(URM)
+ICM_stacked_with_binary_impressions = dataReader.load_ICM_stacked_with_binary_impressions(0)
+URM_aug, ICM = dataReader.pad_with_zeros_given_ICMandURM(
+    ICM_stacked_with_binary_impressions, URM)
+URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample(
+    URM_aug, train_percentage=0.9)
+URM_train_super_pow = dataReader.load_super_powerful_URM(
+    URM_train_aug, ICM_stacked_with_binary_impressions, 0.8)
 
 evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 
+'''
+RP3beta_aug = RP3betaRecommender(URM_train_aug)
+RP3beta_aug.fit()
+
+S_SLIM = SLIMElasticNetRecommender(URM_train_super_pow)
+S_SLIM.fit(l1_ratio=0.006011021694075882,alpha=0.0013369897413235414, topK=459)
+
+
+UserKNNCF = UserKNNCFRecommender(URM_train_aug)
+UserKNNCF.fit()
+
+Hybrid_SSLIM_RP3B_aug = Hybrid_SSLIM_RP3B_aug(URM_train_aug, S_SLIM, RP3beta_aug)
+Hybrid_SSLIM_RP3B_aug.fit(alpha = 0.7447123958484749)
+'''
 
 recommender_class = SLIMElasticNetRecommender
 
@@ -45,41 +66,32 @@ output_folder_path = "result_experiments/"
 if not os.path.exists(output_folder_path):
     os.makedirs(output_folder_path)
 
-n_cases = 100
+n_cases = 200
 n_random_starts = int(n_cases*0.3)
 metric_to_optimize = "MAP"
 cutoff_to_optimize = 10
 
 hyperparameters_range_dictionary = {
-    "l1_ratio": Real(low=0.001, high=0.01, prior='log-uniform'),
-    "alpha": Real(low=0.001, high=0.01, prior='uniform'),
-    "topK": Integer(300, 750)
+    "l1_ratio": Categorical([0.1,0.01,0.001,0.0001,0.00001]),
+    "alpha": Categorical([0.1,0.01,0.001,0.0001,0.00001]),
+    "topK": Integer(100, 1000),
 }
 
 
-
-'''
-hyperparameters_range_dictionary = {
-    "alpha": Real(0,1,prior='uniform'),
-    "beta": Real(0,1,prior='uniform'),
-    "topK": Integer(400,2000,prior='uniform'),
-}
-'''
 earlystopping_keywargs = {"validation_every_n": 5,
-                              "stop_on_validation": True,
-                              "evaluator_object": evaluator_validation,
-                              "lower_validations_allowed": 5,
-                              "validation_metric": metric_to_optimize,
-                              }
+                          "stop_on_validation": True,
+                          "evaluator_object": evaluator_validation,
+                          "lower_validations_allowed": 5,
+                          "validation_metric": metric_to_optimize,
+                          }
 
 # create a bayesian optimizer object, we pass the recommender and the evaluator
-hyperparameterSearch = SearchBayesianSkopt(recommender_class,
-                                           evaluator_validation=evaluator_validation)
+hyperparameterSearch = SearchBayesianSkopt(
+    recommender_class, evaluator_validation=evaluator_validation)
 
 # provide data needed to create instance of model (one on URM_train, the other on URM_all)
 recommender_input_args = SearchInputRecommenderArgs(
     # For a CBF model simply put [URM_train, ICM_train]
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_super_pow],
     CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_super_pow],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
@@ -88,7 +100,6 @@ recommender_input_args = SearchInputRecommenderArgs(
 )
 
 recommender_input_args_last_test = SearchInputRecommenderArgs(
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_super_pow],
     CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_super_pow],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
