@@ -1268,3 +1268,37 @@ class Hybrid_Best(BaseRecommender):
         return item_weights
 
     
+
+###################################################################
+###################### LIST COMBINATION HYBRID ####################
+
+class ListCombinationHybrid(BaseRecommender):
+
+    RECOMMENDER_NAME = "ListCombinationHybrid"
+
+    def __init__(self, URM_train_aug, recommender_1, recommender_2):
+        super(ListCombinationHybrid, self).__init__(URM_train_aug)
+
+        self.URM_train_aug = URM_train_aug
+        self.recommender_1 = recommender_1
+        self.recommender_2 = recommender_2
+
+        
+    def recommend(self, user_id, cutoff = None, remove_seen_flag=True):
+
+        list1 = self.recommender_1.recommend(user_id_array=user_id, cutoff = cutoff,remove_seen_flag=remove_seen_flag)
+        list2 = self.recommender_2.recommend(user_id_array=user_id, cutoff = cutoff,remove_seen_flag=remove_seen_flag)
+        
+        result = []
+        i = 0
+            
+        while len(result) < cutoff:
+            if list1[i] not in result:
+                result.append(list1[i])
+            if (list2[i] != list1[i]):
+                if list2[i] not in result:
+                    if len(result) < cutoff:
+                        result.append(list2[i])
+            i = i + 1
+        
+        return result
