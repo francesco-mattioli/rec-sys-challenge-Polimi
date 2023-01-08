@@ -19,7 +19,7 @@ URM = dataReader.load_augmented_binary_urm()
 URM_aug, ICM = dataReader.pad_with_zeros_ICMandURM(URM)
 
 
-URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample( URM_aug, train_percentage=0.9)
+URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample( URM_aug, train_percentage=1.0)
 #URM_train_super_pow = dataReader.stackMatrixes_with_impressions(URM_train_aug)
 URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
 
@@ -119,11 +119,13 @@ Hybrid_SSLIM_RP3B_aug = Hybrid_SSLIM_RP3B_aug(
     URM_train_aug, S_SLIM, RP3beta_aug)
 Hybrid_SSLIM_RP3B_aug.fit(alpha = 0.7447123958484749)
 
+'''
+Hybrid_UserKNNCF_ItemKNNCF = Hybrid_UserKNNCF_ItemKNNCF(
+    URM_train_aug, URM_train_pow, UserKNNCF, ItemKNNCF)
+Hybrid_UserKNNCF_ItemKNNCF.fit(
+    UserKNNCF_weight=1.0, ItemKNNCF_weight=0.8072073132929845)
+'''
 
-#Hybrid_UserKNNCF_ItemKNNCF = Hybrid_UserKNNCF_ItemKNNCF(
-#    URM_train_aug, URM_train_pow, UserKNNCF, ItemKNNCF)
-#Hybrid_UserKNNCF_ItemKNNCF.fit(
-#    UserKNNCF_weight=1.0, ItemKNNCF_weight=0.8072073132929845)
 
 '''
 Hybrid_User_and_Item_KNN_CFCBF_Hybrid = Hybrid_User_and_Item_KNN_CFCBF_Hybrid(
