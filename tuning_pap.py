@@ -47,8 +47,8 @@ evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 UserKNNCF = UserKNNCFRecommender(URM_train_aug)
 UserKNNCF.fit()
 
-ItemKNNCF = ItemKNNCFRecommender(URM_train_pow)
-ItemKNNCF.fit()
+#ItemKNNCF = ItemKNNCFRecommender(URM_train_pow)
+#ItemKNNCF.fit()
 
 RP3beta_aug = RP3betaRecommender(URM_train_aug)
 RP3beta_aug.fit()
@@ -64,21 +64,24 @@ EASE_R.fit()
 
 
 ##########################################################################################################
-
+'''
 Hybrid_UserKNNCF_RP3B_aug = Hybrid_UserKNNCF_RP3B_aug(
     URM_train_aug, URM_train_pow, UserKNNCF, RP3beta_aug)
 Hybrid_UserKNNCF_RP3B_aug.fit(
     UserKNNCF_weight=0.4348857237366932, RP3B_weight=0.027648314372221712)
 
+
 Hybrid_SSLIM_EASER = Hybrid_SSLIM_EASER(
     URM_train_aug, URM_train_pow, S_SLIM, EASE_R)
 Hybrid_SSLIM_EASER.fit(SSLIM_weight=0.5495139584252299, EASE_R_weight=0.0)
 
+'''
+
 Hybrid_SSLIM_RP3B_aug = Hybrid_SSLIM_RP3B_aug(
     URM_train_aug, URM_train_pow, S_SLIM, RP3beta_aug)
 Hybrid_SSLIM_RP3B_aug.fit(
-    SSLIM_weight=0.26204559437361846, RP3B_weight=0.46562963809236146)
-
+    SSLIM_weight=0.8157521052599057, RP3B_weight=0.22946157569349823)
+'''
 Hybrid_UserKNNCF_ItemKNNCF = Hybrid_UserKNNCF_ItemKNNCF(
     URM_train_aug, URM_train_pow, UserKNNCF, ItemKNNCF)
 Hybrid_UserKNNCF_ItemKNNCF.fit(
@@ -88,13 +91,18 @@ Hybrid_User_and_Item_KNN_CFCBF_Hybrid = Hybrid_User_and_Item_KNN_CFCBF_Hybrid(
     URM_train_aug, URM_train_pow, ItemKNN_CFCBF_Hybrid_Recommender, UserKNN_CFCBF_Hybrid_Recommender)
 Hybrid_User_and_Item_KNN_CFCBF_Hybrid.fit()
 
+Hybrid_Best = Hybrid_Best(URM_train_aug, URM_train_pow, ICM, UCM, Hybrid_SSLIM_RP3B_aug,
+                                 Hybrid_UserKNNCF_ItemKNNCF, UserKNNCF, Hybrid_UserKNNCF_RP3B_aug, Hybrid_SSLIM_EASER)
+Hybrid_Best.fit(Hybrid_1_tier1_weight= 0.5960289190957877, Hybrid_2_tier1_weight= 1.0, Hybrid_1_tier2_weight= 1.0, Hybrid_2_tier2_weight= 0.0, Hybrid_1_tier3_weight=0.4001445272204769, Hybrid_2_tier3_weight= 0.6909775763230392)
 #HybridRecommender_5 = HybridRecommender_5(URM_train_aug, URM_train_pow, UserKNNCF, RP3beta_pow, S_SLIM, EASE_R)
 # HybridRecommender_5.fit()
+'''
+
 
 
 ############################ TUNING ######################################################
 
-recommender_class = Hybrid_of_Hybrids
+recommender_class = Linear_Hybrid
 output_folder_path = "new_result_experiments/"
 
 # If directory does not exist, create
@@ -130,8 +138,6 @@ hyperparameters_range_dictionary = {
     "EASE_R_tier4_weight": Real(0,1),
 
 }
-'''
-
 
 hyperparameters_range_dictionary = {
     "Hybrid_1_tier1_weight": Real(0, 1),
@@ -143,6 +149,14 @@ hyperparameters_range_dictionary = {
     "Hybrid_1_tier3_weight": Real(0, 1),
     "Hybrid_2_tier3_weight": Real(0, 1),
 }
+'''
+
+hyperparameters_range_dictionary = {
+    "norm": Categorical([1,2]),
+    "alpha": Real(0, 1),
+    "beta": Real(0, 1),
+    "gamma": Real(0, 1),
+}
 
 
 # create a bayesian optimizer object, we pass the recommender and the evaluator
@@ -152,8 +166,7 @@ hyperparameterSearch = SearchBayesianSkopt(recommender_class,
 # provide data needed to create instance of model (one on URM_train, the other on URM_all)
 recommender_input_args = SearchInputRecommenderArgs(
     # For a CBF model simply put [URM_train, ICM_train]
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug, URM_train_pow, ICM, UCM, Hybrid_SSLIM_RP3B_aug,
-                                 Hybrid_UserKNNCF_ItemKNNCF, UserKNNCF, Hybrid_UserKNNCF_RP3B_aug, Hybrid_SSLIM_EASER],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug, S_SLIM, RP3beta_aug, S_SLIM, EASE_R],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
@@ -161,8 +174,7 @@ recommender_input_args = SearchInputRecommenderArgs(
 )
 
 recommender_input_args_last_test = SearchInputRecommenderArgs(
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug, URM_train_pow, ICM, UCM, Hybrid_SSLIM_RP3B_aug,
-                                 Hybrid_UserKNNCF_ItemKNNCF, UserKNNCF, Hybrid_UserKNNCF_RP3B_aug, Hybrid_SSLIM_EASER],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug, S_SLIM, RP3beta_aug, S_SLIM, EASE_R],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
