@@ -1367,41 +1367,202 @@ class Hybrid_Best(BaseRecommender):
 
 
 
+class Hybrid_006022(BaseRecommender):
+
+    RECOMMENDER_NAME = "Hybrid_006022"
+
+    def __init__(self, URM_train_aug, URM_train_pow, ICM, UCM, Hybrid1_tier1=None, Hybrid2_tier1=None, Hybrid2_tier2=None):
+
+        self.URM_train_aug = URM_train_aug
+        self.URM_train_pow = URM_train_pow
+        self.ICM = ICM
+        self.UCM = UCM
+
+        if(Hybrid1_tier1 == None):
+            # TODO: based on hybrid
+            self.Hybrid1_tier1 = Hybrid1_tier1(
+                self.URM_train_pow)
+        else:
+            self.Hybrid1_tier1 = Hybrid1_tier1
+
+        if(Hybrid2_tier1 == None):
+            # TODO: based on hybrid
+            self.Hybrid2_tier1 = Hybrid2_tier1(
+                self.URM_train_aug)
+        else:
+            self.Hybrid2_tier1 = Hybrid2_tier1
+        '''
+        if(Hybrid1_tier2 == None):
+            # TODO: based on hybrid
+            self.Hybrid1_tier2 = Hybrid1_tier2(
+                self.URM_train_pow)
+        else:
+            self.Hybrid1_tier2 = Hybrid1_tier2
+        '''
+        
+
+        if(Hybrid2_tier2 == None):
+            # TODO: based on hybrid
+            self.Hybrid2_tier2 = Hybrid2_tier2(self.URM_train_aug)
+        else:
+            self.Hybrid2_tier2 = Hybrid2_tier2
+
+        #self.Hybrid2_tier3 = Hybrid2_tier3
+
+        super(Hybrid_006022, self).__init__(self.URM_train_aug)
+
+    def fit(self, Hybrid_1_tier1_weight=0.5, Hybrid_2_tier1_weight=0.5,
+            Hybrid_1_tier2_weight=0.5, Hybrid_2_tier2_weight=0.5,
+            Hybrid_1_tier3_weight=0.5, Hybrid_2_tier3_weight=0.5):
+        """ Set the weights for every algorithm involved in the hybrid recommender """
+
+        self.Hybrid_1_tier1_weight = Hybrid_1_tier1_weight
+        self.Hybrid_2_tier1_weight = Hybrid_2_tier1_weight
+
+        self.Hybrid_1_tier2_weight = Hybrid_1_tier2_weight
+        self.Hybrid_2_tier2_weight = Hybrid_2_tier2_weight
+
+        self.Hybrid_1_tier3_weight = Hybrid_1_tier3_weight
+        self.Hybrid_2_tier3_weight = Hybrid_2_tier3_weight
+
+    def _compute_item_score(self, user_id_array, items_to_compute=None):
+
+        num_items_pow = 27968
+        item_weights = np.empty([len(user_id_array), num_items_pow])
+
+        for i in range(len(user_id_array)):
+
+            interactions = len(self.URM_train_aug[user_id_array[i], :].indices)
+
+            if interactions <= 22:  # TIER 1
+
+                w1 = self.Hybrid1_tier1._compute_item_score_per_user(
+                    user_id_array[i], items_to_compute)
+                w1 /= LA.norm(w1, 2)
+
+                w2 = self.Hybrid2_tier1._compute_item_score(
+                    user_id_array[i], items_to_compute)
+                w2 /= LA.norm(w2, 2)
+
+                '''
+                w3 = self.Hybrid_3_tier2._compute_item_score_per_user(
+                    user_id_array[i], items_to_compute)
+                w3 /= LA.norm(w3, 2)
+                '''
+
+                w = self.Hybrid_1_tier1_weight*w1 + self.Hybrid_2_tier1_weight*w2
+
+            elif interactions > 22 and interactions <= 24:  # TIER 2
+
+                w1 = self.Hybrid1_tier1._compute_item_score_per_user(
+                    user_id_array[i], items_to_compute)
+                w1 /= LA.norm(w1, 2)
+
+                w2 = self.Hybrid2_tier1._compute_item_score(
+                    user_id_array[i], items_to_compute)
+                w2 /= LA.norm(w2, 2)
+
+                w = self.Hybrid_1_tier2_weight*w1 + self.Hybrid_2_tier2_weight*w2
+
+            else:  # TIER 3
+
+                w1 = self.Hybrid1_tier1._compute_item_score_per_user(
+                    user_id_array[i], items_to_compute)
+                w1 /= LA.norm(w1, 2)
+
+                w2 = self.Hybrid2_tier2._compute_item_score(
+                    user_id_array[i], items_to_compute)
+                w2 /= LA.norm(w2, 2)
+
+                w = self.Hybrid_1_tier3_weight*w1 + self.Hybrid_2_tier3_weight*w2
+
+            item_weights[i, :] = w
+
+        return item_weights
+
+    def _compute_item_score_per_user(self, user_id, items_to_compute=None):
+
+        interactions = len(self.URM_train_aug[user_id, :].indices)
+
+        if interactions <= 22:  # TIER 1
+
+            w1 = self.Hybrid1_tier1._compute_item_score_per_user(
+                user_id, items_to_compute)
+            w1 /= LA.norm(w1, 2)
+
+            w2 = self.Hybrid2_tier1._compute_item_score(
+                user_id, items_to_compute)
+            w2 /= LA.norm(w2, 2)
+
+            '''
+            w3 = self.Hybrid_3_tier2._compute_item_score_per_user(
+                user_id_array[i], items_to_compute)
+            w3 /= LA.norm(w3, 2)
+            '''
+
+            w = self.Hybrid_1_tier1_weight*w1 + self.Hybrid_2_tier1_weight*w2
+
+        elif interactions > 22 and interactions <= 24:  # TIER 2
+
+            w1 = self.Hybrid1_tier1._compute_item_score_per_user(
+                user_id, items_to_compute)
+            w1 /= LA.norm(w1, 2)
+
+            w2 = self.Hybrid2_tier1._compute_item_score(
+                user_id, items_to_compute)
+            w2 /= LA.norm(w2, 2)
+
+            w = self.Hybrid_1_tier2_weight*w1 + self.Hybrid_2_tier2_weight*w2
+
+        else:  # TIER 3
+
+            w1 = self.Hybrid1_tier1._compute_item_score_per_user(
+                user_id, items_to_compute)
+            w1 /= LA.norm(w1, 2)
+
+            w2 = self.Hybrid2_tier2._compute_item_score(
+                user_id, items_to_compute)
+            w2 /= LA.norm(w2, 2)
+
+            w = self.Hybrid_1_tier3_weight*w1 + self.Hybrid_2_tier3_weight*w2
+        return w
+
+
 
 class Linear_Hybrid(BaseRecommender):
     RECOMMENDER_NAME = "Linear_Hybrid"
 
-    def __init__(self, URM_train, recommender_1, recommender_2, recommender_3, recommender_4):
+    def __init__(self, URM_train, recommender_1, recommender_2):
         super(Linear_Hybrid, self).__init__(URM_train)
 
         self.URM_train = sps.csr_matrix(URM_train)
         self.recommender_1 = recommender_1
         self.recommender_2 = recommender_2
-        self.recommender_3 = recommender_3
-        self.recommender_4 = recommender_4
+        #self.recommender_3 = recommender_3
+        #self.recommender_4 = recommender_4
         
         
         
     def fit(self, norm, alpha = 0.5, beta = 0.5, gamma = 0.5):
 
         self.alpha = alpha
-        self.beta = beta
-        self.gamma = gamma
+        #self.beta = beta
+        #self.gamma = gamma
         self.norm = norm
 
 
     def _compute_item_score(self, user_id_array, items_to_compute):
         
-        item_weights_1 = self.recommender_1._compute_item_score(user_id_array)
+        item_weights_1 = self.recommender_1._compute_item_score_per_user(user_id_array)
         item_weights_2 = self.recommender_2._compute_item_score(user_id_array)
-        item_weights_3 = self.recommender_3._compute_item_score(user_id_array)
-        item_weights_4 = self.recommender_4._compute_item_score(user_id_array)
+        #item_weights_3 = self.recommender_3._compute_item_score(user_id_array)
+        #item_weights_4 = self.recommender_4._compute_item_score(user_id_array)
 
 
         norm_item_weights_1 = LA.norm(item_weights_1, self.norm)
         norm_item_weights_2 = LA.norm(item_weights_2, self.norm)
-        norm_item_weights_3 = LA.norm(item_weights_3, self.norm)
-        norm_item_weights_4 = LA.norm(item_weights_4, self.norm)
+        #norm_item_weights_3 = LA.norm(item_weights_3, self.norm)
+        #norm_item_weights_4 = LA.norm(item_weights_4, self.norm)
 
         
         if norm_item_weights_1 == 0:
@@ -1410,13 +1571,46 @@ class Linear_Hybrid(BaseRecommender):
         if norm_item_weights_2 == 0:
             raise ValueError("Norm {} of item weights for recommender 2 is zero. Avoiding division by zero".format(self.norm))
             
-        if norm_item_weights_3 == 0:
-            raise ValueError("Norm {} of item weights for recommender 3 is zero. Avoiding division by zero".format(self.norm))
+        #if norm_item_weights_3 == 0:
+            #raise ValueError("Norm {} of item weights for recommender 3 is zero. Avoiding division by zero".format(self.norm))
         
-        if norm_item_weights_4 == 0:
-            raise ValueError("Norm {} of item weights for recommender 4 is zero. Avoiding division by zero".format(self.norm))
+        #if norm_item_weights_4 == 0:
+            #raise ValueError("Norm {} of item weights for recommender 4 is zero. Avoiding division by zero".format(self.norm))
         
         
-        item_weights = item_weights_1 / norm_item_weights_1 * self.alpha + item_weights_2 / norm_item_weights_2 * self.beta + item_weights_3 / norm_item_weights_3 * self.gamma + item_weights_4 / norm_item_weights_4 * (1-self.alpha-self.beta-self.gamma)
+        #item_weights = item_weights_1 / norm_item_weights_1 * self.alpha + item_weights_2 / norm_item_weights_2 * self.beta + item_weights_3 / norm_item_weights_3 * self.gamma + item_weights_4 / norm_item_weights_4 * (1-self.alpha-self.beta-self.gamma)
 
+        item_weights = item_weights_1 / norm_item_weights_1 * self.alpha + item_weights_2 / norm_item_weights_2 * (1-self.alpha)
+        return item_weights
+    
+    def _compute_item_score_per_user(self, user_id_array, items_to_compute):
+        
+        item_weights_1 = self.recommender_1._compute_item_score_per_user(user_id_array)
+        item_weights_2 = self.recommender_2._compute_item_score(user_id_array)
+        #item_weights_3 = self.recommender_3._compute_item_score(user_id_array)
+        #item_weights_4 = self.recommender_4._compute_item_score(user_id_array)
+
+
+        norm_item_weights_1 = LA.norm(item_weights_1, self.norm)
+        norm_item_weights_2 = LA.norm(item_weights_2, self.norm)
+        #norm_item_weights_3 = LA.norm(item_weights_3, self.norm)
+        #norm_item_weights_4 = LA.norm(item_weights_4, self.norm)
+
+        
+        if norm_item_weights_1 == 0:
+            raise ValueError("Norm {} of item weights for recommender 1 is zero. Avoiding division by zero".format(self.norm))
+        
+        if norm_item_weights_2 == 0:
+            raise ValueError("Norm {} of item weights for recommender 2 is zero. Avoiding division by zero".format(self.norm))
+            
+        #if norm_item_weights_3 == 0:
+            #raise ValueError("Norm {} of item weights for recommender 3 is zero. Avoiding division by zero".format(self.norm))
+        
+        #if norm_item_weights_4 == 0:
+            #raise ValueError("Norm {} of item weights for recommender 4 is zero. Avoiding division by zero".format(self.norm))
+        
+        
+        #item_weights = item_weights_1 / norm_item_weights_1 * self.alpha + item_weights_2 / norm_item_weights_2 * self.beta + item_weights_3 / norm_item_weights_3 * self.gamma + item_weights_4 / norm_item_weights_4 * (1-self.alpha-self.beta-self.gamma)
+
+        item_weights = item_weights_1 / norm_item_weights_1 * self.alpha + item_weights_2 / norm_item_weights_2 * (1-self.alpha)
         return item_weights
