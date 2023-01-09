@@ -33,13 +33,15 @@ URM_train_super_pow = dataReader.stackMatrixes_with_impressions(URM_train_aug)
 '''
 URM = dataReader.load_augmented_binary_urm()
 URM_aug, ICM = dataReader.pad_with_zeros_ICMandURM(URM)
-ICM_stacked_with_binary_impressions = dataReader.load_ICM_stacked_with_binary_impressions(0)
+ICM_stacked_with_weighted_impressions = dataReader.load_ICM_stacked_with_weighted_impressions(0)
 URM_aug, ICM = dataReader.pad_with_zeros_given_ICMandURM(
-    ICM_stacked_with_binary_impressions, URM)
+    ICM_stacked_with_weighted_impressions, URM)
+
 URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample(
     URM_aug, train_percentage=0.9)
+    
 URM_train_super_pow = dataReader.load_super_powerful_URM(
-    URM_train_aug, ICM_stacked_with_binary_impressions, 0.8)
+    URM_train_aug, ICM_stacked_with_weighted_impressions, 0.8)
 
 evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 
