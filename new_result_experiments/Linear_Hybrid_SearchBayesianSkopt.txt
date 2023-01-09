@@ -1513,3 +1513,402 @@ SearchBayesianSkopt: Config 13 Exception. Config: {'norm': 1, 'alpha': 0.6547248
     item_weights_1 = self.recommender_1._compute_item_score_per_user(user_id_array)
 TypeError: _compute_item_score_per_user() missing 1 required positional argument: 'items_to_compute'
 
+SearchBayesianSkopt: Config 0 Exception. Config: {'norm': 1, 'alpha': 0.21772919172383115} - Exception: Traceback (most recent call last):
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 460, in _objective_function
+    result_df, recommender_instance = self._evaluate_on_validation(current_fit_hyperparameters_dict, was_already_evaluated_flag, was_already_evaluated_index)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 322, in _evaluate_on_validation
+    result_df, _ = self.evaluator_validation.evaluateRecommender(recommender_instance)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 276, in evaluateRecommender
+    results_dict = self._run_evaluation_on_selected_users(recommender_object, self.users_to_evaluate)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 477, in _run_evaluation_on_selected_users
+    recommended_items_batch_list, scores_batch = recommender_object.recommend(test_user_batch_array,
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Recommenders/BaseRecommender.py", line 147, in recommend
+    scores_batch = self._compute_item_score(user_id_array, items_to_compute=items_to_compute)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1556, in _compute_item_score
+    item_weights_1 = self.recommender_1._compute_item_score_per_user(user_id_array)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1519, in _compute_item_score_per_user
+    w1 = self.Hybrid1_tier1._compute_item_score_per_user(
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 915, in _compute_item_score_per_user
+    w = self.alpha*w1 + (1-self.alpha)*w2
+ValueError: operands could not be broadcast together with shapes (1000,27968) (1000,27286) 
+
+SearchBayesianSkopt: Config 1 Exception. Config: {'norm': 2, 'alpha': 0.5895994380215488} - Exception: Traceback (most recent call last):
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 460, in _objective_function
+    result_df, recommender_instance = self._evaluate_on_validation(current_fit_hyperparameters_dict, was_already_evaluated_flag, was_already_evaluated_index)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 322, in _evaluate_on_validation
+    result_df, _ = self.evaluator_validation.evaluateRecommender(recommender_instance)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 276, in evaluateRecommender
+    results_dict = self._run_evaluation_on_selected_users(recommender_object, self.users_to_evaluate)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 477, in _run_evaluation_on_selected_users
+    recommended_items_batch_list, scores_batch = recommender_object.recommend(test_user_batch_array,
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Recommenders/BaseRecommender.py", line 147, in recommend
+    scores_batch = self._compute_item_score(user_id_array, items_to_compute=items_to_compute)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1556, in _compute_item_score
+    item_weights_1 = self.recommender_1._compute_item_score_per_user(user_id_array)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1519, in _compute_item_score_per_user
+    w1 = self.Hybrid1_tier1._compute_item_score_per_user(
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 915, in _compute_item_score_per_user
+    w = self.alpha*w1 + (1-self.alpha)*w2
+ValueError: operands could not be broadcast together with shapes (1000,27968) (1000,27286) 
+
+SearchBayesianSkopt: Config 2 Exception. Config: {'norm': 2, 'alpha': 0.5535530938243575} - Exception: Traceback (most recent call last):
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 460, in _objective_function
+    result_df, recommender_instance = self._evaluate_on_validation(current_fit_hyperparameters_dict, was_already_evaluated_flag, was_already_evaluated_index)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 322, in _evaluate_on_validation
+    result_df, _ = self.evaluator_validation.evaluateRecommender(recommender_instance)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 276, in evaluateRecommender
+    results_dict = self._run_evaluation_on_selected_users(recommender_object, self.users_to_evaluate)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 477, in _run_evaluation_on_selected_users
+    recommended_items_batch_list, scores_batch = recommender_object.recommend(test_user_batch_array,
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Recommenders/BaseRecommender.py", line 147, in recommend
+    scores_batch = self._compute_item_score(user_id_array, items_to_compute=items_to_compute)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1556, in _compute_item_score
+    item_weights_1 = self.recommender_1._compute_item_score_per_user(user_id_array)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1519, in _compute_item_score_per_user
+    w1 = self.Hybrid1_tier1._compute_item_score_per_user(
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 915, in _compute_item_score_per_user
+    w = self.alpha*w1 + (1-self.alpha)*w2
+ValueError: operands could not be broadcast together with shapes (1000,27968) (1000,27286) 
+
+SearchBayesianSkopt: Config 3 Exception. Config: {'norm': 1, 'alpha': 0.5682606593876087} - Exception: Traceback (most recent call last):
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 460, in _objective_function
+    result_df, recommender_instance = self._evaluate_on_validation(current_fit_hyperparameters_dict, was_already_evaluated_flag, was_already_evaluated_index)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 322, in _evaluate_on_validation
+    result_df, _ = self.evaluator_validation.evaluateRecommender(recommender_instance)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 276, in evaluateRecommender
+    results_dict = self._run_evaluation_on_selected_users(recommender_object, self.users_to_evaluate)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 477, in _run_evaluation_on_selected_users
+    recommended_items_batch_list, scores_batch = recommender_object.recommend(test_user_batch_array,
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Recommenders/BaseRecommender.py", line 147, in recommend
+    scores_batch = self._compute_item_score(user_id_array, items_to_compute=items_to_compute)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1556, in _compute_item_score
+    item_weights_1 = self.recommender_1._compute_item_score_per_user(user_id_array)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1519, in _compute_item_score_per_user
+    w1 = self.Hybrid1_tier1._compute_item_score_per_user(
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 915, in _compute_item_score_per_user
+    w = self.alpha*w1 + (1-self.alpha)*w2
+ValueError: operands could not be broadcast together with shapes (1000,27968) (1000,27286) 
+
+SearchBayesianSkopt: Config 4 Exception. Config: {'norm': 2, 'alpha': 0.024210254501180424} - Exception: Traceback (most recent call last):
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 460, in _objective_function
+    result_df, recommender_instance = self._evaluate_on_validation(current_fit_hyperparameters_dict, was_already_evaluated_flag, was_already_evaluated_index)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 322, in _evaluate_on_validation
+    result_df, _ = self.evaluator_validation.evaluateRecommender(recommender_instance)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 276, in evaluateRecommender
+    results_dict = self._run_evaluation_on_selected_users(recommender_object, self.users_to_evaluate)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 477, in _run_evaluation_on_selected_users
+    recommended_items_batch_list, scores_batch = recommender_object.recommend(test_user_batch_array,
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Recommenders/BaseRecommender.py", line 147, in recommend
+    scores_batch = self._compute_item_score(user_id_array, items_to_compute=items_to_compute)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1556, in _compute_item_score
+    item_weights_1 = self.recommender_1._compute_item_score_per_user(user_id_array)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1519, in _compute_item_score_per_user
+    w1 = self.Hybrid1_tier1._compute_item_score_per_user(
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 915, in _compute_item_score_per_user
+    w = self.alpha*w1 + (1-self.alpha)*w2
+ValueError: operands could not be broadcast together with shapes (1000,27968) (1000,27286) 
+
+SearchBayesianSkopt: Config 5 Exception. Config: {'norm': 2, 'alpha': 0.7917539075801211} - Exception: Traceback (most recent call last):
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 460, in _objective_function
+    result_df, recommender_instance = self._evaluate_on_validation(current_fit_hyperparameters_dict, was_already_evaluated_flag, was_already_evaluated_index)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 322, in _evaluate_on_validation
+    result_df, _ = self.evaluator_validation.evaluateRecommender(recommender_instance)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 276, in evaluateRecommender
+    results_dict = self._run_evaluation_on_selected_users(recommender_object, self.users_to_evaluate)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 477, in _run_evaluation_on_selected_users
+    recommended_items_batch_list, scores_batch = recommender_object.recommend(test_user_batch_array,
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Recommenders/BaseRecommender.py", line 147, in recommend
+    scores_batch = self._compute_item_score(user_id_array, items_to_compute=items_to_compute)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1556, in _compute_item_score
+    item_weights_1 = self.recommender_1._compute_item_score_per_user(user_id_array)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1519, in _compute_item_score_per_user
+    w1 = self.Hybrid1_tier1._compute_item_score_per_user(
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 915, in _compute_item_score_per_user
+    w = self.alpha*w1 + (1-self.alpha)*w2
+ValueError: operands could not be broadcast together with shapes (1000,27968) (1000,27286) 
+
+SearchBayesianSkopt: Config 6 Exception. Config: {'norm': 1, 'alpha': 0.8360582594740897} - Exception: Traceback (most recent call last):
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 460, in _objective_function
+    result_df, recommender_instance = self._evaluate_on_validation(current_fit_hyperparameters_dict, was_already_evaluated_flag, was_already_evaluated_index)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 322, in _evaluate_on_validation
+    result_df, _ = self.evaluator_validation.evaluateRecommender(recommender_instance)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 276, in evaluateRecommender
+    results_dict = self._run_evaluation_on_selected_users(recommender_object, self.users_to_evaluate)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 477, in _run_evaluation_on_selected_users
+    recommended_items_batch_list, scores_batch = recommender_object.recommend(test_user_batch_array,
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Recommenders/BaseRecommender.py", line 147, in recommend
+    scores_batch = self._compute_item_score(user_id_array, items_to_compute=items_to_compute)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1556, in _compute_item_score
+    item_weights_1 = self.recommender_1._compute_item_score_per_user(user_id_array)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1519, in _compute_item_score_per_user
+    w1 = self.Hybrid1_tier1._compute_item_score_per_user(
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 915, in _compute_item_score_per_user
+    w = self.alpha*w1 + (1-self.alpha)*w2
+ValueError: operands could not be broadcast together with shapes (1000,27968) (1000,27286) 
+
+SearchBayesianSkopt: Config 7 Exception. Config: {'norm': 2, 'alpha': 0.7636850290884795} - Exception: Traceback (most recent call last):
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 460, in _objective_function
+    result_df, recommender_instance = self._evaluate_on_validation(current_fit_hyperparameters_dict, was_already_evaluated_flag, was_already_evaluated_index)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 322, in _evaluate_on_validation
+    result_df, _ = self.evaluator_validation.evaluateRecommender(recommender_instance)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 276, in evaluateRecommender
+    results_dict = self._run_evaluation_on_selected_users(recommender_object, self.users_to_evaluate)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 477, in _run_evaluation_on_selected_users
+    recommended_items_batch_list, scores_batch = recommender_object.recommend(test_user_batch_array,
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Recommenders/BaseRecommender.py", line 147, in recommend
+    scores_batch = self._compute_item_score(user_id_array, items_to_compute=items_to_compute)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1556, in _compute_item_score
+    item_weights_1 = self.recommender_1._compute_item_score_per_user(user_id_array)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1519, in _compute_item_score_per_user
+    w1 = self.Hybrid1_tier1._compute_item_score_per_user(
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 915, in _compute_item_score_per_user
+    w = self.alpha*w1 + (1-self.alpha)*w2
+ValueError: operands could not be broadcast together with shapes (1000,27968) (1000,27286) 
+
+SearchBayesianSkopt: Config 8 Exception. Config: {'norm': 2, 'alpha': 0.553199659081295} - Exception: Traceback (most recent call last):
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 460, in _objective_function
+    result_df, recommender_instance = self._evaluate_on_validation(current_fit_hyperparameters_dict, was_already_evaluated_flag, was_already_evaluated_index)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 322, in _evaluate_on_validation
+    result_df, _ = self.evaluator_validation.evaluateRecommender(recommender_instance)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 276, in evaluateRecommender
+    results_dict = self._run_evaluation_on_selected_users(recommender_object, self.users_to_evaluate)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 477, in _run_evaluation_on_selected_users
+    recommended_items_batch_list, scores_batch = recommender_object.recommend(test_user_batch_array,
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Recommenders/BaseRecommender.py", line 147, in recommend
+    scores_batch = self._compute_item_score(user_id_array, items_to_compute=items_to_compute)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1556, in _compute_item_score
+    item_weights_1 = self.recommender_1._compute_item_score_per_user(user_id_array)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1519, in _compute_item_score_per_user
+    w1 = self.Hybrid1_tier1._compute_item_score_per_user(
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 915, in _compute_item_score_per_user
+    w = self.alpha*w1 + (1-self.alpha)*w2
+ValueError: operands could not be broadcast together with shapes (1000,27968) (1000,27286) 
+
+SearchBayesianSkopt: Config 9 Exception. Config: {'norm': 2, 'alpha': 0.497808346582436} - Exception: Traceback (most recent call last):
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 460, in _objective_function
+    result_df, recommender_instance = self._evaluate_on_validation(current_fit_hyperparameters_dict, was_already_evaluated_flag, was_already_evaluated_index)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 322, in _evaluate_on_validation
+    result_df, _ = self.evaluator_validation.evaluateRecommender(recommender_instance)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 276, in evaluateRecommender
+    results_dict = self._run_evaluation_on_selected_users(recommender_object, self.users_to_evaluate)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 477, in _run_evaluation_on_selected_users
+    recommended_items_batch_list, scores_batch = recommender_object.recommend(test_user_batch_array,
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Recommenders/BaseRecommender.py", line 147, in recommend
+    scores_batch = self._compute_item_score(user_id_array, items_to_compute=items_to_compute)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1556, in _compute_item_score
+    item_weights_1 = self.recommender_1._compute_item_score_per_user(user_id_array)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1519, in _compute_item_score_per_user
+    w1 = self.Hybrid1_tier1._compute_item_score_per_user(
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 915, in _compute_item_score_per_user
+    w = self.alpha*w1 + (1-self.alpha)*w2
+ValueError: operands could not be broadcast together with shapes (1000,27968) (1000,27286) 
+
+SearchBayesianSkopt: Config 10 Exception. Config: {'norm': 2, 'alpha': 0.9076643564657323} - Exception: Traceback (most recent call last):
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 460, in _objective_function
+    result_df, recommender_instance = self._evaluate_on_validation(current_fit_hyperparameters_dict, was_already_evaluated_flag, was_already_evaluated_index)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 322, in _evaluate_on_validation
+    result_df, _ = self.evaluator_validation.evaluateRecommender(recommender_instance)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 276, in evaluateRecommender
+    results_dict = self._run_evaluation_on_selected_users(recommender_object, self.users_to_evaluate)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 477, in _run_evaluation_on_selected_users
+    recommended_items_batch_list, scores_batch = recommender_object.recommend(test_user_batch_array,
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Recommenders/BaseRecommender.py", line 147, in recommend
+    scores_batch = self._compute_item_score(user_id_array, items_to_compute=items_to_compute)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1556, in _compute_item_score
+    item_weights_1 = self.recommender_1._compute_item_score_per_user(user_id_array)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1519, in _compute_item_score_per_user
+    w1 = self.Hybrid1_tier1._compute_item_score_per_user(
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 915, in _compute_item_score_per_user
+    w = self.alpha*w1 + (1-self.alpha)*w2
+ValueError: operands could not be broadcast together with shapes (1000,27968) (1000,27286) 
+
+SearchBayesianSkopt: Config 11 Exception. Config: {'norm': 2, 'alpha': 0.1212054107902} - Exception: Traceback (most recent call last):
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 460, in _objective_function
+    result_df, recommender_instance = self._evaluate_on_validation(current_fit_hyperparameters_dict, was_already_evaluated_flag, was_already_evaluated_index)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 322, in _evaluate_on_validation
+    result_df, _ = self.evaluator_validation.evaluateRecommender(recommender_instance)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 276, in evaluateRecommender
+    results_dict = self._run_evaluation_on_selected_users(recommender_object, self.users_to_evaluate)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 477, in _run_evaluation_on_selected_users
+    recommended_items_batch_list, scores_batch = recommender_object.recommend(test_user_batch_array,
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Recommenders/BaseRecommender.py", line 147, in recommend
+    scores_batch = self._compute_item_score(user_id_array, items_to_compute=items_to_compute)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1556, in _compute_item_score
+    item_weights_1 = self.recommender_1._compute_item_score_per_user(user_id_array)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1519, in _compute_item_score_per_user
+    w1 = self.Hybrid1_tier1._compute_item_score_per_user(
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 915, in _compute_item_score_per_user
+    w = self.alpha*w1 + (1-self.alpha)*w2
+ValueError: operands could not be broadcast together with shapes (1000,27968) (1000,27286) 
+
+SearchBayesianSkopt: Config 12 Exception. Config: {'norm': 1, 'alpha': 0.44902943847144317} - Exception: Traceback (most recent call last):
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 460, in _objective_function
+    result_df, recommender_instance = self._evaluate_on_validation(current_fit_hyperparameters_dict, was_already_evaluated_flag, was_already_evaluated_index)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 322, in _evaluate_on_validation
+    result_df, _ = self.evaluator_validation.evaluateRecommender(recommender_instance)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 276, in evaluateRecommender
+    results_dict = self._run_evaluation_on_selected_users(recommender_object, self.users_to_evaluate)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 477, in _run_evaluation_on_selected_users
+    recommended_items_batch_list, scores_batch = recommender_object.recommend(test_user_batch_array,
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Recommenders/BaseRecommender.py", line 147, in recommend
+    scores_batch = self._compute_item_score(user_id_array, items_to_compute=items_to_compute)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1556, in _compute_item_score
+    item_weights_1 = self.recommender_1._compute_item_score_per_user(user_id_array)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1519, in _compute_item_score_per_user
+    w1 = self.Hybrid1_tier1._compute_item_score_per_user(
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 915, in _compute_item_score_per_user
+    w = self.alpha*w1 + (1-self.alpha)*w2
+ValueError: operands could not be broadcast together with shapes (1000,27968) (1000,27286) 
+
+SearchBayesianSkopt: Config 13 Exception. Config: {'norm': 2, 'alpha': 0.07050979542063297} - Exception: Traceback (most recent call last):
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 460, in _objective_function
+    result_df, recommender_instance = self._evaluate_on_validation(current_fit_hyperparameters_dict, was_already_evaluated_flag, was_already_evaluated_index)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 322, in _evaluate_on_validation
+    result_df, _ = self.evaluator_validation.evaluateRecommender(recommender_instance)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 276, in evaluateRecommender
+    results_dict = self._run_evaluation_on_selected_users(recommender_object, self.users_to_evaluate)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 477, in _run_evaluation_on_selected_users
+    recommended_items_batch_list, scores_batch = recommender_object.recommend(test_user_batch_array,
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Recommenders/BaseRecommender.py", line 147, in recommend
+    scores_batch = self._compute_item_score(user_id_array, items_to_compute=items_to_compute)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1556, in _compute_item_score
+    item_weights_1 = self.recommender_1._compute_item_score_per_user(user_id_array)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1519, in _compute_item_score_per_user
+    w1 = self.Hybrid1_tier1._compute_item_score_per_user(
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 915, in _compute_item_score_per_user
+    w = self.alpha*w1 + (1-self.alpha)*w2
+ValueError: operands could not be broadcast together with shapes (1000,27968) (1000,27286) 
+
+SearchBayesianSkopt: Config 14 Exception. Config: {'norm': 1, 'alpha': 0.9802807331200911} - Exception: Traceback (most recent call last):
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 460, in _objective_function
+    result_df, recommender_instance = self._evaluate_on_validation(current_fit_hyperparameters_dict, was_already_evaluated_flag, was_already_evaluated_index)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 322, in _evaluate_on_validation
+    result_df, _ = self.evaluator_validation.evaluateRecommender(recommender_instance)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 276, in evaluateRecommender
+    results_dict = self._run_evaluation_on_selected_users(recommender_object, self.users_to_evaluate)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 477, in _run_evaluation_on_selected_users
+    recommended_items_batch_list, scores_batch = recommender_object.recommend(test_user_batch_array,
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Recommenders/BaseRecommender.py", line 147, in recommend
+    scores_batch = self._compute_item_score(user_id_array, items_to_compute=items_to_compute)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1556, in _compute_item_score
+    item_weights_1 = self.recommender_1._compute_item_score_per_user(user_id_array)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1519, in _compute_item_score_per_user
+    w1 = self.Hybrid1_tier1._compute_item_score_per_user(
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 915, in _compute_item_score_per_user
+    w = self.alpha*w1 + (1-self.alpha)*w2
+ValueError: operands could not be broadcast together with shapes (1000,27968) (1000,27286) 
+
+SearchBayesianSkopt: Config 15 Exception. Config: {'norm': 2, 'alpha': 0.399712618998604} - Exception: Traceback (most recent call last):
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 460, in _objective_function
+    result_df, recommender_instance = self._evaluate_on_validation(current_fit_hyperparameters_dict, was_already_evaluated_flag, was_already_evaluated_index)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 322, in _evaluate_on_validation
+    result_df, _ = self.evaluator_validation.evaluateRecommender(recommender_instance)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 276, in evaluateRecommender
+    results_dict = self._run_evaluation_on_selected_users(recommender_object, self.users_to_evaluate)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 477, in _run_evaluation_on_selected_users
+    recommended_items_batch_list, scores_batch = recommender_object.recommend(test_user_batch_array,
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Recommenders/BaseRecommender.py", line 147, in recommend
+    scores_batch = self._compute_item_score(user_id_array, items_to_compute=items_to_compute)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1556, in _compute_item_score
+    item_weights_1 = self.recommender_1._compute_item_score_per_user(user_id_array)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1519, in _compute_item_score_per_user
+    w1 = self.Hybrid1_tier1._compute_item_score_per_user(
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 915, in _compute_item_score_per_user
+    w = self.alpha*w1 + (1-self.alpha)*w2
+ValueError: operands could not be broadcast together with shapes (1000,27968) (1000,27286) 
+
+SearchBayesianSkopt: Config 16 Exception. Config: {'norm': 1, 'alpha': 0.06613328582949608} - Exception: Traceback (most recent call last):
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 460, in _objective_function
+    result_df, recommender_instance = self._evaluate_on_validation(current_fit_hyperparameters_dict, was_already_evaluated_flag, was_already_evaluated_index)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 322, in _evaluate_on_validation
+    result_df, _ = self.evaluator_validation.evaluateRecommender(recommender_instance)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 276, in evaluateRecommender
+    results_dict = self._run_evaluation_on_selected_users(recommender_object, self.users_to_evaluate)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 477, in _run_evaluation_on_selected_users
+    recommended_items_batch_list, scores_batch = recommender_object.recommend(test_user_batch_array,
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Recommenders/BaseRecommender.py", line 147, in recommend
+    scores_batch = self._compute_item_score(user_id_array, items_to_compute=items_to_compute)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1556, in _compute_item_score
+    item_weights_1 = self.recommender_1._compute_item_score_per_user(user_id_array)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1519, in _compute_item_score_per_user
+    w1 = self.Hybrid1_tier1._compute_item_score_per_user(
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 915, in _compute_item_score_per_user
+    w = self.alpha*w1 + (1-self.alpha)*w2
+ValueError: operands could not be broadcast together with shapes (1000,27968) (1000,27286) 
+
+SearchBayesianSkopt: Config 17 Exception. Config: {'norm': 1, 'alpha': 0.09681718277957743} - Exception: Traceback (most recent call last):
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 460, in _objective_function
+    result_df, recommender_instance = self._evaluate_on_validation(current_fit_hyperparameters_dict, was_already_evaluated_flag, was_already_evaluated_index)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 322, in _evaluate_on_validation
+    result_df, _ = self.evaluator_validation.evaluateRecommender(recommender_instance)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 276, in evaluateRecommender
+    results_dict = self._run_evaluation_on_selected_users(recommender_object, self.users_to_evaluate)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 477, in _run_evaluation_on_selected_users
+    recommended_items_batch_list, scores_batch = recommender_object.recommend(test_user_batch_array,
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Recommenders/BaseRecommender.py", line 147, in recommend
+    scores_batch = self._compute_item_score(user_id_array, items_to_compute=items_to_compute)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1556, in _compute_item_score
+    item_weights_1 = self.recommender_1._compute_item_score_per_user(user_id_array)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1519, in _compute_item_score_per_user
+    w1 = self.Hybrid1_tier1._compute_item_score_per_user(
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 915, in _compute_item_score_per_user
+    w = self.alpha*w1 + (1-self.alpha)*w2
+ValueError: operands could not be broadcast together with shapes (1000,27968) (1000,27286) 
+
+SearchBayesianSkopt: Config 0 Exception. Config: {'norm': 2, 'alpha': 0.3622876540343117} - Exception: Traceback (most recent call last):
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 460, in _objective_function
+    result_df, recommender_instance = self._evaluate_on_validation(current_fit_hyperparameters_dict, was_already_evaluated_flag, was_already_evaluated_index)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 322, in _evaluate_on_validation
+    result_df, _ = self.evaluator_validation.evaluateRecommender(recommender_instance)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 276, in evaluateRecommender
+    results_dict = self._run_evaluation_on_selected_users(recommender_object, self.users_to_evaluate)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 477, in _run_evaluation_on_selected_users
+    recommended_items_batch_list, scores_batch = recommender_object.recommend(test_user_batch_array,
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Recommenders/BaseRecommender.py", line 147, in recommend
+    scores_batch = self._compute_item_score(user_id_array, items_to_compute=items_to_compute)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1556, in _compute_item_score
+    item_weights_1 = self.recommender_1._compute_item_score_per_user(user_id_array)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1519, in _compute_item_score_per_user
+    w1 = self.Hybrid1_tier1._compute_item_score_per_user(
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 915, in _compute_item_score_per_user
+    w = self.alpha*w1 + (1-self.alpha)*w2
+ValueError: operands could not be broadcast together with shapes (1000,27968) (1000,27286) 
+
+SearchBayesianSkopt: Config 1 Exception. Config: {'norm': 1, 'alpha': 0.12049188534069069} - Exception: Traceback (most recent call last):
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 460, in _objective_function
+    result_df, recommender_instance = self._evaluate_on_validation(current_fit_hyperparameters_dict, was_already_evaluated_flag, was_already_evaluated_index)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 322, in _evaluate_on_validation
+    result_df, _ = self.evaluator_validation.evaluateRecommender(recommender_instance)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 276, in evaluateRecommender
+    results_dict = self._run_evaluation_on_selected_users(recommender_object, self.users_to_evaluate)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 477, in _run_evaluation_on_selected_users
+    recommended_items_batch_list, scores_batch = recommender_object.recommend(test_user_batch_array,
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Recommenders/BaseRecommender.py", line 147, in recommend
+    scores_batch = self._compute_item_score(user_id_array, items_to_compute=items_to_compute)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1556, in _compute_item_score
+    item_weights_1 = self.recommender_1._compute_item_score_per_user(user_id_array)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1519, in _compute_item_score_per_user
+    w1 = self.Hybrid1_tier1._compute_item_score_per_user(
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 915, in _compute_item_score_per_user
+    w = self.alpha*w1 + (1-self.alpha)*w2
+ValueError: operands could not be broadcast together with shapes (1000,27968) (1000,27286) 
+
+SearchBayesianSkopt: Config 2 Exception. Config: {'norm': 2, 'alpha': 0.2554215260287627} - Exception: Traceback (most recent call last):
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 460, in _objective_function
+    result_df, recommender_instance = self._evaluate_on_validation(current_fit_hyperparameters_dict, was_already_evaluated_flag, was_already_evaluated_index)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/HyperparameterTuning/SearchAbstractClass.py", line 322, in _evaluate_on_validation
+    result_df, _ = self.evaluator_validation.evaluateRecommender(recommender_instance)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 276, in evaluateRecommender
+    results_dict = self._run_evaluation_on_selected_users(recommender_object, self.users_to_evaluate)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Evaluation/Evaluator.py", line 477, in _run_evaluation_on_selected_users
+    recommended_items_batch_list, scores_batch = recommender_object.recommend(test_user_batch_array,
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/Recommenders/BaseRecommender.py", line 147, in recommend
+    scores_batch = self._compute_item_score(user_id_array, items_to_compute=items_to_compute)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1556, in _compute_item_score
+    item_weights_1 = self.recommender_1._compute_item_score_per_user(user_id_array)
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 1519, in _compute_item_score_per_user
+    w1 = self.Hybrid1_tier1._compute_item_score_per_user(
+  File "/Users/francescomattioli/Desktop/UNIVERSITA/MAGISTRALE/PRIMO ANNO/PRIMO SEMESTRE/RECOMMENDER SYSTEMS/Challenge/Git Folder/rec-sys-challenge/hybrid.py", line 915, in _compute_item_score_per_user
+    w = self.alpha*w1 + (1-self.alpha)*w2
+ValueError: operands could not be broadcast together with shapes (1000,27968) (1000,27286) 
+

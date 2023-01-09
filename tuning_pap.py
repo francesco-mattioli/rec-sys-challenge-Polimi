@@ -27,14 +27,24 @@ dataReader = DataReader()
 target = dataReader.load_target()
 
 URM = dataReader.load_augmented_binary_urm()
-URM_aug, ICM = dataReader.pad_with_zeros_ICMandURM(URM)
+ICM_stacked_with_binary_impressions = dataReader.load_ICM_stacked_with_binary_impressions(0.8)
+#print(ICM_stacked_with_binary_impressions.shape) #(27286, 7005)
 
-URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample(
-    URM_aug, train_percentage=0.9)
+URM_aug, ICM = dataReader.pad_with_zeros_given_ICMandURM(ICM_stacked_with_binary_impressions, URM) 
+
+#print(URM_aug.shape) #(41629, 27286)
+#print(ICM.shape) #(27286, 7005)
+
+URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample(URM_aug, train_percentage=0.9)
+
+#URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
+
+#URM_train_pow_df = dataReader.csr_to_dataframe(URM_train_pow,'UserID','ItemID','Data')
+
+URM_train_super_pow = dataReader.load_super_powerful_URM(URM_train_aug, ICM_stacked_with_binary_impressions, 0.8)
 URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
 UCM = dataReader.load_aug_ucm()
-ICM_stacked_with_weighted_impressions = dataReader.load_ICM_stacked_with_weighted_impressions()
-URM_train_super_pow = dataReader.load_super_powerful_URM(URM_train_aug, ICM_stacked_with_weighted_impressions, 0.8)
+
 
 evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 
@@ -60,9 +70,9 @@ RP3beta_aug.fit()
 S_SLIM = SLIMElasticNetRecommender(URM_train_pow)
 S_SLIM.fit()
 
-S_SLIMP = SLIMElasticNetRecommender(URM_train_super_pow)
-S_SLIMP.fit(l1_ratio=0.006011021694075882,
-           alpha=0.0013369897413235414, topK=459)
+#S_SLIMP = SLIMElasticNetRecommender(URM_train_super_pow)
+#S_SLIMP.fit(l1_ratio=0.006011021694075882,
+#          alpha=0.0013369897413235414, topK=459)
 
 EASE_R = EASE_R_Recommender(URM_train_aug)
 EASE_R.fit()
@@ -173,7 +183,7 @@ hyperparameterSearch = SearchBayesianSkopt(recommender_class,
 # provide data needed to create instance of model (one on URM_train, the other on URM_all)
 recommender_input_args = SearchInputRecommenderArgs(
     # For a CBF model simply put [URM_train, ICM_train]
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug, Hybrid_006022, S_SLIMP],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug, Hybrid_006022, ItemKNNCF],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
@@ -181,7 +191,7 @@ recommender_input_args = SearchInputRecommenderArgs(
 )
 
 recommender_input_args_last_test = SearchInputRecommenderArgs(
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug, Hybrid_006022, S_SLIMP],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug, Hybrid_006022, ItemKNNCF],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
