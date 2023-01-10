@@ -11,60 +11,20 @@ from Recommenders.EASE_R.EASE_R_Recommender import EASE_R_Recommender
 
 ########################## READ & SPLIT DATA ##########################
 dataReader = DataReader()
-
 target = dataReader.load_target()
-'''
-UCM = dataReader.load_aug_ucm()
+
 URM = dataReader.load_augmented_binary_urm()
 URM_aug, ICM = dataReader.pad_with_zeros_ICMandURM(URM)
-
-
-URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample( URM_aug, train_percentage=1.0)
-#URM_train_super_pow = dataReader.stackMatrixes_with_impressions(URM_train_aug)
-URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
-
-# Instantiate Impressions object to update ranking at the end of recommendations
-#item_ids = dataReader.get_unique_items_based_on_urm(dataReader.load_augmented_binary_urm_df())
-#impressions = Impressions(target,item_ids)
-# dataReader.save_impressions()
-'''
-
-URM = dataReader.load_augmented_binary_urm() 
-#print(URM.shape) #(41629, 24507)
-
-URM_aug, ICM = dataReader.pad_with_zeros_ICMandURM(URM) 
-#print(URM_aug.shape) #(41629, 27968)
-#print(ICM.shape) #(27968, 5)
-
-ICM_stacked_with_binary_impressions = dataReader.load_ICM_stacked_with_binary_impressions(0.8)
-#print(ICM_stacked_with_binary_impressions.shape) #(27286, 7005)
-
-URM_aug, ICM = dataReader.pad_with_zeros_given_ICMandURM(ICM_stacked_with_binary_impressions, URM) 
-
-#print(URM_aug.shape) #(41629, 27286)
-#print(ICM.shape) #(27286, 7005)
-
 URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample(URM_aug, train_percentage=0.9)
 
-#URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
+URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
 
-#URM_train_pow_df = dataReader.csr_to_dataframe(URM_train_pow,'UserID','ItemID','Data')
+ICM_stacked_with_binary_impressions = dataReader.load_ICM_stacked_with_binary_impressions(0.8)
 
-URM_train_super_pow = dataReader.load_super_powerful_URM(URM_train_aug, ICM_stacked_with_binary_impressions, 0.8)
-'''
-URM_train_super_pow_df  = dataReader.csr_to_dataframe(URM_train_super_pow,'UserID','ItemID','Data')
+URM_train_pow_padded, ICM_stacked_with_binary_impressions_padded = dataReader.pad_with_zeros_given_ICMandURM(ICM_stacked_with_binary_impressions, URM_train_pow)
 
-print(len(np.setdiff1d(
-            URM_train_super_pow_df['ItemID'].unique(), URM_train_pow_df['ItemID'].unique())))
+URM_train_super_pow = dataReader.load_super_powerful_URM(URM_train_pow_padded, ICM_stacked_with_binary_impressions_padded, 0.8)
 
-print(len(np.setdiff1d(
-            URM_train_pow_df['ItemID'].unique(), URM_train_super_pow_df['ItemID'].unique())))
-
-
-print(URM_train_pow.shape)
-print(URM_train_super_pow.shape)
-'''
-#URM_train_super_pow, ICM = dataReader.pad_with_zeros_given_ICMandURM(ICM_stacked_with_binary_impressions, URM)
 
 ########################## iNSTANTIATE & FIT SINGLE MODELS ##########################
 
