@@ -36,10 +36,10 @@ URM_aug, ICM = dataReader.pad_with_zeros_ICMandURM(URM)
 #print(URM_aug.shape) #(41629, 27968)
 #print(ICM.shape) #(27968, 5)
 
-ICM_stacked_with_weighted_impressions = dataReader.load_ICM_stacked_with_weighted_impressions()
+ICM_stacked_with_binary_impressions = dataReader.load_ICM_stacked_with_binary_impressions(0.8)
 #print(ICM_stacked_with_binary_impressions.shape) #(27286, 7005)
 
-URM_aug, ICM = dataReader.pad_with_zeros_given_ICMandURM(ICM_stacked_with_weighted_impressions, URM) 
+URM_aug, ICM = dataReader.pad_with_zeros_given_ICMandURM(ICM_stacked_with_binary_impressions, URM) 
 
 #print(URM_aug.shape) #(41629, 27286)
 #print(ICM.shape) #(27286, 7005)
@@ -50,7 +50,7 @@ URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample(URM_
 
 #URM_train_pow_df = dataReader.csr_to_dataframe(URM_train_pow,'UserID','ItemID','Data')
 
-URM_train_super_pow = dataReader.load_super_powerful_URM(URM_train_aug, ICM_stacked_with_weighted_impressions, 0.8)
+URM_train_super_pow = dataReader.load_super_powerful_URM(URM_train_aug, ICM_stacked_with_binary_impressions, 0.8)
 '''
 URM_train_super_pow_df  = dataReader.csr_to_dataframe(URM_train_super_pow,'UserID','ItemID','Data')
 

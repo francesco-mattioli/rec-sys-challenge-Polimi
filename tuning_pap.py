@@ -27,10 +27,21 @@ dataReader = DataReader()
 target = dataReader.load_target()
 
 URM = dataReader.load_augmented_binary_urm()
-URM_aug, ICM = dataReader.pad_with_zeros_ICMandURM(URM)
+ICM_stacked_with_binary_impressions = dataReader.load_ICM_stacked_with_binary_impressions(0.8)
+#print(ICM_stacked_with_binary_impressions.shape) #(27286, 7005)
 
-URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample(
-    URM_aug, train_percentage=0.9)
+URM_aug, ICM = dataReader.pad_with_zeros_given_ICMandURM(ICM_stacked_with_binary_impressions, URM) 
+
+#print(URM_aug.shape) #(41629, 27286)
+#print(ICM.shape) #(27286, 7005)
+
+URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample(URM_aug, train_percentage=0.9)
+
+#URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
+
+#URM_train_pow_df = dataReader.csr_to_dataframe(URM_train_pow,'UserID','ItemID','Data')
+
+URM_train_super_pow = dataReader.load_super_powerful_URM(URM_train_aug, ICM_stacked_with_binary_impressions, 0.8)
 URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
 UCM = dataReader.load_aug_ucm()
 
@@ -47,8 +58,8 @@ evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 UserKNNCF = UserKNNCFRecommender(URM_train_aug)
 UserKNNCF.fit()
 
-#ItemKNNCF = ItemKNNCFRecommender(URM_train_pow)
-#ItemKNNCF.fit()
+ItemKNNCF = ItemKNNCFRecommender(URM_train_aug)
+ItemKNNCF.fit()
 
 RP3beta_aug = RP3betaRecommender(URM_train_aug)
 RP3beta_aug.fit()
@@ -58,6 +69,10 @@ RP3beta_aug.fit()
 
 S_SLIM = SLIMElasticNetRecommender(URM_train_pow)
 S_SLIM.fit()
+
+#S_SLIMP = SLIMElasticNetRecommender(URM_train_super_pow)
+#S_SLIMP.fit(l1_ratio=0.006011021694075882,
+#          alpha=0.0013369897413235414, topK=459)
 
 EASE_R = EASE_R_Recommender(URM_train_aug)
 EASE_R.fit()
@@ -74,13 +89,15 @@ Hybrid_UserKNNCF_RP3B_aug.fit(
 Hybrid_SSLIM_EASER = Hybrid_SSLIM_EASER(
     URM_train_aug, URM_train_pow, S_SLIM, EASE_R)
 Hybrid_SSLIM_EASER.fit(SSLIM_weight=0.5495139584252299, EASE_R_weight=0.0)
-
-'''
-
 Hybrid_SSLIM_RP3B_aug = Hybrid_SSLIM_RP3B_aug(
-    URM_train_aug, URM_train_pow, S_SLIM, RP3beta_aug)
+    URM_train_aug, S_SLIM, RP3beta_aug)
 Hybrid_SSLIM_RP3B_aug.fit(
     SSLIM_weight=0.8157521052599057, RP3B_weight=0.22946157569349823)
+'''
+Hybrid_SSLIM_RP3B_aug = Hybrid_SSLIM_RP3B_aug(
+    URM_train_aug, S_SLIM, RP3beta_aug)
+Hybrid_SSLIM_RP3B_aug.fit(alpha = 0.7447123958484749)
+
 '''
 Hybrid_UserKNNCF_ItemKNNCF = Hybrid_UserKNNCF_ItemKNNCF(
     URM_train_aug, URM_train_pow, UserKNNCF, ItemKNNCF)
@@ -98,6 +115,8 @@ Hybrid_Best.fit(Hybrid_1_tier1_weight= 0.5960289190957877, Hybrid_2_tier1_weight
 # HybridRecommender_5.fit()
 '''
 
+Hybrid_006022 = Hybrid_006022(URM_train_aug, URM_train_pow, ICM, UCM, Hybrid_SSLIM_RP3B_aug, UserKNNCF, EASE_R)
+Hybrid_006022.fit(Hybrid_1_tier1_weight= 0.4730071105820606, Hybrid_2_tier1_weight= 1.0, Hybrid_1_tier2_weight= 1.0, Hybrid_2_tier2_weight= 1.0, Hybrid_1_tier3_weight=1.0, Hybrid_2_tier3_weight=  0.0)
 
 
 ############################ TUNING ######################################################
@@ -154,8 +173,6 @@ hyperparameters_range_dictionary = {
 hyperparameters_range_dictionary = {
     "norm": Categorical([1,2]),
     "alpha": Real(0, 1),
-    "beta": Real(0, 1),
-    "gamma": Real(0, 1),
 }
 
 
@@ -166,7 +183,7 @@ hyperparameterSearch = SearchBayesianSkopt(recommender_class,
 # provide data needed to create instance of model (one on URM_train, the other on URM_all)
 recommender_input_args = SearchInputRecommenderArgs(
     # For a CBF model simply put [URM_train, ICM_train]
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug, S_SLIM, RP3beta_aug, S_SLIM, EASE_R],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug, Hybrid_006022, ItemKNNCF],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
@@ -174,7 +191,7 @@ recommender_input_args = SearchInputRecommenderArgs(
 )
 
 recommender_input_args_last_test = SearchInputRecommenderArgs(
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug, S_SLIM, RP3beta_aug, S_SLIM, EASE_R],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug, Hybrid_006022, ItemKNNCF],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
