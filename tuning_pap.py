@@ -68,7 +68,7 @@ S_SLIM = SLIMElasticNetRecommender(URM_train_pow)
 S_SLIM.fit()
 
 S_SLIM_only_weighted_impressions = SLIMElasticNetRecommender(URM_train_super_pow)
-S_SLIM_only_weighted_impressions.fit()
+S_SLIM_only_weighted_impressions.fit(l1_ratio= 0.02655220236250845, alpha= 0.0009855880367693063, topK=603)
 
 
 
