@@ -700,7 +700,7 @@ class DataReader(object):
             weighted_impressions_icm['Data'] = (1-icm_weight) * weighted_impressions_icm['Data']
             # Change FeatureIDs of binary_impressions_icm in order to make recommender work
             # If we keep same FeatureIDs then some of the real feature IDs of ICM would be confounded with fake FeatureIDs of binary_impressions_icm, which are items!
-            weighted_impressions_icm['FeatureID'] = 7 + \
+            weighted_impressions_icm['FeatureID'] = 8 + \
                 weighted_impressions_icm['FeatureID']
 
             stacked_matrixes = pd.concat([icm, weighted_impressions_icm],
@@ -710,7 +710,7 @@ class DataReader(object):
           
             # Change FeatureIDs of binary_impressions_icm in order to make recommender work
             # If we keep same FeatureIDs then some of the real feature IDs of ICM would be confounded with fake FeatureIDs of binary_impressions_icm, which are items!
-            weighted_impressions_icm['FeatureID'] = 7 + \
+            weighted_impressions_icm['FeatureID'] = 8 + \
                 weighted_impressions_icm['FeatureID']
 
             return self.dataframe_to_csr(weighted_impressions_icm, 'ItemID', 'FeatureID', 'Data')
