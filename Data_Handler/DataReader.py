@@ -517,6 +517,7 @@ class DataReader(object):
             [urm, f], ignore_index=True).sort_values(['UserID', 'ItemID'])
         return self.dataframe_to_csr(powerful_urm, 'UserID', 'ItemID', 'Data')
 
+
     def print_statistics(self):
         """ Print statistics about dataset """
         target = self.load_target()
@@ -560,8 +561,6 @@ class DataReader(object):
         #print("Making augmented URM and ICM of the same shape...")
         urm = self.csr_to_dataframe(URM, 'UserID', 'ItemID', 'Data')
         icm = self.load_icm_df()
-        print("---> ", len(icm['item_id'].unique()))
-        print("==>", len(urm['ItemID'].unique()))
         DiffURM_ICM = np.setdiff1d(
             urm['ItemID'].unique(), icm['item_id'].unique())
         DiffICM_URM = np.setdiff1d(
