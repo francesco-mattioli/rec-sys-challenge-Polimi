@@ -13,7 +13,7 @@ from Recommenders.GraphBased.RP3betaRecommender import RP3betaRecommender
 from Recommenders.GraphBased.P3alphaRecommender import P3alphaRecommender
 from Recommenders.EASE_R.EASE_R_Recommender import EASE_R_Recommender
 from Recommenders.KNN.ItemKNN_CFCBF_Hybrid_Recommender import ItemKNN_CFCBF_Hybrid_Recommender
-
+from Recommenders.FactorizationMachines.LightFMRecommender import LightFMItemHybridRecommender
 from Evaluation.Evaluator import EvaluatorHoldout
 from Recommenders.DataIO import DataIO
 from HyperparameterTuning.SearchBayesianSkopt import SearchBayesianSkopt
@@ -33,6 +33,7 @@ URM_train_super_pow = dataReader.stackMatrixes_with_impressions(URM_train_aug)
 '''
 URM = dataReader.load_augmented_binary_urm()
 URM_aug, ICM = dataReader.pad_with_zeros_ICMandURM(URM)
+#ICM_stacked_with_weighted_impressions = dataReader.load_ICM_stacked_with_weighted_impressions(0)
 ICM_stacked_with_weighted_impressions = dataReader.load_ICM_stacked_with_weighted_impressions(0)
 URM_aug, ICM = dataReader.pad_with_zeros_given_ICMandURM(
     ICM_stacked_with_weighted_impressions, URM)
@@ -60,7 +61,7 @@ Hybrid_SSLIM_RP3B_aug = Hybrid_SSLIM_RP3B_aug(URM_train_aug, S_SLIM, RP3beta_aug
 Hybrid_SSLIM_RP3B_aug.fit(alpha = 0.7447123958484749)
 '''
 
-recommender_class = SLIMElasticNetRecommender
+recommender_class = LightFMItemHybridRecommender
 
 output_folder_path = "result_experiments/"
 
@@ -72,11 +73,23 @@ n_cases = 200
 n_random_starts = int(n_cases*0.3)
 metric_to_optimize = "MAP"
 cutoff_to_optimize = 10
-
+'''
 hyperparameters_range_dictionary = {
     "l1_ratio": Categorical([0.1,0.01,0.001,0.0001,0.00001]),
     "alpha": Categorical([0.1,0.01,0.001,0.0001,0.00001]),
     "topK": Integer(100, 1000),
+
+}
+'''
+hyperparameters_range_dictionary = {
+    "epochs":Integer(20,300),
+    "loss": Categorical(['bpr', 'warp', 'warp-kos']), 
+    "sgd_mode": Categorical(['adagrad', 'adadelta']),
+    "n_components": Integer(5,150),
+    "item_alpha": Categorical([0.1,0.01,0.001,0.0001,0.00001]),
+    "user_alpha": Categorical([0.1,0.01,0.001,0.0001,0.00001]),
+    "learning_rate": Real(0.0001,0.1)
+
 }
 
 
@@ -94,19 +107,19 @@ hyperparameterSearch = SearchBayesianSkopt(
 # provide data needed to create instance of model (one on URM_train, the other on URM_all)
 recommender_input_args = SearchInputRecommenderArgs(
     # For a CBF model simply put [URM_train, ICM_train]
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_super_pow],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug, ICM_stacked_with_weighted_impressions],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
-    EARLYSTOPPING_KEYWORD_ARGS={},
+    EARLYSTOPPING_KEYWORD_ARGS=earlystopping_keywargs,
 )
 
 recommender_input_args_last_test = SearchInputRecommenderArgs(
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_super_pow],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,ICM_stacked_with_weighted_impressions],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
-    EARLYSTOPPING_KEYWORD_ARGS={},
+    EARLYSTOPPING_KEYWORD_ARGS=earlystopping_keywargs,
 )
 
 
