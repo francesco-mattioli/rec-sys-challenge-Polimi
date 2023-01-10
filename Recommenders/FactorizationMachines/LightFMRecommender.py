@@ -10,7 +10,7 @@ from Recommenders.Incremental_Training_Early_Stopping import Incremental_Trainin
 from Recommenders.BaseRecommender import BaseRecommender
 from Recommenders.DataIO import DataIO
 from Recommenders.BaseCBFRecommender import BaseItemCBFRecommender, BaseUserCBFRecommender
-#from lightfm import LightFM
+from lightfm import LightFM
 import numpy as np
 from copy import deepcopy
 import scipy.sparse as sps
@@ -91,7 +91,7 @@ class _BaseLightFMWrapper(BaseRecommender, Incremental_Training_Early_Stopping):
 
     def fit(self, epochs = 300, loss = "bpr", sgd_mode = "adagrad", n_components = 10,
             item_alpha = 0.0, user_alpha = 0.0,
-            learning_rate = 0.05, num_threads = 4, **earlystopping_kwargs):
+            learning_rate = 0.05, num_threads = 10, **earlystopping_kwargs):
 
         if loss not in self.LOSS_VALUES:
            raise ValueError("Value for 'loss' not recognized. Acceptable values are {}, provided was '{}'".format(self.LOSS_VALUES, loss))
