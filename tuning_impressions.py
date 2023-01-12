@@ -4,14 +4,8 @@ from Data_manager.split_functions.split_train_validation_random_holdout import s
 from tqdm import tqdm
 from evaluator import evaluate
 from HyperparameterTuning.run_hyperparameter_search import runHyperparameterSearch_Collaborative
-from Recommenders.SLIM.SLIMElasticNetRecommender import SLIMElasticNetRecommender
-from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
-from Recommenders.GraphBased.RP3betaRecommender import RP3betaRecommender
-from Recommenders.GraphBased.P3alphaRecommender import P3alphaRecommender
-from Recommenders.EASE_R.EASE_R_Recommender import EASE_R_Recommender
-from Recommenders.KNN.UserKNN_CFCBF_Hybrid_Recommender import UserKNN_CFCBF_Hybrid_Recommender
-from Recommenders.KNN.UserKNNCBFRecommender import UserKNNCBFRecommender
-from Recommenders.KNN.ItemKNNCBFRecommender import ItemKNNCBFRecommender
+from Recommenders.Custom.CustomItemKNNCFRecommender import CustomItemKNNCFRecommender
+from Recommenders.Custom.CustomSLIMElasticNetRecommender import CustomSLIMElasticNetRecommender
 
 from Evaluation.Evaluator import EvaluatorHoldout
 from Recommenders.DataIO import DataIO
@@ -26,27 +20,17 @@ dataReader = DataReader()
 
 target = dataReader.load_target()
 
-UCM = dataReader.load_aug_ucm()
 URM = dataReader.load_augmented_binary_urm()
 URM_aug, ICM = dataReader.pad_with_zeros_ICMandURM(URM)
 URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample(URM_aug, train_percentage=0.9)
-
-URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
-
-ICM_stacked_with_weighted_impressions = dataReader.load_ICM_stacked_with_weighted_impressions(0)
-
-URM_train_pow_padded, ICM_stacked_with_weighted_impressions_padded = dataReader.pad_with_zeros_given_ICMandURM(ICM_stacked_with_weighted_impressions, URM_train_pow)
-
-URM_train_super_pow = dataReader.load_super_powerful_URM(URM_train_pow_padded, ICM_stacked_with_weighted_impressions_padded, 0.8)
-
-
 
 evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 
 
 ############################ TUNING ######################################################
 
-recommender_class = SLIMElasticNetRecommender
+#recommender_class = CustomItemKNNCFRecommender
+recommender_class = CustomSLIMElasticNetRecommender
 output_folder_path = "result_experiments/"
 
 # If directory does not exist, create
@@ -59,10 +43,23 @@ metric_to_optimize = "MAP"
 cutoff_to_optimize = 10
 
 
+# For CustomSLIMElasticNet
 hyperparameters_range_dictionary = {
-    "norm": Categorical([1,2]),
-    "alpha": Real(0, 1),
+    "l1_ratio" : Categorical([0.1,0.01]),
+    "alpha" : Categorical([0.1,0.01]),
+    "topK": Integer(500,700),
+    "icm_weight_in_impressions": Real(0, 1),
+    "urm_weight": Real(0, 1),
 }
+
+
+# For CustomItemKNN
+#hyperparameters_range_dictionary = {
+    #"topK": Integer(500,700),
+    #"shrink": Real(150,300),
+    #"icm_weight_in_impressions": Real(0, 1),
+    #"urm_weight": Real(0, 1),
+#}
 
 
 # create a bayesian optimizer object, we pass the recommender and the evaluator
@@ -72,7 +69,7 @@ hyperparameterSearch = SearchBayesianSkopt(recommender_class,
 # provide data needed to create instance of model (one on URM_train, the other on URM_all)
 recommender_input_args = SearchInputRecommenderArgs(
     # For a CBF model simply put [URM_train, ICM_train]
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_super_pow],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
@@ -80,7 +77,7 @@ recommender_input_args = SearchInputRecommenderArgs(
 )
 
 recommender_input_args_last_test = SearchInputRecommenderArgs(
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_super_pow],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
