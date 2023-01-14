@@ -35,7 +35,7 @@ from Recommenders.MatrixFactorization.Cython.MatrixFactorization_Cython import M
     MatrixFactorization_FunkSVD_Cython, MatrixFactorization_AsySVD_Cython
 
 from Recommenders.Neural.MultVAERecommender import MultVAERecommender_OptimizerMask as MultVAERecommender
-from Recommenders.FactorizationMachines.LightFMRecommender import LightFMCFRecommender
+#from Recommenders.FactorizationMachines.LightFMRecommender import LightFMCFRecommender
 
 ######################################################################
 ##########                                                  ##########

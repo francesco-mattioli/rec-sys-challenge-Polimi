@@ -6,6 +6,8 @@ from evaluator import evaluate
 from HyperparameterTuning.run_hyperparameter_search import runHyperparameterSearch_Collaborative
 from Recommenders.Custom.CustomItemKNNCFRecommender import CustomItemKNNCFRecommender
 from Recommenders.Custom.CustomSLIMElasticNetRecommender import CustomSLIMElasticNetRecommender
+from Recommenders.Custom.CustomUserKNNCFRecommender import CustomUserKNNCFRecommender
+from Recommenders.Custom.CustomRP3betaRecommender import CustomRP3betaRecommender
 
 from Evaluation.Evaluator import EvaluatorHoldout
 from Recommenders.DataIO import DataIO
@@ -29,21 +31,24 @@ evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 
 ############################ TUNING ######################################################
 
+recommender_class = CustomRP3betaRecommender
+#recommender_class = CustomUserKNNCFRecommender
 #recommender_class = CustomItemKNNCFRecommender
-recommender_class = CustomSLIMElasticNetRecommender
+#recommender_class = CustomSLIMElasticNetRecommender
 output_folder_path = "result_experiments/"
 
 # If directory does not exist, create
 if not os.path.exists(output_folder_path):
     os.makedirs(output_folder_path)
 
-n_cases = 150
+n_cases = 1000
 n_random_starts = int(n_cases*0.3)
 metric_to_optimize = "MAP"
 cutoff_to_optimize = 10
 
 
 # For CustomSLIMElasticNet
+'''
 hyperparameters_range_dictionary = {
     "l1_ratio" : Categorical([0.1,0.01]),
     "alpha" : Categorical([0.1,0.01]),
@@ -51,15 +56,16 @@ hyperparameters_range_dictionary = {
     "icm_weight_in_impressions": Real(0, 1),
     "urm_weight": Real(0, 1),
 }
-
+'''
 
 # For CustomItemKNN
-#hyperparameters_range_dictionary = {
-    #"topK": Integer(500,700),
-    #"shrink": Real(150,300),
-    #"icm_weight_in_impressions": Real(0, 1),
-    #"urm_weight": Real(0, 1),
-#}
+hyperparameters_range_dictionary = {
+    "topK": Integer(1000,2000),
+    "alpha": Real(0,1),
+    "beta": Real(0,1),
+    "icm_weight_in_impressions": Real(0, 1),
+    "urm_weight": Real(0, 1),
+}
 
 
 # create a bayesian optimizer object, we pass the recommender and the evaluator
