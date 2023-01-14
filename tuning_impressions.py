@@ -45,9 +45,9 @@ cutoff_to_optimize = 10
 
 # For CustomSLIMElasticNet
 hyperparameters_range_dictionary = {
-    "l1_ratio" : Categorical([0.1,0.01]),
-    "alpha" : Categorical([0.1,0.01]),
-    "topK": Integer(500,700),
+    "l1_ratio" :Categorical([0.0001,0.001,0.01,0.1]),
+    "alpha" : Categorical([0.0001,0.001,0.01,0.1]),
+    "topK": Integer(300,750),
     "icm_weight_in_impressions": Real(0, 1),
     "urm_weight": Real(0, 1),
 }

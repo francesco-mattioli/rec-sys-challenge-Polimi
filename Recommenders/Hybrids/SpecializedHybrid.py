@@ -2,6 +2,8 @@ from Recommenders.BaseSimilarityMatrixRecommender import BaseItemSimilarityMatri
 from Recommenders.Recommender_utils import check_matrix
 from Recommenders.GraphBased import P3alphaRecommender
 from Recommenders.KNN import ItemKNNCBFRecommender
+from Recommenders.GraphBased.RP3betaRecommender import RP3betaRecommender
+
 from Recommenders.DataIO import DataIO
 import numpy as np
 
@@ -21,7 +23,7 @@ class SpecializedHybrid(BaseItemSimilarityMatrixRecommender):
 
         self.URM_train = check_matrix(URM_train.copy(), 'csr')
         self.ICM_train = ICM_train
-        self.P3alpha = P3alphaRecommender.P3alphaRecommender(URM_train)
+        self.P3alpha = RP3betaRecommender(URM_train)
         self.itemKNNCBF = ItemKNNCBFRecommender.ItemKNNCBFRecommender(URM_train, ICM_train)
 
     def fit(self, topK_P=991, alpha_P=0.4705816992313091, normalize_similarity_P=False, alpha=0.5,

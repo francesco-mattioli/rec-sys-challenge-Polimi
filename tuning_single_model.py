@@ -20,29 +20,22 @@ from HyperparameterTuning.SearchBayesianSkopt import SearchBayesianSkopt
 from HyperparameterTuning.SearchAbstractClass import SearchInputRecommenderArgs
 from skopt.space import Real, Integer, Categorical
 import os
-# Read & split data
+
+########################## READ & SPLIT DATA ##########################
 dataReader = DataReader()
-
 target = dataReader.load_target()
-'''
-UCM = dataReader.load_aug_ucm()
-URM = dataReader.load_augmented_binary_urm()
-URM_aug, ICM = dataReader.pad_with_zeros_ICMandURM(URM)
-URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample( URM_aug, train_percentage=0.9)
-URM_train_super_pow = dataReader.stackMatrixes_with_impressions(URM_train_aug)
-'''
-URM = dataReader.load_augmented_binary_urm()
-URM_aug, ICM = dataReader.pad_with_zeros_ICMandURM(URM)
-#ICM_stacked_with_weighted_impressions = dataReader.load_ICM_stacked_with_weighted_impressions(0)
-ICM_stacked_with_weighted_impressions = dataReader.load_ICM_stacked_with_weighted_impressions(0)
-URM_aug, ICM = dataReader.pad_with_zeros_given_ICMandURM(
-    ICM_stacked_with_weighted_impressions, URM)
 
-URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample(
-    URM_aug, train_percentage=0.9)
-    
-URM_train_super_pow = dataReader.load_super_powerful_URM(
-    URM_train_aug, ICM_stacked_with_weighted_impressions, 0.8)
+URM = dataReader.load_augmented_binary_urm()
+URM_aug, ICM = dataReader.pad_with_zeros_ICMandURM(URM)
+URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample(URM_aug, train_percentage=0.9)
+
+URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
+
+ICM_stacked_with_binary_impressions = dataReader.load_ICM_stacked_with_binary_impressions(0.8)
+
+URM_train_pow_padded, ICM_stacked_with_binary_impressions_padded = dataReader.pad_with_zeros_given_ICMandURM(ICM_stacked_with_binary_impressions, URM_train_pow)
+
+URM_train_super_pow = dataReader.load_super_powerful_URM(URM_train_pow_padded, ICM_stacked_with_binary_impressions_padded, 0.8)
 
 evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 
@@ -88,7 +81,7 @@ hyperparameters_range_dictionary = {
     "n_components": Integer(5,150),
     "item_alpha": Categorical([0.1,0.01,0.001,0.0001,0.00001]),
     "user_alpha": Categorical([0.1,0.01,0.001,0.0001,0.00001]),
-    "learning_rate": Real(0.0001,0.1)
+    "learning_rate": Categorical([0.1,0.01,0.001,0.0001,0.00001])
 
 }
 
@@ -107,7 +100,7 @@ hyperparameterSearch = SearchBayesianSkopt(
 # provide data needed to create instance of model (one on URM_train, the other on URM_all)
 recommender_input_args = SearchInputRecommenderArgs(
     # For a CBF model simply put [URM_train, ICM_train]
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug, ICM_stacked_with_weighted_impressions],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug, ICM_stacked_with_binary_impressions_padded],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
@@ -115,7 +108,7 @@ recommender_input_args = SearchInputRecommenderArgs(
 )
 
 recommender_input_args_last_test = SearchInputRecommenderArgs(
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,ICM_stacked_with_weighted_impressions],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,ICM_stacked_with_binary_impressions_padded],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
