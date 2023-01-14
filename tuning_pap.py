@@ -12,7 +12,7 @@ from Recommenders.EASE_R.EASE_R_Recommender import EASE_R_Recommender
 from Recommenders.KNN.UserKNN_CFCBF_Hybrid_Recommender import UserKNN_CFCBF_Hybrid_Recommender
 from Recommenders.KNN.UserKNNCBFRecommender import UserKNNCBFRecommender
 from Recommenders.KNN.ItemKNNCBFRecommender import ItemKNNCBFRecommender
-
+from BaseHybridSimilarity import BaseHybridSimilarity
 from Evaluation.Evaluator import EvaluatorHoldout
 from Recommenders.DataIO import DataIO
 from HyperparameterTuning.SearchBayesianSkopt import SearchBayesianSkopt
@@ -67,8 +67,8 @@ RP3beta_aug.fit()
 S_SLIM = SLIMElasticNetRecommender(URM_train_pow)
 S_SLIM.fit()
 
-S_SLIM_only_weighted_impressions = SLIMElasticNetRecommender(URM_train_super_pow)
-S_SLIM_only_weighted_impressions.fit(l1_ratio= 0.02655220236250845, alpha= 0.0009855880367693063, topK=603)
+#S_SLIM_only_weighted_impressions = SLIMElasticNetRecommender(URM_train_super_pow)
+#S_SLIM_only_weighted_impressions.fit(l1_ratio= 0.02655220236250845, alpha= 0.0009855880367693063, topK=603)
 
 
 
@@ -108,13 +108,18 @@ Hybrid_Best = Hybrid_Best(URM_train_aug, URM_train_pow, ICM, UCM, Hybrid_SSLIM_R
 Hybrid_Best.fit(Hybrid_1_tier1_weight= 0.5960289190957877, Hybrid_2_tier1_weight= 1.0, Hybrid_1_tier2_weight= 1.0, Hybrid_2_tier2_weight= 0.0, Hybrid_1_tier3_weight=0.4001445272204769, Hybrid_2_tier3_weight= 0.6909775763230392)
 #HybridRecommender_5 = HybridRecommender_5(URM_train_aug, URM_train_pow, UserKNNCF, RP3beta_pow, S_SLIM, EASE_R)
 # HybridRecommender_5.fit()
-'''
-
 Hybrid_006022 = Hybrid_006022(URM_train_aug, URM_train_pow, ICM, UCM, Hybrid_SSLIM_RP3B_aug, UserKNNCF)
 Hybrid_006022.fit(Hybrid_1_tier1_weight= 0.4730071105820606, Hybrid_2_tier1_weight= 1.0, Hybrid_1_tier2_weight= 1.0, Hybrid_2_tier2_weight= 1.0, Hybrid_1_tier3_weight=1.0)
 
 Linear_Hybrid_1 = Linear_Hybrid(URM_train_aug,Hybrid_006022,EASE_R)
 Linear_Hybrid_1.fit(norm= 2, alpha= 0.8845750718247858)
+
+Similarity_Hybrid = BaseHybridSimilarity(URM_train_aug,S_SLIM, RP3beta_aug)
+Similarity_Hybrid.fit(topK = 991, alpha = 0.6724792305190331)
+
+'''
+
+
 
 ############################ TUNING ######################################################
 
@@ -170,6 +175,11 @@ hyperparameters_range_dictionary = {
 hyperparameters_range_dictionary = {
     "norm": Categorical([1,2]),
     "alpha": Real(0, 1),
+    "beta": Real(0, 1),
+    "teta": Real(0, 1),
+    "gamma": Real(0, 1),
+    "delta": Real(0, 1)
+
 }
 
 
@@ -180,7 +190,7 @@ hyperparameterSearch = SearchBayesianSkopt(recommender_class,
 # provide data needed to create instance of model (one on URM_train, the other on URM_all)
 recommender_input_args = SearchInputRecommenderArgs(
     # For a CBF model simply put [URM_train, ICM_train]
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,Linear_Hybrid_1,S_SLIM_only_weighted_impressions],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,S_SLIM, EASE_R, UserKNNCF, ItemKNNCF, RP3beta_aug],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
@@ -188,7 +198,7 @@ recommender_input_args = SearchInputRecommenderArgs(
 )
 
 recommender_input_args_last_test = SearchInputRecommenderArgs(
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,Linear_Hybrid_1,S_SLIM_only_weighted_impressions],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,S_SLIM, EASE_R, UserKNNCF, ItemKNNCF, RP3beta_aug],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},

@@ -1378,6 +1378,8 @@ class Hybrid_006022(BaseRecommender):
         self.URM_train_pow = URM_train_pow
         self.ICM = ICM
         self.UCM = UCM
+        self.Hybrid1_tier1 = Hybrid1_tier1
+        self.Hybrid2_tier1 = Hybrid2_tier1
 
         super(Hybrid_006022, self).__init__(self.URM_train_aug)
 
@@ -1483,27 +1485,50 @@ class Hybrid_006022(BaseRecommender):
 class Linear_Hybrid(BaseRecommender):
     RECOMMENDER_NAME = "Linear_Hybrid"
 
-    def __init__(self, URM_train, recommender_1, recommender_2):
+    def __init__(self, URM_train, recommender_1, recommender_2, recommender_3, recommender_4, recommender_5):
         super(Linear_Hybrid, self).__init__(URM_train)
 
         self.URM_train = sps.csr_matrix(URM_train)
         self.recommender_1 = recommender_1
         self.recommender_2 = recommender_2
-        
-        
-    def fit(self, norm=2, alpha = 0.5):
+        self.recommender_3 = recommender_3
+        self.recommender_4 = recommender_4
+        self.recommender_5 = recommender_5
 
-        self.alpha = alpha
+        
+        
+    def fit(self, norm=2, alpha = 0.5, beta =0.5, teta = 0.5, gamma = 0.5, delta = 0.5):
+        
         self.norm = norm
+        self.alpha = alpha
+        self.beta = beta
+        self.teta = teta
+        self.gamma = gamma
+        self.delta = delta
 
 
     def _compute_item_score(self, user_id_array, items_to_compute):
         
-        item_weights_1 = self.recommender_1._compute_item_score_per_user(user_id_array,items_to_compute)
+        item_weights_1 = self.recommender_1._compute_item_score(user_id_array,items_to_compute)
         item_weights_2 = self.recommender_2._compute_item_score(user_id_array,items_to_compute)
+        item_weights_3 = self.recommender_3._compute_item_score(user_id_array,items_to_compute)
+        item_weights_4 = self.recommender_4._compute_item_score(user_id_array,items_to_compute)
+        item_weights_5 = self.recommender_5._compute_item_score(user_id_array,items_to_compute)
 
-        norm_item_weights_1 = LA.norm(item_weights_1, self.norm)
-        norm_item_weights_2 = LA.norm(item_weights_2, self.norm)
+        if (self.norm == 1 or self.norm == 2):
+            norm_item_weights_1 = LA.norm(item_weights_1, self.norm)
+            norm_item_weights_2 = LA.norm(item_weights_2, self.norm)
+            norm_item_weights_3 = LA.norm(item_weights_3, self.norm)
+            norm_item_weights_4 = LA.norm(item_weights_4, self.norm)
+            norm_item_weights_5 = LA.norm(item_weights_5, self.norm)
+        else:
+            norm_item_weights_1 = 1
+            norm_item_weights_2 = 1
+            norm_item_weights_3 = 1
+            norm_item_weights_4 = 1
+            norm_item_weights_5 = 1
+
+
         
         '''
         if norm_item_weights_1 == 0:
@@ -1511,11 +1536,15 @@ class Linear_Hybrid(BaseRecommender):
         
         if norm_item_weights_2 == 0:
             raise ValueError("Norm {} of item weights for recommender 2 is zero. Avoiding division by zero".format(self.norm))
-        '''
-        if norm_item_weights_2 == 0 and self.recommender_2==EASE_R_Recommender:
+          if norm_item_weights_2 == 0 and self.recommender_2==EASE_R_Recommender:
             item_weights = (item_weights_1 / norm_item_weights_1)
         else:
             item_weights = (item_weights_1 / norm_item_weights_1) * self.alpha + (item_weights_2 / norm_item_weights_2) * (1-self.alpha)
+        return item_weights
+        '''
+      
+        item_weights = (item_weights_1 / norm_item_weights_1) * self.alpha + (item_weights_2 / norm_item_weights_2) * self.beta + (item_weights_3 / norm_item_weights_3) * self.teta + (item_weights_4 / norm_item_weights_4) * self.gamma + self.teta + (item_weights_5 / norm_item_weights_5) * self.delta
+        
         return item_weights
 
     

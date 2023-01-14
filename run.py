@@ -7,23 +7,29 @@ from evaluator import evaluate
 import pandas as pd
 import numpy as np
 from Recommenders.EASE_R.EASE_R_Recommender import EASE_R_Recommender
+from Evaluation.Evaluator import EvaluatorHoldout
 
-
-########################## READ & SPLIT DATA ##########################
+############################# READ & SPLIT DATA ##############################
 dataReader = DataReader()
+
 target = dataReader.load_target()
 
+UCM = dataReader.load_aug_ucm()
 URM = dataReader.load_augmented_binary_urm()
 URM_aug, ICM = dataReader.pad_with_zeros_ICMandURM(URM)
 URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample(URM_aug, train_percentage=0.9)
 
 URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
 
-ICM_stacked_with_binary_impressions = dataReader.load_ICM_stacked_with_binary_impressions(0.8)
+ICM_stacked_with_weighted_impressions = dataReader.load_ICM_stacked_with_weighted_impressions(0)
 
-URM_train_pow_padded, ICM_stacked_with_binary_impressions_padded = dataReader.pad_with_zeros_given_ICMandURM(ICM_stacked_with_binary_impressions, URM_train_pow)
+URM_train_pow_padded, ICM_stacked_with_weighted_impressions_padded = dataReader.pad_with_zeros_given_ICMandURM(ICM_stacked_with_weighted_impressions, URM_train_pow)
 
-URM_train_super_pow = dataReader.load_super_powerful_URM(URM_train_pow_padded, ICM_stacked_with_binary_impressions_padded, 0.8)
+URM_train_super_pow = dataReader.load_super_powerful_URM(URM_train_pow_padded, ICM_stacked_with_weighted_impressions_padded, 0.8)
+
+
+
+evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 
 
 ########################## iNSTANTIATE & FIT SINGLE MODELS ##########################
@@ -37,16 +43,26 @@ URM_train_super_pow = dataReader.load_super_powerful_URM(URM_train_pow_padded, I
 
 #EASE_R = EASE_R_Recommender(URM_train_aug)
 #EASE_R.fit()
+EASE_R = EASE_R_Recommender(URM_train_aug)
+EASE_R.fit()
 
 UserKNNCF = UserKNNCFRecommender(URM_train_aug)
 UserKNNCF.fit()
 
+ItemKNNCF = ItemKNNCFRecommender(URM_train_aug)
+ItemKNNCF.fit()
+
 RP3beta_aug = RP3betaRecommender(URM_train_aug)
 RP3beta_aug.fit()
 
-S_SLIM = SLIMElasticNetRecommender(URM_train_super_pow)
-S_SLIM.fit(l1_ratio=0.006011021694075882,
-           alpha=0.0013369897413235414, topK=459)
+#RP3beta_pow = RP3betaRecommender(URM_train_pow)
+#RP3beta_pow.fit(alpha=0.3648761546066018,beta=0.5058870363874656, topK=480, normalize_similarity=True)
+
+S_SLIM = SLIMElasticNetRecommender(URM_train_pow)
+S_SLIM.fit()
+
+S_SLIM_only_weighted_impressions = SLIMElasticNetRecommender(URM_train_super_pow)
+S_SLIM_only_weighted_impressions.fit(l1_ratio= 0.02655220236250845, alpha= 0.0009855880367693063, topK=603)
 
 '''
 UserKNN_CFCBF_Hybrid_Recommender = UserKNN_CFCBF_Hybrid_Recommender(
@@ -92,12 +108,15 @@ Hybrid_User_and_Item_KNN_CFCBF_Hybrid = Hybrid_User_and_Item_KNN_CFCBF_Hybrid(
     URM_train_aug, URM_train_pow, ItemKNN_CFCBF_Hybrid_Recommender, UserKNN_CFCBF_Hybrid_Recommender)
 Hybrid_User_and_Item_KNN_CFCBF_Hybrid.fit()
 '''
+Hybrid_006022 = Hybrid_006022(URM_train_aug, URM_train_pow, ICM, UCM, Hybrid_SSLIM_RP3B_aug, UserKNNCF)
+Hybrid_006022.fit(Hybrid_1_tier1_weight= 0.4730071105820606, Hybrid_2_tier1_weight= 1.0, Hybrid_1_tier2_weight= 1.0, Hybrid_2_tier2_weight= 1.0, Hybrid_1_tier3_weight=1.0)
 
+Linear_Hybrid_1 = Linear_Hybrid(URM_train_aug,Hybrid_006022,EASE_R)
+Linear_Hybrid_1.fit(norm= 2, alpha= 0.8845750718247858)
 ########################## INSTANTIATE & FIT FINAL HYBIRD MODEL ##########################
 
-recommender = Hybrid_of_Hybrids(URM_train_aug, Hybrid_SSLIM_RP3B_aug, UserKNNCF, S_SLIM)
-
-recommender.fit(alpha=0.24953067333115547,beta=0.5529848994377775,gamma=0.4543600764791589)
+recommender = Linear_Hybrid(URM_train_aug,Linear_Hybrid_1,S_SLIM_only_weighted_impressions)
+recommender.fit(norm= 2, alpha= 1.0)
             
 ########################## CREATE CSV FOR SUBMISISON ##########################
 f = open("submission.csv", "w+")
