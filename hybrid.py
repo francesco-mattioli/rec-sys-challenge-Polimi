@@ -1514,11 +1514,19 @@ class Linear_Hybrid(BaseRecommender):
         item_weights_3 = self.recommender_3._compute_item_score(user_id_array,items_to_compute)
         item_weights_4 = self.recommender_4._compute_item_score(user_id_array,items_to_compute)
         item_weights_5 = self.recommender_5._compute_item_score(user_id_array,items_to_compute)
-        norm_item_weights_1 = LA.norm(item_weights_1, self.norm)
-        norm_item_weights_2 = LA.norm(item_weights_2, self.norm)
-        norm_item_weights_3 = LA.norm(item_weights_3, self.norm)
-        norm_item_weights_4 = LA.norm(item_weights_4, self.norm)
-        norm_item_weights_5 = LA.norm(item_weights_5, self.norm)
+
+        if (self.norm == 1 or self.norm == 2):
+            norm_item_weights_1 = LA.norm(item_weights_1, self.norm)
+            norm_item_weights_2 = LA.norm(item_weights_2, self.norm)
+            norm_item_weights_3 = LA.norm(item_weights_3, self.norm)
+            norm_item_weights_4 = LA.norm(item_weights_4, self.norm)
+            norm_item_weights_5 = LA.norm(item_weights_5, self.norm)
+        else:
+            norm_item_weights_1 = 1
+            norm_item_weights_2 = 1
+            norm_item_weights_3 = 1
+            norm_item_weights_4 = 1
+            norm_item_weights_5 = 1
 
 
         
