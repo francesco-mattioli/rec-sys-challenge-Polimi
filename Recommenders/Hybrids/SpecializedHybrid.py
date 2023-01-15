@@ -1,7 +1,10 @@
 from Recommenders.BaseSimilarityMatrixRecommender import BaseItemSimilarityMatrixRecommender
 from Recommenders.Recommender_utils import check_matrix
 from Recommenders.GraphBased import P3alphaRecommender
+from Recommenders.GraphBased.RP3betaRecommender import RP3betaRecommender
 from Recommenders.KNN import ItemKNNCBFRecommender
+from Recommenders.Custom.CustomSLIMElasticNetRecommender import CustomSLIMElasticNetRecommender
+
 from Recommenders.GraphBased.RP3betaRecommender import RP3betaRecommender
 
 from Recommenders.DataIO import DataIO
@@ -23,15 +26,16 @@ class SpecializedHybrid(BaseItemSimilarityMatrixRecommender):
 
         self.URM_train = check_matrix(URM_train.copy(), 'csr')
         self.ICM_train = ICM_train
-        self.P3alpha = RP3betaRecommender(URM_train)
-        self.itemKNNCBF = ItemKNNCBFRecommender.ItemKNNCBFRecommender(URM_train, ICM_train)
+        self.CustomSlim = CustomSLIMElasticNetRecommender(URM_train)
+        self.RP3beta_aug = RP3betaRecommender(URM_train)
+
 
     def fit(self, topK_P=991, alpha_P=0.4705816992313091, normalize_similarity_P=False, alpha=0.5,
             topK=700, shrink=200, similarity='jaccard', normalize=True, feature_weighting="TF-IDF", norm_scores=True):
         self.alpha = alpha
         self.norm_scores = norm_scores
-        self.P3alpha.fit(topK=topK_P, alpha=alpha_P, normalize_similarity=normalize_similarity_P)
-        self.itemKNNCBF.fit(topK=topK, shrink=shrink, similarity=similarity, normalize=normalize,
+        self.CustomSlim.fit(topK=topK_P, alpha=alpha_P, normalize_similarity=normalize_similarity_P)
+        self.RP3beta_aug.fit(topK=topK, shrink=shrink, similarity=similarity, normalize=normalize,
                             feature_weighting=feature_weighting)
 
 

@@ -9,6 +9,7 @@ from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
 from Recommenders.GraphBased.RP3betaRecommender import RP3betaRecommender
 from Recommenders.GraphBased.P3alphaRecommender import P3alphaRecommender
 from Recommenders.EASE_R.EASE_R_Recommender import EASE_R_Recommender
+from Recommenders.Custom.CustomSLIMElasticNetRecommender import CustomSLIMElasticNetRecommender
 from Recommenders.KNN.UserKNN_CFCBF_Hybrid_Recommender import UserKNN_CFCBF_Hybrid_Recommender
 from Recommenders.KNN.UserKNNCBFRecommender import UserKNNCBFRecommender
 from Recommenders.KNN.ItemKNNCBFRecommender import ItemKNNCBFRecommender
@@ -27,18 +28,10 @@ dataReader = DataReader()
 
 target = dataReader.load_target()
 
-UCM = dataReader.load_aug_ucm()
 URM = dataReader.load_augmented_binary_urm()
 URM_aug, ICM = dataReader.pad_with_zeros_ICMandURM(URM)
-URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample(URM_aug, train_percentage=1.0)
-
+URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample(URM_aug, train_percentage=0.9)
 URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
-
-ICM_stacked_with_weighted_impressions = dataReader.load_ICM_stacked_with_weighted_impressions(0)
-
-URM_train_pow_padded, ICM_stacked_with_weighted_impressions_padded = dataReader.pad_with_zeros_given_ICMandURM(ICM_stacked_with_weighted_impressions, URM_train_pow)
-
-URM_train_super_pow = dataReader.load_super_powerful_URM(URM_train_pow_padded, ICM_stacked_with_weighted_impressions_padded, 0.8)
 
 
 
@@ -46,6 +39,7 @@ evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 
 
 ############################## FITTING ##########################################################
+'''
 
 EASE_R = EASE_R_Recommender(URM_train_aug)
 EASE_R.fit()
@@ -67,10 +61,12 @@ S_SLIM.fit()
 
 #S_SLIM_only_weighted_impressions = SLIMElasticNetRecommender(URM_train_super_pow)
 #S_SLIM_only_weighted_impressions.fit(l1_ratio= 0.02655220236250845, alpha= 0.0009855880367693063, topK=603)
+'''
+
 
 
 ##########################################################################################################
-
+'''
 Hybrid_SSLIM_RP3B_aug = Hybrid_SSLIM_RP3B_aug(
     URM_train_aug, S_SLIM, RP3beta_aug)
 Hybrid_SSLIM_RP3B_aug.fit(alpha = 0.7447123958484749)
@@ -83,11 +79,16 @@ Linear_Hybrid_1.fit(norm= 2, alpha= 0.8845750718247858)
 
 Similarity_Hybrid = BaseHybridSimilarity(URM_train_aug,S_SLIM, RP3beta_aug)
 Similarity_Hybrid.fit(topK = 991, alpha = 0.6724792305190331)
+'''
+
 
 ##########################################################################################################
-
+'''
 recommender = Linear_Hybrid(URM_train_aug,Linear_Hybrid_1,Similarity_Hybrid)
 recommender.fit(norm = 2, alpha =  0.755120058094304)
+'''
+recommender = CustomSLIMElasticNetRecommender(URM_train_aug)
+recommender.fit(l1_ratio = 0.0001, alpha = 0.001, topK = 750, icm_weight_in_impressions = 1.0, urm_weight = 0.8555768222937054)
 
 ########################## CREATE CSV FOR SUBMISISON ##########################
 f = open("submission.csv", "w+")

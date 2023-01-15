@@ -12,6 +12,7 @@ from Recommenders.EASE_R.EASE_R_Recommender import EASE_R_Recommender
 from Recommenders.KNN.UserKNN_CFCBF_Hybrid_Recommender import UserKNN_CFCBF_Hybrid_Recommender
 from Recommenders.KNN.UserKNNCBFRecommender import UserKNNCBFRecommender
 from Recommenders.KNN.ItemKNNCBFRecommender import ItemKNNCBFRecommender
+from Recommenders.Custom.CustomSLIMElasticNetRecommender import CustomSLIMElasticNetRecommender
 from BaseHybridSimilarity import BaseHybridSimilarity
 from Evaluation.Evaluator import EvaluatorHoldout
 from Recommenders.DataIO import DataIO
@@ -59,11 +60,11 @@ evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 UserKNNCF = UserKNNCFRecommender(URM_train_aug)
 UserKNNCF.fit()
 
-#ItemKNNCF = ItemKNNCFRecommender(URM_train_aug)
-#ItemKNNCF.fit()
+ItemKNNCF = ItemKNNCFRecommender(URM_train_aug)
+ItemKNNCF.fit()
 
-RP3beta_aug = RP3betaRecommender(URM_train_aug)
-RP3beta_aug.fit()
+#RP3beta_aug = RP3betaRecommender(URM_train_aug)
+#RP3beta_aug.fit()
 
 #RP3beta_pow = RP3betaRecommender(URM_train_pow)
 #RP3beta_pow.fit(alpha=0.3648761546066018,beta=0.5058870363874656, topK=480, normalize_similarity=True)
@@ -75,7 +76,8 @@ RP3beta_aug.fit()
 #S_SLIM_only_weighted_impressions.fit(l1_ratio= 0.02655220236250845, alpha= 0.0009855880367693063, topK=603)
 
 
-
+#CustomSlim = CustomSLIMElasticNetRecommender(URM_train_aug)
+#CustomSlim.fit(l1_ratio = 0.0001, alpha = 0.001, topK = 750, icm_weight_in_impressions = 1.0, urm_weight = 0.8555768222937054)
 
 ##########################################################################################################
 '''
@@ -126,7 +128,7 @@ Linear_Hybrid_1.fit(norm= 2, alpha= 0.8845750718247858)
 
 ############################ TUNING ######################################################
 
-recommender_class = BaseHybridSimilarity
+recommender_class = Hybrid_UserKNNCF_ItemKNNCF
 output_folder_path = "result_experiments/"
 
 # If directory does not exist, create
@@ -176,8 +178,8 @@ hyperparameters_range_dictionary = {
 '''
 
 hyperparameters_range_dictionary = {
-    "topK": Integer(800,1200),
-    "alpha": Real(0,1),
+    "alpha": Categorical(np.arange(0,1.05,0.05).round(2).tolist()),
+
 }
 
 
@@ -188,7 +190,7 @@ hyperparameterSearch = SearchBayesianSkopt(recommender_class,
 # provide data needed to create instance of model (one on URM_train, the other on URM_all)
 recommender_input_args = SearchInputRecommenderArgs(
     # For a CBF model simply put [URM_train, ICM_train]
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,RP3beta_aug, UserKNNCF],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,UserKNNCF, ItemKNNCF],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
@@ -196,7 +198,7 @@ recommender_input_args = SearchInputRecommenderArgs(
 )
 
 recommender_input_args_last_test = SearchInputRecommenderArgs(
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,RP3beta_aug, UserKNNCF],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,UserKNNCF, ItemKNNCF],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
