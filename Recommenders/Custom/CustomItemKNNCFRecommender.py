@@ -60,6 +60,6 @@ class CustomItemKNNCFRecommender(CustomBaseItemSimilarityMatrixRecommender):
 
         similarity = Compute_Similarity(self.URM_train, shrink=shrink, topK=topK, normalize=normalize, similarity = similarity, **similarity_args)
 
-
+    
         self.W_sparse = similarity.compute_similarity()
         self.W_sparse = check_matrix(self.W_sparse, format='csr')
