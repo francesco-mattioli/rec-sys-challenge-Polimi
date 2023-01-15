@@ -1518,10 +1518,18 @@ class Linear_Hybrid(BaseRecommender):
         item_weights_6 = self.recommender_6._compute_item_score(user_id_array,items_to_compute)
         item_weights_7 = self.recommender_7._compute_item_score(user_id_array,items_to_compute)
 
+        norm_item_weights_1 = LA.norm(item_weights_1, 2)
+        norm_item_weights_2 = LA.norm(item_weights_2, 2)
+        norm_item_weights_3 = LA.norm(item_weights_3, 2)
+        norm_item_weights_4 = LA.norm(item_weights_4, 2)
+        norm_item_weights_5 = LA.norm(item_weights_5, 2)
+        norm_item_weights_6 = LA.norm(item_weights_4, 2)
+        norm_item_weights_7 = LA.norm(item_weights_5, 2)
+
+        #item_weights = item_weights_1 * self.alpha + item_weights_2 * self.beta + item_weights_3 * self.teta + item_weights_4 * self.gamma + self.teta + item_weights_5 * self.delta + item_weights_6 * self.sigma + item_weights_7 * self.rho
+        item_weights = (item_weights_1 / norm_item_weights_1) * self.alpha + (item_weights_2 / norm_item_weights_2) * self.beta + (item_weights_3 / norm_item_weights_3) * self.teta + (item_weights_4 / norm_item_weights_4) * self.gamma + (item_weights_5 / norm_item_weights_5) * self.delta + (item_weights_6 / norm_item_weights_6) * self.sigma + (item_weights_7 / norm_item_weights_7) * self.rho
 
 
-        item_weights = item_weights_1 * self.alpha + item_weights_2 * self.beta + item_weights_3 * self.teta + item_weights_4 * self.gamma + self.teta + item_weights_5 * self.delta + item_weights_6 * self.sigma + item_weights_7 * self.rho
-        
         return item_weights
 
     

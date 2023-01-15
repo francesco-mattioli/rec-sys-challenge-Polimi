@@ -62,13 +62,14 @@ RP3beta_aug.fit()
 
 P3alpha = P3alphaRecommender(URM_train_aug)
 P3alpha.fit(topK=150, alpha=1.2040177868858861)
-#S_SLIM = SLIMElasticNetRecommender(URM_train_pow)
-#S_SLIM.fit()
+
+S_SLIM = SLIMElasticNetRecommender(URM_train_pow)
+S_SLIM.fit()
 
 
 
-CustomSlim = CustomSLIMElasticNetRecommender(URM_train_aug)
-CustomSlim.fit(l1_ratio = 0.0001, alpha = 0.001, topK = 750, icm_weight_in_impressions = 1.0, urm_weight = 0.8555768222937054)
+#CustomSlim = CustomSLIMElasticNetRecommender(URM_train_aug)
+#CustomSlim.fit(l1_ratio = 0.0001, alpha = 0.001, topK = 750, icm_weight_in_impressions = 1.0, urm_weight = 0.8555768222937054)
 
 CustomItemKNNCF = CustomItemKNNCFRecommender(URM_train_aug)
 CustomItemKNNCF.fit(topK = 66, shrink = 165.4742394926627, icm_weight_in_impressions = 0.02543754033616919, urm_weight = 0.38639914658270913)
@@ -88,7 +89,7 @@ output_folder_path = "result_experiments/"
 if not os.path.exists(output_folder_path):
     os.makedirs(output_folder_path)
 
-n_cases = 200
+n_cases = 300
 n_random_starts = int(n_cases*0.3)
 metric_to_optimize = "MAP"
 cutoff_to_optimize = 10
@@ -139,9 +140,9 @@ hyperparameters_range_dictionary = {
 
 '''
 hyperparameters_range_dictionary = {
-    "alpha": Categorical(np.arange(0,1.05,0.05).round(2).tolist()),
+    "alpha": Categorical(np.arange(0.3,1.05,0.05).round(2).tolist()),
     "beta": Categorical(np.arange(0,1.05,0.05).round(2).tolist()),
-    "teta": Categorical(np.arange(0,1.05,0.05).round(2).tolist()),
+    "teta": Categorical(np.arange(0.3,1.05,0.05).round(2).tolist()),
     "gamma": Categorical(np.arange(0,1.05,0.05).round(2).tolist()),
     "delta": Categorical(np.arange(0,1.05,0.05).round(2).tolist()),
     "sigma": Categorical(np.arange(0,1.05,0.05).round(2).tolist()),
@@ -157,7 +158,7 @@ hyperparameterSearch = SearchBayesianSkopt(recommender_class,
 # provide data needed to create instance of model (one on URM_train, the other on URM_all)
 recommender_input_args = SearchInputRecommenderArgs(
     # For a CBF model simply put [URM_train, ICM_train]
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,CustomSlim, UserKNNCF, RP3beta_aug, CustomItemKNNCF, EASE_R, IALS, P3alpha],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,S_SLIM, UserKNNCF, RP3beta_aug, CustomItemKNNCF, EASE_R, IALS, P3alpha],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
@@ -165,7 +166,7 @@ recommender_input_args = SearchInputRecommenderArgs(
 )
 
 recommender_input_args_last_test = SearchInputRecommenderArgs(
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,CustomSlim, UserKNNCF, RP3beta_aug, CustomItemKNNCF, EASE_R, IALS, P3alpha],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,S_SLIM, UserKNNCF, RP3beta_aug, CustomItemKNNCF, EASE_R, IALS, P3alpha],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},

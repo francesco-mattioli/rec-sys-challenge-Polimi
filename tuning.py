@@ -32,6 +32,7 @@ UCM = dataReader.load_aug_ucm()
 URM = dataReader.load_augmented_binary_urm()
 URM_aug, ICM = dataReader.pad_with_zeros_ICMandURM(URM)
 URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample(URM_aug, train_percentage=0.9)
+URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
 
 '''
 URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
@@ -190,7 +191,7 @@ hyperparameterSearch = SearchBayesianSkopt(recommender_class,
 # provide data needed to create instance of model (one on URM_train, the other on URM_all)
 recommender_input_args = SearchInputRecommenderArgs(
     # For a CBF model simply put [URM_train, ICM_train]
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,UserKNNCF, ItemKNNCF],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,URM_train_pow,UserKNNCF, ItemKNNCF],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},
@@ -198,7 +199,7 @@ recommender_input_args = SearchInputRecommenderArgs(
 )
 
 recommender_input_args_last_test = SearchInputRecommenderArgs(
-    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,UserKNNCF, ItemKNNCF],
+    CONSTRUCTOR_POSITIONAL_ARGS=[URM_train_aug,URM_train_pow,UserKNNCF, ItemKNNCF],
     CONSTRUCTOR_KEYWORD_ARGS={},
     FIT_POSITIONAL_ARGS=[],
     FIT_KEYWORD_ARGS={},

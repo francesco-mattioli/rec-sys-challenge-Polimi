@@ -5,16 +5,17 @@ from tqdm import tqdm
 from evaluator import evaluate
 from HyperparameterTuning.run_hyperparameter_search import runHyperparameterSearch_Collaborative
 from Recommenders.SLIM.SLIMElasticNetRecommender import SLIMElasticNetRecommender
+from Recommenders.MatrixFactorization.IALSRecommender import IALSRecommender
 from Recommenders.KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
 from Recommenders.GraphBased.RP3betaRecommender import RP3betaRecommender
 from Recommenders.GraphBased.P3alphaRecommender import P3alphaRecommender
 from Recommenders.EASE_R.EASE_R_Recommender import EASE_R_Recommender
-from Recommenders.Custom.CustomSLIMElasticNetRecommender import CustomSLIMElasticNetRecommender
 from Recommenders.KNN.UserKNN_CFCBF_Hybrid_Recommender import UserKNN_CFCBF_Hybrid_Recommender
+from Recommenders.Custom.CustomSLIMElasticNetRecommender import CustomSLIMElasticNetRecommender
+from Recommenders.Custom.CustomItemKNNCFRecommender import CustomItemKNNCFRecommender
 from Recommenders.KNN.UserKNNCBFRecommender import UserKNNCBFRecommender
 from Recommenders.KNN.ItemKNNCBFRecommender import ItemKNNCBFRecommender
 from BaseHybridSimilarity import BaseHybridSimilarity
-
 from Evaluation.Evaluator import EvaluatorHoldout
 from Recommenders.DataIO import DataIO
 from HyperparameterTuning.SearchBayesianSkopt import SearchBayesianSkopt
@@ -35,60 +36,52 @@ URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
 
 
 
+
 evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 
 
 ############################## FITTING ##########################################################
-'''
+
+#UserKNNCB_Hybrid = UserKNN_CFCBF_Hybrid_Recommender(URM_train_aug,UCM)
+#UserKNNCB_Hybrid.fit(UCM_weight = 0.030666039949562303, topK = 374, shrink = 44, normalize = True)
 
 EASE_R = EASE_R_Recommender(URM_train_aug)
 EASE_R.fit()
 
+IALS = IALSRecommender(URM_train_aug)
+IALS.fit(epochs = 15, num_factors = 50, confidence_scaling = 'log', alpha = 0.6349270178060594, epsilon = 0.16759381713132152, reg = 2.0856600118526794e-05)
+
 UserKNNCF = UserKNNCFRecommender(URM_train_aug)
 UserKNNCF.fit()
 
-ItemKNNCF = ItemKNNCFRecommender(URM_train_aug)
-ItemKNNCF.fit()
+#ItemKNNCF = ItemKNNCFRecommender(URM_train_aug)
+#ItemKNNCF.fit()
 
 RP3beta_aug = RP3betaRecommender(URM_train_aug)
 RP3beta_aug.fit()
 
-#RP3beta_pow = RP3betaRecommender(URM_train_pow)
-#RP3beta_pow.fit(alpha=0.3648761546066018,beta=0.5058870363874656, topK=480, normalize_similarity=True)
+P3alpha = P3alphaRecommender(URM_train_aug)
+P3alpha.fit(topK=150, alpha=1.2040177868858861)
 
 S_SLIM = SLIMElasticNetRecommender(URM_train_pow)
 S_SLIM.fit()
 
-#S_SLIM_only_weighted_impressions = SLIMElasticNetRecommender(URM_train_super_pow)
-#S_SLIM_only_weighted_impressions.fit(l1_ratio= 0.02655220236250845, alpha= 0.0009855880367693063, topK=603)
-'''
+
+
+#CustomSlim = CustomSLIMElasticNetRecommender(URM_train_aug)
+#CustomSlim.fit(l1_ratio = 0.0001, alpha = 0.001, topK = 750, icm_weight_in_impressions = 1.0, urm_weight = 0.8555768222937054)
+
+CustomItemKNNCF = CustomItemKNNCFRecommender(URM_train_aug)
+CustomItemKNNCF.fit(topK = 66, shrink = 165.4742394926627, icm_weight_in_impressions = 0.02543754033616919, urm_weight = 0.38639914658270913)
+
+#Basesimilarity = BaseHybridSimilarity(URM_train_aug,S_SLIM,RP3beta_aug)
+#Basesimilarity.fit(topK = 803, alpha = 0.6232393364076014)
 
 
 
-##########################################################################################################
-'''
-Hybrid_SSLIM_RP3B_aug = Hybrid_SSLIM_RP3B_aug(
-    URM_train_aug, S_SLIM, RP3beta_aug)
-Hybrid_SSLIM_RP3B_aug.fit(alpha = 0.7447123958484749)
 
-Hybrid_006022 = Hybrid_006022(URM_train_aug, URM_train_pow, ICM, UCM, Hybrid_SSLIM_RP3B_aug, UserKNNCF)
-Hybrid_006022.fit(Hybrid_1_tier1_weight= 0.4730071105820606, Hybrid_2_tier1_weight= 1.0, Hybrid_1_tier2_weight= 1.0, Hybrid_2_tier2_weight= 1.0, Hybrid_1_tier3_weight=1.0)
-
-Linear_Hybrid_1 = Linear_Hybrid(URM_train_aug,Hybrid_006022,EASE_R)
-Linear_Hybrid_1.fit(norm= 2, alpha= 0.8845750718247858)
-
-Similarity_Hybrid = BaseHybridSimilarity(URM_train_aug,S_SLIM, RP3beta_aug)
-Similarity_Hybrid.fit(topK = 991, alpha = 0.6724792305190331)
-'''
-
-
-##########################################################################################################
-'''
-recommender = Linear_Hybrid(URM_train_aug,Linear_Hybrid_1,Similarity_Hybrid)
-recommender.fit(norm = 2, alpha =  0.755120058094304)
-'''
-recommender = CustomSLIMElasticNetRecommender(URM_train_aug)
-recommender.fit(l1_ratio = 0.0001, alpha = 0.001, topK = 750, icm_weight_in_impressions = 1.0, urm_weight = 0.8555768222937054)
+recommender = Linear_Hybrid(URM_train_aug,S_SLIM, UserKNNCF, RP3beta_aug, CustomItemKNNCF, EASE_R, IALS, P3alpha)
+recommender.fit(alpha = 0.85, beta = 0.45, teta = 0.85, gamma = 0.1, delta = 0.65, sigma = 0.25, rho = 0.35)
 
 ########################## CREATE CSV FOR SUBMISISON ##########################
 f = open("submission.csv", "w+")
@@ -102,8 +95,6 @@ for user_id in tqdm(target):
     well_formatted = " ".join([str(x) for x in recommended_items])
     f.write(f"{user_id}, {well_formatted}\n")
 
-# Evaluate recommended items
-map = evaluate(recommended_items_for_each_user, URM_validation, target)
-print('MAP score: {}'.format(map))
+
 
 
