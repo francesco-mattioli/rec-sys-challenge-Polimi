@@ -44,7 +44,7 @@ pip install -r requirements.txt
 
 ### Perform a recommendation
 
-To run our final and best recommender system , run the following command:
+To run our final and best recommender system, run the following command:
 
 ```bash
 python3 run.py
