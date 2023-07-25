@@ -27,22 +27,10 @@ URM_train_pow_padded, ICM_stacked_with_weighted_impressions_padded = dataReader.
 
 URM_train_super_pow = dataReader.load_super_powerful_URM(URM_train_pow_padded, ICM_stacked_with_weighted_impressions_padded, 0.8)
 
-
-
 evaluator_validation = EvaluatorHoldout(URM_validation, [10])
-
 
 ########################## iNSTANTIATE & FIT SINGLE MODELS ##########################
 
-
-#ItemKNNCF = ItemKNNCFRecommender(URM_train_pow)
-#ItemKNNCF.fit()
-
-#RP3beta_pow = RP3betaRecommender(URM_train_pow)
-#RP3beta_pow.fit(alpha=0.3648761546066018,beta=0.5058870363874656, topK=480, normalize_similarity=True)
-
-#EASE_R = EASE_R_Recommender(URM_train_aug)
-#EASE_R.fit()
 EASE_R = EASE_R_Recommender(URM_train_aug)
 EASE_R.fit()
 
@@ -55,64 +43,23 @@ ItemKNNCF.fit()
 RP3beta_aug = RP3betaRecommender(URM_train_aug)
 RP3beta_aug.fit()
 
-#RP3beta_pow = RP3betaRecommender(URM_train_pow)
-#RP3beta_pow.fit(alpha=0.3648761546066018,beta=0.5058870363874656, topK=480, normalize_similarity=True)
-
 S_SLIM = SLIMElasticNetRecommender(URM_train_pow)
 S_SLIM.fit()
 
 S_SLIM_only_weighted_impressions = SLIMElasticNetRecommender(URM_train_super_pow)
 S_SLIM_only_weighted_impressions.fit(l1_ratio= 0.02655220236250845, alpha= 0.0009855880367693063, topK=603)
 
-'''
-UserKNN_CFCBF_Hybrid_Recommender = UserKNN_CFCBF_Hybrid_Recommender(
-    URM_train_aug, UCM)
-UserKNN_CFCBF_Hybrid_Recommender.fit()
+########################## INSTANTIATE & FIT FIRST STEP HYBRID MODELS ##########################
 
-ItemKNN_CFCBF_Hybrid_Recommender = ItemKNN_CFCBF_Hybrid_Recommender(
-    URM_train_aug, ICM)
-ItemKNN_CFCBF_Hybrid_Recommender.fit()
-
-'''
-
-
-##########################################################################################################
-
-
-'''
-Hybrid_UserKNNCF_RP3B_aug = Hybrid_UserKNNCF_RP3B_aug(
-    URM_train_aug, URM_train_pow, UserKNNCF, RP3beta_aug)
-Hybrid_UserKNNCF_RP3B_aug.fit(
-    UserKNNCF_weight=0.4348857237366932, RP3B_weight=0.027648314372221712)
-
-'''
-
-#Hybrid_SSLIM_EASER = Hybrid_SSLIM_EASER(
-#    URM_train_aug, URM_train_pow, S_SLIM, EASE_R)
-#Hybrid_SSLIM_EASER.fit(SSLIM_weight=0.5495139584252299, EASE_R_weight=0.0)
-
-Hybrid_SSLIM_RP3B_aug = Hybrid_SSLIM_RP3B_aug(
-    URM_train_aug, S_SLIM, RP3beta_aug)
+Hybrid_SSLIM_RP3B_aug = Hybrid_SSLIM_RP3B_aug(URM_train_aug, S_SLIM, RP3beta_aug)
 Hybrid_SSLIM_RP3B_aug.fit(alpha = 0.7447123958484749)
 
-'''
-Hybrid_UserKNNCF_ItemKNNCF = Hybrid_UserKNNCF_ItemKNNCF(
-    URM_train_aug, URM_train_pow, UserKNNCF, ItemKNNCF)
-Hybrid_UserKNNCF_ItemKNNCF.fit(
-    UserKNNCF_weight=1.0, ItemKNNCF_weight=0.8072073132929845)
-'''
-
-
-'''
-Hybrid_User_and_Item_KNN_CFCBF_Hybrid = Hybrid_User_and_Item_KNN_CFCBF_Hybrid(
-    URM_train_aug, URM_train_pow, ItemKNN_CFCBF_Hybrid_Recommender, UserKNN_CFCBF_Hybrid_Recommender)
-Hybrid_User_and_Item_KNN_CFCBF_Hybrid.fit()
-'''
 Hybrid_006022 = Hybrid_006022(URM_train_aug, URM_train_pow, ICM, UCM, Hybrid_SSLIM_RP3B_aug, UserKNNCF)
 Hybrid_006022.fit(Hybrid_1_tier1_weight= 0.4730071105820606, Hybrid_2_tier1_weight= 1.0, Hybrid_1_tier2_weight= 1.0, Hybrid_2_tier2_weight= 1.0, Hybrid_1_tier3_weight=1.0)
 
 Linear_Hybrid_1 = Linear_Hybrid(URM_train_aug,Hybrid_006022,EASE_R)
 Linear_Hybrid_1.fit(norm= 2, alpha= 0.8845750718247858)
+
 ########################## INSTANTIATE & FIT FINAL HYBIRD MODEL ##########################
 
 recommender = Linear_Hybrid(URM_train_aug,Linear_Hybrid_1,S_SLIM_only_weighted_impressions)
