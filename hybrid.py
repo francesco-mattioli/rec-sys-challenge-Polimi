@@ -42,11 +42,8 @@ class HybridRecommender(BaseRecommender):
         # self.ItemCF = ItemKNNCFRecommender(self.URM_train_pow)
         # self.ItemCF.fit(topK=1199, shrink=229.22107382005083,similarity='cosine', normalize=True, feature_weighting="TF-IDF")
 
-        # self.SLIM_ElasticNet = SLIMElasticNetRecommender(self.URM_train)
-        # self.SLIM_ElasticNet.fit(l1_ratio=0.008213119901673099,alpha=0.0046000272149077145, positive_only=True, topK=498)
-
-        # self.LightFMItemHybridRecommender = LightFMItemHybridRecommender(self.URM_train, self.ICM)
-        # self.LightFMItemHybridRecommender.fit(epochs = 10)
+        self.SLIM_ElasticNet = SLIMElasticNetRecommender(self.URM_train_aug)
+        self.SLIM_ElasticNet.fit(l1_ratio=0.008213119901673099,alpha=0.0046000272149077145, positive_only=True, topK=498)
 
         self.RP3beta = RP3betaRecommender(self.URM_train_aug)
         self.RP3beta.fit(alpha=0.3648761546066018,
@@ -62,24 +59,14 @@ class HybridRecommender(BaseRecommender):
 
         for i in tqdm(range(len(user_id_array))):
 
-            '''
-            w1 = self.ItemCF._compute_item_score(
+            # w = self.ItemCF._compute_item_score(user_id_array[i], items_to_compute)
+            w1 = self.RP3beta._compute_item_score(
                 user_id_array[i], items_to_compute)
             w1 /= LA.norm(w1, 2)
-            w2 = self.SLIM_ElasticNet._compute_item_score(
-                user_id_array[i], items_to_compute)
+            w2 = self.SLIM_ElasticNet._compute_item_score(user_id_array[i], items_to_compute)
             w2 /= LA.norm(w2, 2)
+            
             w = w1 + w2
-            '''
-
-            # w = self.ItemCF._compute_item_score(user_id_array[i], items_to_compute)
-            w = self.RP3beta._compute_item_score(
-                user_id_array[i], items_to_compute)
-            # w = self.SLIM_ElasticNet._compute_item_score(user_id_array[i], items_to_compute)
-            # w = self.SLIM_BPR_Cython._compute_item_score(user_id_array[i], items_to_compute)
-            # w = self.LightFMItemHybridRecommender._compute_item_score(user_id_array[i], items_to_compute)
-
-            # In the i-th array of item_weights we assign the w array
             item_weights[i, :] = w
 
         return item_weights
@@ -213,70 +200,6 @@ class HybridRecommender_3(BaseRecommender):
                 item_weights[i, :] = w
 
         return item_weights
-
-
-'''
-class HybridLightFM(BaseRecommender):
-    RECOMMENDER_NAME = "HybridLightFM"
-
-    def __init__(self, URM_train: sp.csr_matrix, ICM, dataReader):
-        self.URM_train, self.ICM = dataReader.paddingICMandURM(
-            dataReader, URM_train)
-        self.URM_train_pow = self.stackMatrixes(dataReader, URM_train)
-        super(HybridRecommender_3, self).__init__(URM_train)
-
-    def fit(self):
-        LightFM = LightFMItemHybridRecommender(self.URM_train, self.ICM)
-        LightFM.fit(epochs=50)
-
-    def _compute_item_score(self, user_id_array, items_to_compute=None):
-
-        item_weights = np.empty([len(user_id_array), 27968])
-        for i in tqdm(range(len(user_id_array))):
-            w = self.LightFM._compute_item_score(
-                user_id_array[i], items_to_compute)
-            item_weights[i, :] = w
-
-        return item_weights
-
-    def stackMatrixes(self, dataReader, URM_train):
-        # Vertical stack so ItemIDs cardinality must coincide.
-
-        urm = dataReader.csr_to_dataframe(URM_train)
-        f = dataReader.load_icm_df()
-        swap_list = ["feature_id", "item_id", "data"]
-        f = f.reindex(columns=swap_list)
-        f = f.rename(
-            {'feature_id': 'UserID', 'item_id': 'ItemID', 'data': 'Data'}, axis=1)
-
-        urm['Data'] = 0.825 * urm['Data']
-        # f times (1-aplha)
-        f['Data'] = 0.175 * f['Data']
-        # Change UserIDs of f matrix in order to make recommender work
-        f['UserID'] = 41634 + f['UserID']
-
-        powerful_urm = pd.concat(
-            [urm, f], ignore_index=True).sort_values(['UserID', 'ItemID'])
-        return dataReader.dataframe_to_csr(powerful_urm, 'UserID', 'ItemID', 'Data')
-'''
-
-'''
-def paddingICMandURM(self, dataReader, URM_train):
-        urm=dataReader.csr_to_dataframe(URM_train)
-        icm=dataReader.load_icm_df()
-        DiffURM_ICM = np.setdiff1d(
-            urm['ItemID'].unique(), icm['item_id'].unique())
-        DiffICM_URM = np.setdiff1d(
-            icm['item_id'].unique(), urm['ItemID'].unique())
-        print(DiffURM_ICM.size)
-        for id in DiffURM_ICM:
-            icm.loc[len(icm.index)] = [id, 1, 0]
-        sorted_icm = icm.sort_values('item_id').reset_index(drop= True)
-        for id in DiffICM_URM:
-            urm.loc[len(urm.index)] = [1, id, 0]
-        sorted_urm = urm.sort_values('UserID').reset_index(drop= True)
-        return sorted_urm, sorted_icm
-'''
 
 
 class HybridRecommender_4(BaseRecommender):
