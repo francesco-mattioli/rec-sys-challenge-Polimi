@@ -34,9 +34,6 @@ URM_aug, ICM = dataReader.pad_with_zeros_ICMandURM(URM)
 URM_train_aug, URM_validation = split_train_in_two_percentage_global_sample(URM_aug, train_percentage=0.9)
 URM_train_pow = dataReader.stackMatrixes(URM_train_aug)
 
-
-
-
 evaluator_validation = EvaluatorHoldout(URM_validation, [10])
 
 
