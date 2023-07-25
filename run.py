@@ -57,13 +57,9 @@ Hybrid_SSLIM_RP3B_aug.fit(alpha = 0.7447123958484749)
 Hybrid_006022 = Hybrid_006022(URM_train_aug, URM_train_pow, ICM, UCM, Hybrid_SSLIM_RP3B_aug, UserKNNCF)
 Hybrid_006022.fit(Hybrid_1_tier1_weight= 0.4730071105820606, Hybrid_2_tier1_weight= 1.0, Hybrid_1_tier2_weight= 1.0, Hybrid_2_tier2_weight= 1.0, Hybrid_1_tier3_weight=1.0)
 
-Linear_Hybrid_1 = Linear_Hybrid(URM_train_aug,Hybrid_006022,EASE_R)
-Linear_Hybrid_1.fit(norm= 2, alpha= 0.8845750718247858)
+recommender = Linear_Hybrid(URM_train_aug,Hybrid_006022,EASE_R)
+recommender.fit(norm= 2, alpha= 0.8845750718247858)
 
-########################## INSTANTIATE & FIT FINAL HYBIRD MODEL ##########################
-
-recommender = Linear_Hybrid(URM_train_aug,Linear_Hybrid_1,S_SLIM_only_weighted_impressions)
-recommender.fit(norm= 2, alpha= 1.0)
             
 ########################## CREATE CSV FOR SUBMISISON ##########################
 f = open("submission.csv", "w+")
