@@ -1,4 +1,4 @@
-# REC-SYS-CHALLENGE
+# Recommender System Challenge
 
 Welcome to the code repository for the Recommender Systems Challenge hosted by Politecnico di Milano. This competition is about developing a recommendation system for TV shows. The key objective is to predict the TV shows a user would interact with, taking into account variables such as the duration and categories of the TV shows.
 
