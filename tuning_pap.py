@@ -15,7 +15,7 @@ from Recommenders.Custom.CustomSLIMElasticNetRecommender import CustomSLIMElasti
 from Recommenders.Custom.CustomItemKNNCFRecommender import CustomItemKNNCFRecommender
 from Recommenders.KNN.UserKNNCBFRecommender import UserKNNCBFRecommender
 from Recommenders.KNN.ItemKNNCBFRecommender import ItemKNNCBFRecommender
-from BaseHybridSimilarity import BaseHybridSimilarity
+from Recommenders.HybridRecommenders.BaseHybridSimilarity import BaseHybridSimilarity
 from Evaluation.Evaluator import EvaluatorHoldout
 from Recommenders.DataIO import DataIO
 from HyperparameterTuning.SearchBayesianSkopt import SearchBayesianSkopt

@@ -13,7 +13,7 @@ from Recommenders.KNN.UserKNN_CFCBF_Hybrid_Recommender import UserKNN_CFCBF_Hybr
 from Recommenders.KNN.UserKNNCBFRecommender import UserKNNCBFRecommender
 from Recommenders.KNN.ItemKNNCBFRecommender import ItemKNNCBFRecommender
 from Recommenders.Custom.CustomSLIMElasticNetRecommender import CustomSLIMElasticNetRecommender
-from BaseHybridSimilarity import BaseHybridSimilarity
+from Recommenders.HybridRecommenders.BaseHybridSimilarity import BaseHybridSimilarity
 from Evaluation.Evaluator import EvaluatorHoldout
 from Recommenders.DataIO import DataIO
 from Recommenders.Hybrids.SpecializedHybrid import SpecializedHybrid
