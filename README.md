@@ -20,6 +20,11 @@ Here is a brief explanation of the main files and modules in the repository:
 - `run.py`: This script serves as the primary initiation point to setup and execute the recommendation system, as well as compute the MAP score.
 - `tuning.py`: This script provides functionalities for hyperparameter tuning.
 
+Here is a brief explanation of the two matrixes used:
+
+- `URM_aug`: This is a user-item interaction matrix that represents user interactions with items in the system. Each entry (user, item) in the matrix is set to '1' if the user has either watched the item or opened the item's details page. The matrix is then padded with zeros in the missing items that are present in the Item-Content Matrix (ICM) but not in the User-Content Matrix (UCM).
+- `URM_aug_pow`: This is similar to URM_aug, but it includes an additional step where the ICM is stacked vertically below the URM_aug matrix. The vertical stacking ensures that the cardinality (number of columns) of both matrices coincides, enabling proper concatenation. For the concatenation we used an hyperparameter that is fundamental because it balances the importance of the collaborative part with respect to the context-based part. It can take a value between 0 and 1 (if we want to build a hybrid recommender system).
+
 ## Competition Details
 
 The datasets includes around 1.8M interactions, 41k users, 27k items (TV shows) and two features: the TV shows length (number of episodes or movies) and 4 categories. For some user interactions the data also includes the impressions, representing which items were available on the screen when the user clicked on that TV shows.
