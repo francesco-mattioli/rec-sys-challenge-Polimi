@@ -1,5 +1,9 @@
 # Recommender System Challenge
 
+<p align="center">
+  <img width="100%" src="https://www.symbola.net/wp-content/uploads/2020/07/Polimi.jpg" alt="header" />
+</p>
+
 Welcome to the code repository for the Recommender Systems Challenge hosted by Politecnico di Milano. This competition is about developing a recommendation system for TV shows. The key objective is to predict the TV shows a user would interact with, taking into account variables such as the duration and categories of the TV shows.
 
 Please read the README till the end for a detailed understanding of the project!
