@@ -26,7 +26,11 @@ Here is a brief explanation of the two matrixes used:
 - `URM_aug_pow`: This is similar to URM_aug, but it includes an additional step where the ICM is stacked vertically below the URM_aug matrix. The vertical stacking ensures that the cardinality (number of columns) of both matrices coincides, enabling proper concatenation. For the concatenation we used an hyperparameter that is fundamental because it balances the importance of the collaborative part with respect to the context-based part. It can take a value between 0 and 1 (if we want to build a hybrid recommender system).
 
 Below, you will find a schematic representation of our top-performing hybrid recommender system, where numeric values within rounded boxes indicate the respective weights.
-![Schema](https://github.com/engpap/rec-sys-challenge/tree/master/Docs/schema_best_hybrid.png)
+
+<img src="https://github.com/engpap/rec-sys-challenge/blob/master/Docs/schema_best_hybrid.png" alt="Project Logo" width="700"/>
+
+
+
 
 ## Competition Details
 
